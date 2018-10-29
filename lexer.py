@@ -1,7 +1,18 @@
+"""Contains code for the lexical analysis component of the compiler.  Lexical
+analysis involves taking the source code as a raw string and splitting it down
+into 'tokens'. These are easier to parse later.
+"""
+
 from enum import Enum
 import re
 
+class InvalidSourceException(Exception):
+    
+    def __init__(self, message):
+        super().__init__(message)
+
 class TokenType(Enum):
+    """Enumeration used to identify the type of a token."""
     KEYWORD = 1
     OPERATOR = 2
     SEPARATOR = 3
@@ -16,7 +27,9 @@ regexes = [
     (TokenType.OPERATOR, re.compile(r"=")),
     (TokenType.SEPARATOR, re.compile(r"\(")),
     (TokenType.SEPARATOR, re.compile(r"\)")),
+    (TokenType.SEPARATOR, re.compile(r"\|")),
     (TokenType.SEPARATOR, re.compile(r"\n+")),
+
     (TokenType.OPERATOR, re.compile(r"\+")),
     (TokenType.OPERATOR, re.compile(r"-")),
     (TokenType.OPERATOR, re.compile(r"\*")),
@@ -31,6 +44,8 @@ regexes = [
     (TokenType.OPERATOR, re.compile(r"or")),
     (TokenType.OPERATOR, re.compile(r"not")),
 
+    (TokenType.KEYWORD, re.compile(r"let")),
+    (TokenType.KEYWORD, re.compile(r"in")),
     (TokenType.KEYWORD, re.compile(r"if")),
     (TokenType.KEYWORD, re.compile(r"then")),
     (TokenType.KEYWORD, re.compile(r"else")),
@@ -48,8 +63,9 @@ def lex(source, regexes):
         source  -- the raw source code
         regexes -- a list of tuples (TokenType, regex)
 
-    Returns: a list of tokens (TokenType, value)
-        """
+    Returns:
+        a list of tokens (TokenType, value)
+    """
     cursor, tokens = 0, []
     while cursor < len(source):
         for regex in regexes:
@@ -61,6 +77,6 @@ def lex(source, regexes):
                 cursor = match.end(0)
                 break
         else:
-            print("Invalid character: {}".format(source[cursor]))
-            return None
+            raise InvalidSourceException(
+                "Invalid character '{}'".format(source[cursor]))
     return tokens

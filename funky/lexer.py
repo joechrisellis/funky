@@ -2,22 +2,25 @@
 analysis involves taking the source code as a raw string and splitting it down
 into 'tokens'. These are easier to parse later.
 """
-
-from enum import Enum
+from enum import Enum, auto
 import re
 
-class InvalidSourceException(Exception):
-    
-    def __init__(self, message):
-        super().__init__(message)
+from . import FunkyError
+
+class InvalidSourceException(FunkyError):
+    """Raised when the source code cannot be lexed."""
+    pass
 
 class TokenType(Enum):
     """Enumeration used to identify the type of a token."""
-    KEYWORD = 1
-    OPERATOR = 2
-    SEPARATOR = 3
-    LITERAL = 4
-    IDENTIFIER = 5
+    IDENTIFIER = auto()
+    INTEGER    = auto()
+    KEYWORD    = auto()
+    OPERATOR   = auto()
+    SEPARATOR  = auto()
+    STRING     = auto()
+
+    END        = auto() # <- end input marker used in parsing
 
 regexes = [
     # drop all whitespace and comments
@@ -34,6 +37,7 @@ regexes = [
     (TokenType.OPERATOR, re.compile(r"-")),
     (TokenType.OPERATOR, re.compile(r"\*")),
     (TokenType.OPERATOR, re.compile(r"/")),
+    (TokenType.OPERATOR, re.compile(r"%")),
     (TokenType.OPERATOR, re.compile(r"<=")),
     (TokenType.OPERATOR, re.compile(r"<")),
     (TokenType.OPERATOR, re.compile(r">=")),
@@ -51,14 +55,16 @@ regexes = [
     (TokenType.KEYWORD, re.compile(r"else")),
     (TokenType.KEYWORD, re.compile(r"lam")),
 
-    (TokenType.LITERAL, re.compile(r"[0-9]+")),
+    (TokenType.INTEGER, re.compile(r"[0-9]+")),
+    (TokenType.STRING, re.compile(r"\".*\"")),
+    (TokenType.STRING, re.compile(r"'.*'")),
     (TokenType.IDENTIFIER, re.compile(r"[A-Za-z][A-Za-z_0-9]*")),
 ]
 
 def lex(source, regexes):
     """Converts the given source code into tokens given a list of token
     regexes.
-    
+
     Input:
         source  -- the raw source code
         regexes -- a list of tuples (TokenType, regex)
@@ -79,4 +85,6 @@ def lex(source, regexes):
         else:
             raise InvalidSourceException(
                 "Invalid character '{}'".format(source[cursor]))
+
+    tokens.append((TokenType.END, None))
     return tokens

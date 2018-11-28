@@ -5,7 +5,7 @@ into 'tokens'. These are easier to parse later.
 from enum import Enum, auto
 import re
 
-from . import FunkyError
+from funky import FunkyError
 
 class InvalidSourceException(FunkyError):
     """Raised when the source code cannot be lexed."""
@@ -21,6 +21,44 @@ class TokenType(Enum):
     STRING     = auto()
 
     END        = auto() # <- end input marker used in parsing
+
+class Token:
+    
+    def __init__(self, token_type, token_value=None):
+        self.token_type = token_type
+        self.token_value = token_value
+
+    def has_value(self):
+        """Returns true if this token has a value associated with it, false
+        otherwise.
+        """
+        return self.token_value is not None
+
+    def strip_value(self):
+        """Returns a new token object with the value stripped."""
+        return Token(self.token_type, None)
+
+    def __eq__(self, other):
+        # can only compare two tokens, and different types mean that the tokens
+        # are absolutely not equal
+        if not isinstance(other, Token) or \
+           self.token_type != other.token_type: 
+            return False
+
+        # if either token has the value None, they are equal (given that they
+        # are assured to have the same type now)
+        if self.token_value is None or other.token_value is None:
+            return True
+        return self.token_value == other.token_value
+
+    def __repr__(self):
+        return "<{}: {}>".format(self.token_type, self.token_value)
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __hash__(self):
+        return hash((self.token_type, self.token_value))
 
 regexes = [
     # drop all whitespace and comments
@@ -79,12 +117,12 @@ def lex(source, regexes):
             match = pattern.match(source, cursor)
             if match:
                 if tag:
-                    tokens.append((tag, match.group(0)))
+                    tokens.append(Token(tag, match.group(0)))
                 cursor = match.end(0)
                 break
         else:
             raise InvalidSourceException(
                 "Invalid character '{}'".format(source[cursor]))
 
-    tokens.append((TokenType.END, None))
+    tokens.append(Token(TokenType.END))
     return tokens

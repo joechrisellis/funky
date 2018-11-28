@@ -2,19 +2,11 @@
 Syntax analysis involves taking the tokenized source code and building an
 abstract syntax tree (AST) to represent the structure of the program.
 """
-
 from funky import FunkyError
+from funky import lexer as lexer
 
-END     = "$"
+END     = lexer.Token(lexer.TokenType.END)
 EPSILON = "epsilon"
-
-test_grammar = {
-    "E" : [["T", "E'"]],
-    "E'" : [["+", "T", "E'"], [EPSILON]],
-    "T" : [["F", "T'"]],
-    "T'" : [["*", "F", "T'"], [EPSILON]],
-    "F" : [["(", "E", ")"], ["id"]],
-}
 
 class ParsingError(FunkyError):
     """Base class for all parsing errors."""

@@ -1,6 +1,6 @@
 import argparse
 
-import compiler
+import funky.compiler as compiler
 
 def main():
     parser = argparse.ArgumentParser()
@@ -14,6 +14,10 @@ def main():
 
     source = "\n".join(args.input.readlines())
     output = compiler.compile_to_c(source)
+
+def start():
+    """Exists only for setuptools."""
+    main()
 
 if __name__ == "__main__":
     main()

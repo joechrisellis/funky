@@ -6,6 +6,23 @@ import funky.lexer as lexer
 import funky.parsers as parsers
 import funky.parsers.llparser as llparser
 
+test_grammar = parsers.ContextFreeGrammar("E", {
+    "E" : [["T", "E'"]],
+    "E'" : [["+", "T", "E'"], [parsers.EPSILON]],
+    "T" : [["F", "T'"]],
+    "T'" : [["*", "F", "T'"], [parsers.EPSILON]],
+    "F" : [["(", "E", ")"], ["int"]],
+})
+
+test_grammar2 = parsers.ContextFreeGrammar("A", {
+    "A" : [["B", "D"]],
+    "D" : [[lexer.Token(lexer.TokenType.OPERATOR, "+"), "B", "D"], [lexer.Token(lexer.TokenType.OPERATOR, "-"), "B", "D"], [parsers.EPSILON]],
+    "B" : [["C", "B'"]],
+    "B'" : [[lexer.Token(lexer.TokenType.OPERATOR, "*"), "B"], [lexer.Token(lexer.TokenType.OPERATOR, "/"), "B"], [parsers.EPSILON]],
+    "C" : [[lexer.Token(lexer.TokenType.SEPARATOR, "("), "A", lexer.Token(lexer.TokenType.SEPARATOR, ")")], [lexer.Token(lexer.TokenType.INTEGER)]],
+})
+
+
 def compile_to_c(source):
     """Compiles funky source code.
     
@@ -21,28 +38,20 @@ def compile_to_c(source):
     # lexical analysis
     try:
         tokens = lexer.lex(source, lexer.regexes)
+        print(tokens)
     except lexer.InvalidSourceException as e:
         err("Compilation failed during lexical analysis.")
-        err("Error: \"{}\"".format(e.message))
-
-    print(tokens)
+        err("Error: \"{}\"".format(e.args[0]))
+        exit(1)
 
     try:
-        test_grammar = parsers.ContextFreeGrammar("E", {
-            "E" : [["T", "E'"]],
-            "E'" : [[lexer.Token(lexer.TokenType.OPERATOR, "+"), "T", "E'"], [parsers.EPSILON]],
-            "T" : [["F", "T'"]],
-            "T'" : [[lexer.Token(lexer.TokenType.OPERATOR, "*"), "F", "T'"], [parsers.EPSILON]],
-            "F" : [[lexer.Token(lexer.TokenType.SEPARATOR, "("), "E", lexer.Token(lexer.TokenType.SEPARATOR, ")")], [lexer.Token(lexer.TokenType.INTEGER, None)]],
-        })
-
-        parser = parsers.llparser.LLParser(test_grammar)
+        parser = parsers.llparser.LLParser(test_grammar2)
         parser.parse(tokens)
-
+        print("String parsed successfully.")
     except parsers.ParsingError as e:
         err("Compilation failed during syntax analysis.")
         err("Error: \"{}\"".format(e.args[0]))
-        pass
+        exit(2)
 
     # TODO: syntax analysis
     pass

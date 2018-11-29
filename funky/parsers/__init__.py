@@ -12,7 +12,7 @@ class ParsingError(FunkyError):
     """Base class for all parsing errors."""
     pass
 
-class InvalidSyntaxException(ParsingError):
+class InvalidSyntaxError(ParsingError):
     """Raised when the syntax of the program is invalid."""
     pass
 
@@ -50,80 +50,109 @@ class ContextFreeGrammar:
                                     for alternative  in alternatives
                                     for symbol       in alternative) - \
                          self.nonterminals
-
-    def get_first_sets(self):
-        """Returns a dictionary mapping each nonterminal to its first set."""
-        return {v : self.first(v) for v in self.nonterminals}
-    
-    def first(self, symbol):
-        """returns the first set of a symbol. if a terminal symbol is given,
-        returns a singleton set containing only that symbol. if a nonterminal
-        symbol is given, returns its 'first set'.
         
-        input:
-            symbol -- the symbol for which you want a first set, as a string.
+        self.first = {}
+        self.follow = {}
+        self._compute_first_sets()
+        self._compute_follow_sets()
 
-        returns:
-            the first set associated with the symbol.
-        """
-        if symbol not in self.terminals and symbol not in self.nonterminals:
-            raise ParsingError("Symbol '{}' not defined for this " \
-                               "grammar.".format(symbol))
+    def first_of(self, symbols):
+        """Computes the first set of a string of symbols X1X2...Xn.
+        Algorithm adapted from Dragon Book, Aho et al. To compute FIRST for any
+        string X1X2...Xn:
 
-        # TODO: write unit tests for this function
-        first = set()
-        if symbol in self.terminals:
-            first.add(symbol)
-            return first
-        
-        for alternative in self.rules[symbol]:
-            for a in alternative:
-                sub_problem = self.first(a)
-                first |= sub_problem - set([EPSILON])
-                if EPSILON not in sub_problem:
-                    break
-            else:
-                # all epsilon symbols!
-                first.add(EPSILON)
-
-        return first
-
-    def get_follow_sets(self):
-        """Returns a dictionary mapping each nonterminal to its follow set."""
-        return {v : self.follow(v) for v in self.nonterminals}
-
-    def follow(self, symbol):
-        """Returns the follow set of a symbol. If a terminal symbol is given,
-        returns a singleton set containing only that symbol. If a nonterminal
-        symbol is given, returns its 'first set'.
+            1. Add to FIRST all non-epsilon symbols of FIRST(X1).
+            2. Also add the non-epsilon symbols of FIRST(X2), if epsilon is in
+               FIRST(X1); the non-epsilon symbols of FIRST(X3), if epsilon is in
+               FIRST(X1) and FIRST(X2), and so on.
+            3. Finally, add epsilon to FIRST(X1X2...Xn) if, for all i, epsilon
+               is in FIRST(Xi).
         
         Input:
-            symbol -- the symbol for which you want a first set, as a string.
+            symbols -- a string of symbols, i.e. ["S", "A", "B"]
 
         Returns:
-            the first set associated with the symbol.
+            the first set for that string of symbols.
         """
+        first = set()
+        for symbol in symbols:
+            first |= self.first[symbol] - set([EPSILON])
+            if EPSILON not in self.first[symbol]:
+                break
+        else:
+            first.add(EPSILON)
+        return first
 
-        if symbol in self.terminals:
-            raise ParsingError("Cannot compute follow set for a terminal " \
-                               "'{}'.".format(symbol))
+    def _compute_first_sets(self):
+        """Computes the first set for all of the symbols in the grammar.
+        Algorithm adapted from Dragon Book, Aho et al. To compute FIRST(X) for
+        all grammar symbols X, apply the following rules until no more
+        terminals or epsilon can be added to any FIRST set.
+
+            1. If X is a terminal, first(X) = { X }
+            2. If X is a nonterminal and X -> Y1Y2...Yk is a production for
+               some k >= 1, then a is a member of FIRST(X) if, for some i, a is
+               in FIRST(Yi), and epsilon is in all of FIRST(Y1), ..., FIRST(Yi-1).
+            3. If X -> epsilon is a produciton, then add epsilon to FIRST(X).
+        """
+        for t in self.terminals:
+            self.first[t] = set([t])
+        for v in self.nonterminals:
+            self.first[v] = set()
+
+        break_next = False
+        while True:
+            buf = self.first.copy()
+            for X in self.nonterminals:
+                for alternatives in [s for v, s in self.rules.items() if v == X]:
+                    for alternative in alternatives:
+                        add_epsilon = True
+                        for symbol in alternative:
+                            self.first[X] |= self.first[symbol] - set([EPSILON])
+                            if EPSILON not in self.first[symbol]:
+                                add_epsilon = False
+                                break
+
+                        if add_epsilon:
+                            self.first[X] |= set([EPSILON])
+
+            if break_next and buf == self.first:
+                break
+            break_next = buf == self.first
+
+    def _compute_follow_sets(self):
+        """Computes the follow set for all of the symbols in the grammar.
+        Algorithm adapted from Dragon Book, Aho et al. To compute FOLLOW(A) for
+        all nonterminals A, apply the following rules until nothing can be
+        added to any follow set:
         
-        follow = set()
-        if symbol == self.start_symbol:
-            follow.add(END)
+        1. Place the end marker in FOLLOW(S), where S is the start symbol.
+        2. If there is a production A -> xBz, then everything in FIRST(Z) except
+           epsilon is in FOLLOW(B).
+        3. If there is a production A -> xB, or a production A -> xBz, where
+           FIRST(z) contains epsilon, then everything in FOLLOW(A) is in
+           FOLLOW(B).
+        """
+        for v in self.nonterminals:
+            self.follow[v] = set()
+        self.follow[self.start_symbol].add(END)
 
-        for v, alternatives in self.rules.items():
-            for alternative in alternatives:
-                if symbol not in alternative or \
-                   v == symbol: continue
+        break_next = False
+        while True:
+            buf = self.follow.copy()
+            for A in self.nonterminals:
+                for v, alternatives in self.rules.items():
+                    for alternative in alternatives:
+                        if not A in alternative: continue
+                        i = alternative.index(A)
+                        if i + 1 < len(alternative):
+                            self.follow[A] |= self.first[alternative[i + 1]] - \
+                                              set([EPSILON])
+                            if EPSILON in self.first[alternative[i + 1]]:
+                                self.follow[A] |= self.follow[v]
+                        else:
+                            self.follow[A] |= self.follow[v]
 
-                i = alternative.index(symbol)
-                if i + 1 < len(alternative):
-                    f = self.first(alternative[i + 1])
-                    follow |= f
-                    if EPSILON in f:
-                        follow |= self.follow(v)
-                else:
-                    follow |= self.follow(v)
-
-        return follow - set([EPSILON])
+            if break_next and buf == self.follow:
+                break
+            break_next = buf == self.follow

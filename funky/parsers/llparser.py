@@ -20,38 +20,33 @@ class LLParser:
         Returns:
             an abstract syntax tree representing the parse
         """
-        i, stack = 0, [END, self.cfg.start_symbol]
+        i = 0
         root = AbstractSyntaxTree(self.cfg.start_symbol)
-        tree_stack = [root]
+        stack = [END, root]
 
         x = stack[-1]
         while x != END:
             a = source[i]
-            if x == a:
-                stack.pop()
-                t = tree_stack.pop()
+            if x.value == a:
+                t = stack.pop()
                 t.value = a
                 i += 1
             elif x in self.cfg.terminals:
-                print("x in terminals", x, i, a)
                 raise ParsingError(LLParser.INVALID_SYNTAX(a))
             else:
-                v = self.parse_table[x].get(a,
-                                            self.parse_table[x].get(a.strip_value(),
+                v = self.parse_table[x.value].get(a,
+                                            self.parse_table[x.value].get(a.strip_value(),
                                                                     None))
-                if v:
-                    rule = v[0]
-                    stack.pop()
-                    t = tree_stack.pop()
-
-                    children = [AbstractSyntaxTree(x) for x in rule]
-
-                    if rule != [EPSILON]:
-                        t.children = children
-                        tree_stack.extend(children[::-1])
-                        stack.extend(rule[::-1])
-                else:
+                if not v:
                     raise InvalidSyntaxError(LLParser.INVALID_SYNTAX(a))
+                    
+                rule = v[0]
+                t = stack.pop()
+
+                if rule != [EPSILON]:
+                    children = [AbstractSyntaxTree(x) for x in rule]
+                    t.children = children
+                    stack.extend(children[::-1])
                 
             x = stack[-1]
 

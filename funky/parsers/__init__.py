@@ -2,6 +2,8 @@
 Syntax analysis involves taking the tokenized source code and building an
 abstract syntax tree (AST) to represent the structure of the program.
 """
+from copy import deepcopy
+
 from funky import FunkyError
 from funky import lexer as lexer
 
@@ -16,15 +18,21 @@ class InvalidSyntaxError(ParsingError):
     """Raised when the syntax of the program is invalid."""
     pass
 
-class TreeNode:
+class AbstractSyntaxTree:
 
-    def __init__(self, node_type, params=[]):
-        self.node_type = node_type
-        self.params = params
+    def __init__(self, value, children=[]):
+        self.value = value
+        self.children = children
+
+    def __repr__(self):
+        s = str(self.value)
+        # print(self.value, [child.value for child in self.children])
+        for child in self.children:
+            s += " [{}]".format(repr(child))
+        return s
 
     def __str__(self):
-        children = " ".join(str(x) for x in self.params)
-        return "{} {}".format(self.node_type, children)
+        return self.__repr__()
 
 class ContextFreeGrammar:
     """Class to represent context-free grammars."""
@@ -101,8 +109,9 @@ class ContextFreeGrammar:
             self.first[v] = set()
 
         break_next = False
+        i = 0
         while True:
-            buf = self.first.copy()
+            buf = deepcopy(self.first) # TODO: definitely inefficient, fix
             for X in self.nonterminals:
                 for alternatives in [s for v, s in self.rules.items() if v == X]:
                     for alternative in alternatives:
@@ -139,16 +148,16 @@ class ContextFreeGrammar:
 
         break_next = False
         while True:
-            buf = self.follow.copy()
+            buf = deepcopy(self.follow)
             for A in self.nonterminals:
                 for v, alternatives in self.rules.items():
                     for alternative in alternatives:
                         if not A in alternative: continue
                         i = alternative.index(A)
                         if i + 1 < len(alternative):
-                            self.follow[A] |= self.first[alternative[i + 1]] - \
+                            self.follow[A] |= self.first_of(alternative[i + 1:]) - \
                                               set([EPSILON])
-                            if EPSILON in self.first[alternative[i + 1]]:
+                            if EPSILON in self.first_of(alternative[i + 1:]):
                                 self.follow[A] |= self.follow[v]
                         else:
                             self.follow[A] |= self.follow[v]

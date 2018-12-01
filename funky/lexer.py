@@ -68,8 +68,9 @@ regexes = [
     (TokenType.OPERATOR, re.compile(r"=")),
     (TokenType.SEPARATOR, re.compile(r"\(")),
     (TokenType.SEPARATOR, re.compile(r"\)")),
+    (TokenType.SEPARATOR, re.compile(r",")),
     (TokenType.SEPARATOR, re.compile(r"\|")),
-    (TokenType.SEPARATOR, re.compile(r"\n+")),
+    (TokenType.SEPARATOR, re.compile(r";")),
 
     (TokenType.OPERATOR, re.compile(r"\+")),
     (TokenType.OPERATOR, re.compile(r"-")),
@@ -85,6 +86,7 @@ regexes = [
     (TokenType.OPERATOR, re.compile(r"and")),
     (TokenType.OPERATOR, re.compile(r"or")),
     (TokenType.OPERATOR, re.compile(r"not")),
+    (TokenType.OPERATOR, re.compile(r"::")),
 
     (TokenType.KEYWORD, re.compile(r"let")),
     (TokenType.KEYWORD, re.compile(r"in")),
@@ -94,8 +96,8 @@ regexes = [
     (TokenType.KEYWORD, re.compile(r"lam")),
 
     (TokenType.INTEGER, re.compile(r"[0-9]+")),
-    (TokenType.STRING, re.compile(r"\".*\"")),
-    (TokenType.STRING, re.compile(r"'.*'")),
+    (TokenType.STRING, re.compile(r"\".*?\"")),
+    (TokenType.STRING, re.compile(r"'.*?'")),
     (TokenType.IDENTIFIER, re.compile(r"[A-Za-z][A-Za-z_0-9]*")),
 ]
 

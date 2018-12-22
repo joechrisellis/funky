@@ -1,5 +1,6 @@
 from funky.parsers import ParsingError, InvalidSyntaxError, \
                           AbstractSyntaxTree, EPSILON, END
+from funky.lexer import Token, TokenType
 
 class LLParser: 
     """An LL(1) parser."""
@@ -20,6 +21,8 @@ class LLParser:
         Returns:
             an abstract syntax tree representing the parse
         """
+        source.append(Token(TokenType.END)) # add an end character.
+
         i = 0
         root = AbstractSyntaxTree(self.cfg.start_symbol)
         stack = [END, root]
@@ -31,7 +34,7 @@ class LLParser:
                 t = stack.pop()
                 t.value = a
                 i += 1
-            elif x in self.cfg.terminals:
+            elif x.value in self.cfg.terminals:
                 raise ParsingError(LLParser.INVALID_SYNTAX(a))
             else:
                 v = self.parse_table[x.value].get(a,

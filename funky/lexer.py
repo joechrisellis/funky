@@ -51,6 +51,9 @@ class Token:
             return True
         return self.token_value == other.token_value
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __repr__(self):
         return "<{}: {}>".format(self.token_type, self.token_value)
 
@@ -126,5 +129,4 @@ def lex(source, regexes):
             raise InvalidSourceException(
                 "Invalid character '{}'".format(source[cursor]))
 
-    tokens.append(Token(TokenType.END))
     return tokens

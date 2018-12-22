@@ -1,11 +1,10 @@
 """Control flow for the compiler."""
 import sys
 
+from funky.parser.funky_parser import FunkyParser
+from funky.parser import FunkyParsingError, FunkySyntaxError
 from funky.util import err
 import funky
-import funky.lexer as lexer
-import funky.parsers as parsers
-import funky.parsers.llparser as llparser
 
 def compile_to_c(source):
     """Compiles funky source code.
@@ -19,24 +18,19 @@ def compile_to_c(source):
 
     symbol_table = {}
 
-    # lexical analysis
+    # lexical and syntax analysis
     try:
-        tokens = lexer.lex(source, lexer.regexes)
-        print(tokens)
-    except lexer.InvalidSourceException as e:
-        err("Compilation failed during lexical analysis.")
-        err("Error: \"{}\"".format(e.args[0]))
-        exit(1)
-
-    try:
-        parser = parsers.llparser.LLParser(funky.FUNKY_GRAMMAR)
-        ast = parser.parse(tokens)
-        print("Source parsed successfully.")
-        print(ast)
-    except parsers.ParsingError as e:
-        err("Compilation failed during syntax analysis.")
+        parser = FunkyParser()
+        parser.build()
+        parsed = parser.do_parse(source)
+    except FunkySyntaxError as e:
+        err("Syntax error in given program.")
         err("Error: \"{}\"".format(e.args[0]))
         exit(2)
+    except FunkyParsingError as e:
+        err("Compilation failed during syntax analysis.")
+        err("Error: \"{}\"".format(e.args[0]))
+        exit(3)
 
     # TODO: semantic analysis
     pass

@@ -26,7 +26,6 @@ class AbstractSyntaxTree:
 
     def __repr__(self):
         s = str(self.value)
-        # print(self.value, [child.value for child in self.children])
         for child in self.children:
             s += " [{}]".format(repr(child))
         return s
@@ -165,3 +164,18 @@ class ContextFreeGrammar:
             if break_next and buf == self.follow:
                 break
             break_next = buf == self.follow
+
+    def get_augmented(self):
+        """For a grammar G with start symbol S, G' is the augmented grammar --
+        it is just G with a new start symbol S' and production S' -> S. The
+        purpose of this new starting production is to indicate to the parser
+        when it should stop parsing and announce acceptance of the input. That
+        is, acceptance occurs when and only when the parser is about to reduce
+        by S' -> S.
+        """
+        new_rules = dict(self.rules)
+        new_start_symbol = cfg.start_symbol + "'"
+        new_rules[new_start_symbol] = [[cfg.start_symbol]]
+
+        augmented = ContextFreeGrammar(new_start_symbol, new_rules)
+        return augmented

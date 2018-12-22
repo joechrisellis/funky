@@ -1,0 +1,1193 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    ARROW
+    GUARD
+    MATCH
+
+Grammar
+
+Rule 0     S' -> PROG
+Rule 1     PROG -> FUNC_LIST
+Rule 2     FUNC_LIST -> FUNC NEWLINE FUNC_LIST
+Rule 3     FUNC_LIST -> empty
+Rule 4     FUNC -> IDENTIFIER ARG_LIST EQUALS EXPRESSION
+Rule 5     ARG_LIST -> IDENTIFIER ARG_LIST
+Rule 6     ARG_LIST -> NUMBER ARG_LIST
+Rule 7     ARG_LIST -> STRING ARG_LIST
+Rule 8     ARG_LIST -> IDENTIFIER
+Rule 9     ARG_LIST -> NUMBER
+Rule 10    ARG_LIST -> STRING
+Rule 11    EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+Rule 12    EXPRESSION -> EXPRESSION PLUS EXPRESSION
+Rule 13    EXPRESSION -> EXPRESSION MINUS EXPRESSION
+Rule 14    EXPRESSION -> EXPRESSION TIMES EXPRESSION
+Rule 15    EXPRESSION -> EXPRESSION DIVIDE EXPRESSION
+Rule 16    EXPRESSION -> EXPRESSION POW EXPRESSION
+Rule 17    EXPRESSION -> MINUS EXPRESSION
+Rule 18    EXPRESSION -> IDENTIFIER ARG_LIST
+Rule 19    EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+Rule 20    EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION
+Rule 21    EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+Rule 22    EXPRESSION -> NUMBER
+Rule 23    EXPRESSION -> IDENTIFIER
+Rule 24    EXPRESSION -> STRING
+Rule 25    empty -> <empty>
+
+Terminals, with rules where they appear
+
+ARROW                : 
+CLOSE_BRACKET        : 11
+DIVIDE               : 15
+ELSE                 : 20
+EQUALS               : 4 19 21
+GUARD                : 
+IDENTIFIER           : 4 5 8 18 19 21 23
+IF                   : 20
+IN                   : 19
+LET                  : 19
+MATCH                : 
+MINUS                : 13 17
+NEWLINE              : 2
+NUMBER               : 6 9 22
+OPEN_BRACKET         : 11
+PLUS                 : 12
+POW                  : 16
+STRING               : 7 10 24
+TIMES                : 14
+WHERE                : 21
+error                : 
+
+Nonterminals, with rules where they appear
+
+ARG_LIST             : 4 5 6 7 18
+EXPRESSION           : 4 11 12 12 13 13 14 14 15 15 16 16 17 19 19 20 20 20 21 21
+FUNC                 : 2
+FUNC_LIST            : 1 2
+PROG                 : 0
+empty                : 3
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . PROG
+    (1) PROG -> . FUNC_LIST
+    (2) FUNC_LIST -> . FUNC NEWLINE FUNC_LIST
+    (3) FUNC_LIST -> . empty
+    (4) FUNC -> . IDENTIFIER ARG_LIST EQUALS EXPRESSION
+    (25) empty -> .
+
+    IDENTIFIER      shift and go to state 5
+    $end            reduce using rule 25 (empty -> .)
+
+    PROG                           shift and go to state 1
+    FUNC_LIST                      shift and go to state 2
+    FUNC                           shift and go to state 3
+    empty                          shift and go to state 4
+
+state 1
+
+    (0) S' -> PROG .
+
+
+
+state 2
+
+    (1) PROG -> FUNC_LIST .
+
+    $end            reduce using rule 1 (PROG -> FUNC_LIST .)
+
+
+state 3
+
+    (2) FUNC_LIST -> FUNC . NEWLINE FUNC_LIST
+
+    NEWLINE         shift and go to state 6
+
+
+state 4
+
+    (3) FUNC_LIST -> empty .
+
+    $end            reduce using rule 3 (FUNC_LIST -> empty .)
+
+
+state 5
+
+    (4) FUNC -> IDENTIFIER . ARG_LIST EQUALS EXPRESSION
+    (5) ARG_LIST -> . IDENTIFIER ARG_LIST
+    (6) ARG_LIST -> . NUMBER ARG_LIST
+    (7) ARG_LIST -> . STRING ARG_LIST
+    (8) ARG_LIST -> . IDENTIFIER
+    (9) ARG_LIST -> . NUMBER
+    (10) ARG_LIST -> . STRING
+
+    IDENTIFIER      shift and go to state 7
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+
+    ARG_LIST                       shift and go to state 8
+
+state 6
+
+    (2) FUNC_LIST -> FUNC NEWLINE . FUNC_LIST
+    (2) FUNC_LIST -> . FUNC NEWLINE FUNC_LIST
+    (3) FUNC_LIST -> . empty
+    (4) FUNC -> . IDENTIFIER ARG_LIST EQUALS EXPRESSION
+    (25) empty -> .
+
+    IDENTIFIER      shift and go to state 5
+    $end            reduce using rule 25 (empty -> .)
+
+    FUNC                           shift and go to state 3
+    FUNC_LIST                      shift and go to state 11
+    empty                          shift and go to state 4
+
+state 7
+
+    (5) ARG_LIST -> IDENTIFIER . ARG_LIST
+    (8) ARG_LIST -> IDENTIFIER .
+    (5) ARG_LIST -> . IDENTIFIER ARG_LIST
+    (6) ARG_LIST -> . NUMBER ARG_LIST
+    (7) ARG_LIST -> . STRING ARG_LIST
+    (8) ARG_LIST -> . IDENTIFIER
+    (9) ARG_LIST -> . NUMBER
+    (10) ARG_LIST -> . STRING
+
+    EQUALS          reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    PLUS            reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    MINUS           reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    TIMES           reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    DIVIDE          reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    POW             reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    IF              reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    WHERE           reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    NEWLINE         reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    CLOSE_BRACKET   reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    ELSE            reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    IN              reduce using rule 8 (ARG_LIST -> IDENTIFIER .)
+    IDENTIFIER      shift and go to state 7
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+
+    ARG_LIST                       shift and go to state 12
+
+state 8
+
+    (4) FUNC -> IDENTIFIER ARG_LIST . EQUALS EXPRESSION
+
+    EQUALS          shift and go to state 13
+
+
+state 9
+
+    (6) ARG_LIST -> NUMBER . ARG_LIST
+    (9) ARG_LIST -> NUMBER .
+    (5) ARG_LIST -> . IDENTIFIER ARG_LIST
+    (6) ARG_LIST -> . NUMBER ARG_LIST
+    (7) ARG_LIST -> . STRING ARG_LIST
+    (8) ARG_LIST -> . IDENTIFIER
+    (9) ARG_LIST -> . NUMBER
+    (10) ARG_LIST -> . STRING
+
+    EQUALS          reduce using rule 9 (ARG_LIST -> NUMBER .)
+    PLUS            reduce using rule 9 (ARG_LIST -> NUMBER .)
+    MINUS           reduce using rule 9 (ARG_LIST -> NUMBER .)
+    TIMES           reduce using rule 9 (ARG_LIST -> NUMBER .)
+    DIVIDE          reduce using rule 9 (ARG_LIST -> NUMBER .)
+    POW             reduce using rule 9 (ARG_LIST -> NUMBER .)
+    IF              reduce using rule 9 (ARG_LIST -> NUMBER .)
+    WHERE           reduce using rule 9 (ARG_LIST -> NUMBER .)
+    NEWLINE         reduce using rule 9 (ARG_LIST -> NUMBER .)
+    CLOSE_BRACKET   reduce using rule 9 (ARG_LIST -> NUMBER .)
+    ELSE            reduce using rule 9 (ARG_LIST -> NUMBER .)
+    IN              reduce using rule 9 (ARG_LIST -> NUMBER .)
+    IDENTIFIER      shift and go to state 7
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+
+    ARG_LIST                       shift and go to state 14
+
+state 10
+
+    (7) ARG_LIST -> STRING . ARG_LIST
+    (10) ARG_LIST -> STRING .
+    (5) ARG_LIST -> . IDENTIFIER ARG_LIST
+    (6) ARG_LIST -> . NUMBER ARG_LIST
+    (7) ARG_LIST -> . STRING ARG_LIST
+    (8) ARG_LIST -> . IDENTIFIER
+    (9) ARG_LIST -> . NUMBER
+    (10) ARG_LIST -> . STRING
+
+    EQUALS          reduce using rule 10 (ARG_LIST -> STRING .)
+    PLUS            reduce using rule 10 (ARG_LIST -> STRING .)
+    MINUS           reduce using rule 10 (ARG_LIST -> STRING .)
+    TIMES           reduce using rule 10 (ARG_LIST -> STRING .)
+    DIVIDE          reduce using rule 10 (ARG_LIST -> STRING .)
+    POW             reduce using rule 10 (ARG_LIST -> STRING .)
+    IF              reduce using rule 10 (ARG_LIST -> STRING .)
+    WHERE           reduce using rule 10 (ARG_LIST -> STRING .)
+    NEWLINE         reduce using rule 10 (ARG_LIST -> STRING .)
+    CLOSE_BRACKET   reduce using rule 10 (ARG_LIST -> STRING .)
+    ELSE            reduce using rule 10 (ARG_LIST -> STRING .)
+    IN              reduce using rule 10 (ARG_LIST -> STRING .)
+    IDENTIFIER      shift and go to state 7
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+
+    ARG_LIST                       shift and go to state 15
+
+state 11
+
+    (2) FUNC_LIST -> FUNC NEWLINE FUNC_LIST .
+
+    $end            reduce using rule 2 (FUNC_LIST -> FUNC NEWLINE FUNC_LIST .)
+
+
+state 12
+
+    (5) ARG_LIST -> IDENTIFIER ARG_LIST .
+
+    EQUALS          reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    PLUS            reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    MINUS           reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    TIMES           reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    DIVIDE          reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    POW             reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    IF              reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    WHERE           reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    NEWLINE         reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    CLOSE_BRACKET   reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    ELSE            reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+    IN              reduce using rule 5 (ARG_LIST -> IDENTIFIER ARG_LIST .)
+
+
+state 13
+
+    (4) FUNC -> IDENTIFIER ARG_LIST EQUALS . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 17
+
+state 14
+
+    (6) ARG_LIST -> NUMBER ARG_LIST .
+
+    EQUALS          reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    PLUS            reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    MINUS           reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    TIMES           reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    DIVIDE          reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    POW             reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    IF              reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    WHERE           reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    NEWLINE         reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    CLOSE_BRACKET   reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    ELSE            reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+    IN              reduce using rule 6 (ARG_LIST -> NUMBER ARG_LIST .)
+
+
+state 15
+
+    (7) ARG_LIST -> STRING ARG_LIST .
+
+    EQUALS          reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    PLUS            reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    MINUS           reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    TIMES           reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    DIVIDE          reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    POW             reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    IF              reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    WHERE           reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    NEWLINE         reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    CLOSE_BRACKET   reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    ELSE            reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+    IN              reduce using rule 7 (ARG_LIST -> STRING ARG_LIST .)
+
+
+state 16
+
+    (18) EXPRESSION -> IDENTIFIER . ARG_LIST
+    (23) EXPRESSION -> IDENTIFIER .
+    (5) ARG_LIST -> . IDENTIFIER ARG_LIST
+    (6) ARG_LIST -> . NUMBER ARG_LIST
+    (7) ARG_LIST -> . STRING ARG_LIST
+    (8) ARG_LIST -> . IDENTIFIER
+    (9) ARG_LIST -> . NUMBER
+    (10) ARG_LIST -> . STRING
+
+    PLUS            reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    MINUS           reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    TIMES           reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    DIVIDE          reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    POW             reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    IF              reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    WHERE           reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    NEWLINE         reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    CLOSE_BRACKET   reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    ELSE            reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    IN              reduce using rule 23 (EXPRESSION -> IDENTIFIER .)
+    IDENTIFIER      shift and go to state 7
+    NUMBER          shift and go to state 9
+    STRING          shift and go to state 10
+
+    ARG_LIST                       shift and go to state 23
+
+state 17
+
+    (4) FUNC -> IDENTIFIER ARG_LIST EQUALS EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    NEWLINE         reduce using rule 4 (FUNC -> IDENTIFIER ARG_LIST EQUALS EXPRESSION .)
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+
+state 18
+
+    (11) EXPRESSION -> OPEN_BRACKET . EXPRESSION CLOSE_BRACKET
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 31
+
+state 19
+
+    (17) EXPRESSION -> MINUS . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 32
+
+state 20
+
+    (19) EXPRESSION -> LET . IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+
+    IDENTIFIER      shift and go to state 33
+
+
+state 21
+
+    (22) EXPRESSION -> NUMBER .
+
+    PLUS            reduce using rule 22 (EXPRESSION -> NUMBER .)
+    MINUS           reduce using rule 22 (EXPRESSION -> NUMBER .)
+    TIMES           reduce using rule 22 (EXPRESSION -> NUMBER .)
+    DIVIDE          reduce using rule 22 (EXPRESSION -> NUMBER .)
+    POW             reduce using rule 22 (EXPRESSION -> NUMBER .)
+    IF              reduce using rule 22 (EXPRESSION -> NUMBER .)
+    WHERE           reduce using rule 22 (EXPRESSION -> NUMBER .)
+    NEWLINE         reduce using rule 22 (EXPRESSION -> NUMBER .)
+    CLOSE_BRACKET   reduce using rule 22 (EXPRESSION -> NUMBER .)
+    ELSE            reduce using rule 22 (EXPRESSION -> NUMBER .)
+    IN              reduce using rule 22 (EXPRESSION -> NUMBER .)
+
+
+state 22
+
+    (24) EXPRESSION -> STRING .
+
+    PLUS            reduce using rule 24 (EXPRESSION -> STRING .)
+    MINUS           reduce using rule 24 (EXPRESSION -> STRING .)
+    TIMES           reduce using rule 24 (EXPRESSION -> STRING .)
+    DIVIDE          reduce using rule 24 (EXPRESSION -> STRING .)
+    POW             reduce using rule 24 (EXPRESSION -> STRING .)
+    IF              reduce using rule 24 (EXPRESSION -> STRING .)
+    WHERE           reduce using rule 24 (EXPRESSION -> STRING .)
+    NEWLINE         reduce using rule 24 (EXPRESSION -> STRING .)
+    CLOSE_BRACKET   reduce using rule 24 (EXPRESSION -> STRING .)
+    ELSE            reduce using rule 24 (EXPRESSION -> STRING .)
+    IN              reduce using rule 24 (EXPRESSION -> STRING .)
+
+
+state 23
+
+    (18) EXPRESSION -> IDENTIFIER ARG_LIST .
+
+    PLUS            reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    MINUS           reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    TIMES           reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    DIVIDE          reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    POW             reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    IF              reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    WHERE           reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    NEWLINE         reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    CLOSE_BRACKET   reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    ELSE            reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+    IN              reduce using rule 18 (EXPRESSION -> IDENTIFIER ARG_LIST .)
+
+
+state 24
+
+    (12) EXPRESSION -> EXPRESSION PLUS . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 34
+
+state 25
+
+    (13) EXPRESSION -> EXPRESSION MINUS . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 35
+
+state 26
+
+    (14) EXPRESSION -> EXPRESSION TIMES . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 36
+
+state 27
+
+    (15) EXPRESSION -> EXPRESSION DIVIDE . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 37
+
+state 28
+
+    (16) EXPRESSION -> EXPRESSION POW . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 38
+
+state 29
+
+    (20) EXPRESSION -> EXPRESSION IF . EXPRESSION ELSE EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 39
+
+state 30
+
+    (21) EXPRESSION -> EXPRESSION WHERE . IDENTIFIER EQUALS EXPRESSION
+
+    IDENTIFIER      shift and go to state 40
+
+
+state 31
+
+    (11) EXPRESSION -> OPEN_BRACKET EXPRESSION . CLOSE_BRACKET
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    CLOSE_BRACKET   shift and go to state 41
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+
+state 32
+
+    (17) EXPRESSION -> MINUS EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    PLUS            reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    MINUS           reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    TIMES           reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    DIVIDE          reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    POW             reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    IF              reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    WHERE           reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    NEWLINE         reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    ELSE            reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+    IN              reduce using rule 17 (EXPRESSION -> MINUS EXPRESSION .)
+
+  ! PLUS            [ shift and go to state 24 ]
+  ! MINUS           [ shift and go to state 25 ]
+  ! TIMES           [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! POW             [ shift and go to state 28 ]
+  ! IF              [ shift and go to state 29 ]
+  ! WHERE           [ shift and go to state 30 ]
+
+
+state 33
+
+    (19) EXPRESSION -> LET IDENTIFIER . EQUALS EXPRESSION IN EXPRESSION
+
+    EQUALS          shift and go to state 42
+
+
+state 34
+
+    (12) EXPRESSION -> EXPRESSION PLUS EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    PLUS            reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    MINUS           reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    POW             reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    IF              reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    WHERE           reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    NEWLINE         reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    ELSE            reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    IN              reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .)
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+
+  ! TIMES           [ reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .) ]
+  ! DIVIDE          [ reduce using rule 12 (EXPRESSION -> EXPRESSION PLUS EXPRESSION .) ]
+  ! PLUS            [ shift and go to state 24 ]
+  ! MINUS           [ shift and go to state 25 ]
+  ! POW             [ shift and go to state 28 ]
+  ! IF              [ shift and go to state 29 ]
+  ! WHERE           [ shift and go to state 30 ]
+
+
+state 35
+
+    (13) EXPRESSION -> EXPRESSION MINUS EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    PLUS            reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    MINUS           reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    POW             reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    IF              reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    WHERE           reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    NEWLINE         reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    ELSE            reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    IN              reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .)
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+
+  ! TIMES           [ reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .) ]
+  ! DIVIDE          [ reduce using rule 13 (EXPRESSION -> EXPRESSION MINUS EXPRESSION .) ]
+  ! PLUS            [ shift and go to state 24 ]
+  ! MINUS           [ shift and go to state 25 ]
+  ! POW             [ shift and go to state 28 ]
+  ! IF              [ shift and go to state 29 ]
+  ! WHERE           [ shift and go to state 30 ]
+
+
+state 36
+
+    (14) EXPRESSION -> EXPRESSION TIMES EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    PLUS            reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    MINUS           reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    TIMES           reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    DIVIDE          reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    POW             reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    IF              reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    WHERE           reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    NEWLINE         reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    ELSE            reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+    IN              reduce using rule 14 (EXPRESSION -> EXPRESSION TIMES EXPRESSION .)
+
+  ! PLUS            [ shift and go to state 24 ]
+  ! MINUS           [ shift and go to state 25 ]
+  ! TIMES           [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! POW             [ shift and go to state 28 ]
+  ! IF              [ shift and go to state 29 ]
+  ! WHERE           [ shift and go to state 30 ]
+
+
+state 37
+
+    (15) EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    PLUS            reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    MINUS           reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    TIMES           reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    DIVIDE          reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    POW             reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    IF              reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    WHERE           reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    NEWLINE         reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    ELSE            reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+    IN              reduce using rule 15 (EXPRESSION -> EXPRESSION DIVIDE EXPRESSION .)
+
+  ! PLUS            [ shift and go to state 24 ]
+  ! MINUS           [ shift and go to state 25 ]
+  ! TIMES           [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! POW             [ shift and go to state 28 ]
+  ! IF              [ shift and go to state 29 ]
+  ! WHERE           [ shift and go to state 30 ]
+
+
+state 38
+
+    (16) EXPRESSION -> EXPRESSION POW EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    POW             reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    IF              reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    WHERE           reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    NEWLINE         reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    ELSE            reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    IN              reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .)
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+
+  ! PLUS            [ reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .) ]
+  ! TIMES           [ reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .) ]
+  ! DIVIDE          [ reduce using rule 16 (EXPRESSION -> EXPRESSION POW EXPRESSION .) ]
+  ! POW             [ shift and go to state 28 ]
+  ! IF              [ shift and go to state 29 ]
+  ! WHERE           [ shift and go to state 30 ]
+
+
+state 39
+
+    (20) EXPRESSION -> EXPRESSION IF EXPRESSION . ELSE EXPRESSION
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    ELSE            shift and go to state 43
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+
+state 40
+
+    (21) EXPRESSION -> EXPRESSION WHERE IDENTIFIER . EQUALS EXPRESSION
+
+    EQUALS          shift and go to state 44
+
+
+state 41
+
+    (11) EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .
+
+    PLUS            reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    MINUS           reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    TIMES           reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    DIVIDE          reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    POW             reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    IF              reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    WHERE           reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    NEWLINE         reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    CLOSE_BRACKET   reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    ELSE            reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+    IN              reduce using rule 11 (EXPRESSION -> OPEN_BRACKET EXPRESSION CLOSE_BRACKET .)
+
+
+state 42
+
+    (19) EXPRESSION -> LET IDENTIFIER EQUALS . EXPRESSION IN EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 45
+
+state 43
+
+    (20) EXPRESSION -> EXPRESSION IF EXPRESSION ELSE . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 46
+
+state 44
+
+    (21) EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 47
+
+state 45
+
+    (19) EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION . IN EXPRESSION
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+    IN              shift and go to state 48
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+
+state 46
+
+    (20) EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for POW resolved as shift
+  ! shift/reduce conflict for IF resolved as shift
+  ! shift/reduce conflict for WHERE resolved as shift
+    NEWLINE         reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .)
+    ELSE            reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .)
+    IN              reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .)
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+  ! PLUS            [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+  ! TIMES           [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+  ! DIVIDE          [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+  ! POW             [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+  ! IF              [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+  ! WHERE           [ reduce using rule 20 (EXPRESSION -> EXPRESSION IF EXPRESSION ELSE EXPRESSION .) ]
+
+
+state 47
+
+    (21) EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for POW resolved as shift
+  ! shift/reduce conflict for IF resolved as shift
+  ! shift/reduce conflict for WHERE resolved as shift
+    NEWLINE         reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .)
+    ELSE            reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .)
+    IN              reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .)
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+  ! PLUS            [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+  ! TIMES           [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+  ! DIVIDE          [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+  ! POW             [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+  ! IF              [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+  ! WHERE           [ reduce using rule 21 (EXPRESSION -> EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION .) ]
+
+
+state 48
+
+    (19) EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN . EXPRESSION
+    (11) EXPRESSION -> . OPEN_BRACKET EXPRESSION CLOSE_BRACKET
+    (12) EXPRESSION -> . EXPRESSION PLUS EXPRESSION
+    (13) EXPRESSION -> . EXPRESSION MINUS EXPRESSION
+    (14) EXPRESSION -> . EXPRESSION TIMES EXPRESSION
+    (15) EXPRESSION -> . EXPRESSION DIVIDE EXPRESSION
+    (16) EXPRESSION -> . EXPRESSION POW EXPRESSION
+    (17) EXPRESSION -> . MINUS EXPRESSION
+    (18) EXPRESSION -> . IDENTIFIER ARG_LIST
+    (19) EXPRESSION -> . LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION
+    (20) EXPRESSION -> . EXPRESSION IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> . EXPRESSION WHERE IDENTIFIER EQUALS EXPRESSION
+    (22) EXPRESSION -> . NUMBER
+    (23) EXPRESSION -> . IDENTIFIER
+    (24) EXPRESSION -> . STRING
+
+    OPEN_BRACKET    shift and go to state 18
+    MINUS           shift and go to state 19
+    IDENTIFIER      shift and go to state 16
+    LET             shift and go to state 20
+    NUMBER          shift and go to state 21
+    STRING          shift and go to state 22
+
+    EXPRESSION                     shift and go to state 49
+
+state 49
+
+    (19) EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .
+    (12) EXPRESSION -> EXPRESSION . PLUS EXPRESSION
+    (13) EXPRESSION -> EXPRESSION . MINUS EXPRESSION
+    (14) EXPRESSION -> EXPRESSION . TIMES EXPRESSION
+    (15) EXPRESSION -> EXPRESSION . DIVIDE EXPRESSION
+    (16) EXPRESSION -> EXPRESSION . POW EXPRESSION
+    (20) EXPRESSION -> EXPRESSION . IF EXPRESSION ELSE EXPRESSION
+    (21) EXPRESSION -> EXPRESSION . WHERE IDENTIFIER EQUALS EXPRESSION
+
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for POW resolved as shift
+  ! shift/reduce conflict for IF resolved as shift
+  ! shift/reduce conflict for WHERE resolved as shift
+    NEWLINE         reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .)
+    CLOSE_BRACKET   reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .)
+    ELSE            reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .)
+    IN              reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .)
+    PLUS            shift and go to state 24
+    MINUS           shift and go to state 25
+    TIMES           shift and go to state 26
+    DIVIDE          shift and go to state 27
+    POW             shift and go to state 28
+    IF              shift and go to state 29
+    WHERE           shift and go to state 30
+
+  ! PLUS            [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+  ! MINUS           [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+  ! TIMES           [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+  ! DIVIDE          [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+  ! POW             [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+  ! IF              [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+  ! WHERE           [ reduce using rule 19 (EXPRESSION -> LET IDENTIFIER EQUALS EXPRESSION IN EXPRESSION .) ]
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for PLUS in state 46 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 46 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 46 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 46 resolved as shift
+WARNING: shift/reduce conflict for POW in state 46 resolved as shift
+WARNING: shift/reduce conflict for IF in state 46 resolved as shift
+WARNING: shift/reduce conflict for WHERE in state 46 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 47 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 47 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 47 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 47 resolved as shift
+WARNING: shift/reduce conflict for POW in state 47 resolved as shift
+WARNING: shift/reduce conflict for IF in state 47 resolved as shift
+WARNING: shift/reduce conflict for WHERE in state 47 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 49 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 49 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 49 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 49 resolved as shift
+WARNING: shift/reduce conflict for POW in state 49 resolved as shift
+WARNING: shift/reduce conflict for IF in state 49 resolved as shift
+WARNING: shift/reduce conflict for WHERE in state 49 resolved as shift

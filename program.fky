@@ -1,0 +1,3 @@
+square x        = x * x
+area r          = pi * (square r)
+circumference r = 2 * pi * r where pi = 3

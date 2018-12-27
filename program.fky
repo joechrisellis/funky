@@ -1,3 +1,23 @@
-square x        = x * x
-area r          = pi * (square r)
-circumference r = 2 * pi * r where pi = 3
+module math where
+
+    pow :: Float -> Float -> Float
+    pow a b = a ** b
+
+    area :: Float -> Float
+    area r = pi * pow r 2
+             where pi = 3.14
+                   e  = 2 + n where n = 2.72
+    
+    g x = let pi = 3.141
+              x  = "Test"
+              g = 4
+         in pi + g
+
+    factorial 0 = 0
+    factorial n = n * factorial (n - 1)
+
+    factorial n = if n <= 1 then 1 else n * factorial (n - 1)
+
+    factorial n | n < 0     = error "error!"
+                | n == 0    = 1
+                | otherwise = n * factorial (n - 1)

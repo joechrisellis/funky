@@ -11,6 +11,7 @@ that we handle this is very similar to the 'layout' rule in Haskell.
 import ply.lex as lex
 
 from funky.util import err
+from funky.parser import FunkyLexingError
 
 class FunkyLexer:
     """PLY lexer for funky. This performs the first stage of lexical analysis
@@ -41,8 +42,7 @@ class FunkyLexer:
     tokens = [
 
         # structural
-        "COMMENT",
-        "INDENTATION",
+        "WHITESPACE",
 
         # 'control' characters
         "BACKTICK",
@@ -90,20 +90,27 @@ class FunkyLexer:
 
     # Ignore spaces and tabs (unless they appear in the context of another
     # lexeme)
-    t_ignore        =  " \t"
+    t_ignore        =  "\t"
+
+    at_line_start   = True
 
     # Comments are the same as they are in python -- this function returns
     # nothing since comments are ignored.
     def t_COMMENT(self, t):
-        r"\n*[ ]*\#[^\n]*"
+        r"[ ]*\#[^\n]*"
         pass
 
-    # Indentation is considered to be one or more line breaks followed by some
-    # spacing.
-    def t_INDENTATION(self, t):
-        r"\n+[ ]*"
-        t.value = t.value.count(" ") # level of indentation = number of spaces
-        return t
+    def t_WHITESPACE(self, t):
+        r"[ ]+"
+        # we only care about whitespace if it's at the start of a line
+        if self.at_line_start:
+            t.value = t.value.count(" ") # level of indentation = number of spaces
+            return t
+
+    def t_NEWLINE(self, t):
+        r"\n+"
+        self.at_line_start = True
+        t.lexer.lineno += len(t.value)
 
     # Regexes for the control characters.
     t_BACKTICK      =  r"`"
@@ -177,6 +184,8 @@ class FunkyLexer:
         while True:
             tok = self.lexer.token()
             if not tok: break
+
+            self.at_line_start = False
             tokens.append(tok)
 
         return tokens
@@ -221,18 +230,17 @@ class IndentationLexer:
         ind_stack = []
         
         i = 0
-        while i < len(tokens) - 1:
-            tok, next_tok = tokens[i], tokens[i + 1]
+        while i < len(tokens):
+            tok = tokens[i]
             if tok.type in ["WHERE", "LET", "OF"] and \
-               next_tok.type != "OPEN_BRACE":
+               tokens[i + 1].type != "OPEN_BRACE":
                 j = i + 1
-                while next_tok.type == "INDENTATION":
+                while tokens[j].type == "WHITESPACE":
                     j += 1
-                    next_tok = tokens[j]
-                ind_stack.append(self._find_column(next_tok))
+                ind_stack.append(self._find_column(tokens[j]))
                 new_tokens.append(tok)
                 new_tokens.append(self._make_token("OPEN_BRACE", value="{"))
-            elif tok.type == "INDENTATION":
+            elif tok.type == "WHITESPACE":
                 if ind_stack:
                     if tok.value == ind_stack[-1]:
                         new_tokens.append(self._make_token("ENDSTATEMENT", value=";"))

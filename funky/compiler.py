@@ -28,7 +28,7 @@ def compile_to_c(source):
         err("Error: \"{}\"".format(e.args[0]))
         exit(2)
     except FunkyParsingError as e:
-        err("Compilation failed during syntax analysis.")
+        err("Parsing error occurred during syntax analysis.")
         err("Error: \"{}\"".format(e.args[0]))
         exit(3)
 

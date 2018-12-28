@@ -2,6 +2,7 @@ import ply.yacc as yacc
 
 from funky.util import err
 from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
+from funky.parser import FunkySyntaxError
 
 class FunkyParser:
 
@@ -17,7 +18,6 @@ class FunkyParser:
 
     def p_MODULE_DEFINITION(self, p):
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
-                             | BODY
         """
         pass
 
@@ -296,7 +296,8 @@ class FunkyParser:
         pass
 
     def p_error(self, p):
-        err("Cannot parse input.") # TODO -- make an exception here.
+        raise FunkySyntaxError("Parsing failed at symbol " \
+                               "'{}' on line {}.".format(p.value, p.lineno))
 
     def build(self, **kwargs):
         self.lexer = FunkyLexer()
@@ -306,9 +307,7 @@ class FunkyParser:
 
     def do_parse(self, source):
         self.lexer.input(source)
-        # TODO -- remove later.
         for tok in self.lexer:
             print(tok.value, end=" ")
-            if tok.value == ";":
-                print()
+        print()
         return self.parser.parse(source, self.lexer)

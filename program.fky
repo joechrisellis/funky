@@ -1,23 +1,5 @@
-module math where
+module stdlib where
+    filter :: [Generic] -> (Generic -> Bool) -> [Generic]
 
-    pow :: Float -> Float -> Float
-    pow a b = a ** b
-
-    area :: Float -> Float
-    area r = pi * pow r 2
-             where pi = 3.14
-                   e  = 2 + n where n = 2.72
-    
-    g x = let pi = 3.141
-              x  = "Test"
-              g = 4
-         in pi + g
-
-    factorial 0 = 0
-    factorial n = n * factorial (n - 1)
-
-    factorial n = if n <= 1 then 1 else n * factorial (n - 1)
-
-    factorial n | n < 0     = error "error!"
-                | n == 0    = 1
-                | otherwise = n * factorial (n - 1)
+    filter (x : xs) f | f x       = x + [filter xs f]
+                      | otherwise = filter xs f

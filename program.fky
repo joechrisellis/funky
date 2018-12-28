@@ -1,5 +1,3 @@
 module stdlib where
-    filter :: [Generic] -> (Generic -> Bool) -> [Generic]
-
-    filter (x : xs) f | f x       = x + [filter xs f]
-                      | otherwise = filter xs f
+    even 0 = True
+    even n = not (even (n - 1))

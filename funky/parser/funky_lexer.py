@@ -21,21 +21,21 @@ class FunkyLexer:
 
     # Reserved keywords -- variables may not have these names.
     reserved = {
-        "module"  : "MODULE",
-        "import"  : "IMPORT",
-        "as"      : "AS",
-        "newtype" : "NEWTYPE",
-        "let"     : "LET",
-        "in"      : "IN",
-        "if"      : "IF",
-        "then"    : "THEN",
-        "else"    : "ELSE",
-        "where"   : "WHERE",
-        "match"   : "MATCH",
-        "of"      : "OF",
-        "infix"   : "INFIX",
-        "infixl"  : "INFIXL",
-        "infixr"  : "INFIXR",
+        "module"   :  "MODULE",
+        "import"   :  "IMPORT",
+        "as"       :  "AS",
+        "newtype"  :  "NEWTYPE",
+        "let"      :  "LET",
+        "in"       :  "IN",
+        "if"       :  "IF",
+        "then"     :  "THEN",
+        "else"     :  "ELSE",
+        "where"    :  "WHERE",
+        "match"    :  "MATCH",
+        "of"       :  "OF",
+        "infix"    :  "INFIX",
+        "infixl"   :  "INFIXL",
+        "infixr"   :  "INFIXR",
     }
 
     # All the tokens known to the lexer.
@@ -58,6 +58,7 @@ class FunkyLexer:
         # literals
         "FLOAT",
         "INTEGER",
+        "BOOL",
         "CHAR",
         "STRING",
 
@@ -124,16 +125,19 @@ class FunkyLexer:
     t_ENDSTATEMENT  =  r";"
 
     # Literals:
-    # Floating point numbers.
     def t_FLOAT(self, t):
         r"\d+\.\d+"
         t.value = float(t.value)
         return t
 
-    # Integers.
     def t_INTEGER(self, t):
         r"\d+"
         t.value = int(t.value)
+        return t
+
+    def t_BOOL(self, t):
+        r"(True|False)"
+        t.value = t.value == "True"
         return t
 
     t_CHAR          =  r"'[.]'"

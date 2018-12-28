@@ -2,6 +2,7 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
+    BOOL
     INEQUALITY
     WHITESPACE
 
@@ -126,6 +127,7 @@ Terminals, with rules where they appear
 ARROW                : 32 56 72
 AS                   : 8
 BACKTICK             : 89 89
+BOOL                 : 
 CHAR                 : 111
 CLOSE_BRACE          : 2 3 4 13 14 59
 CLOSE_PAREN          : 36 37 41 66 67 77 78 83 84 86

@@ -308,6 +308,6 @@ class FunkyParser:
     def do_parse(self, source):
         self.lexer.input(source)
         for tok in self.lexer:
-            print(tok.value, end=" ")
+            print(tok, end=" ")
         print()
         return self.parser.parse(source, self.lexer)

@@ -1,12 +1,6 @@
 module math where
 
-            
-        
-    import x as y
-    
-    factorial :: Integer -> Integer
-    factorial 0 = 1
-    factorial n = n * factorial (n - 1)
+    import stdlib as alias
+    import math
 
-    area :: Float -> Float
-    area r = pi * r ** 2 where
+    factorial :: Integer -> Integer -> Integer

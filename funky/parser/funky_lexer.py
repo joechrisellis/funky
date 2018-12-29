@@ -212,7 +212,6 @@ class IndentationLexer:
         braces.
         """
         new_tokens, ind_stack = [], []
-        print(tokens)
 
         i = 0
         while i < len(tokens):

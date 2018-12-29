@@ -4,7 +4,8 @@ from funky.util import err
 from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
 from funky.parser import FunkySyntaxError
 
-from funky.core.intermediate import Module
+from funky.core.intermediate import Module, ProgramBody, ImportStatement, \
+                                    NewTypeStatement, TypeDeclaration
 
 class FunkyParser:
 
@@ -22,58 +23,81 @@ class FunkyParser:
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
         """
         module_id, body = p[2], p[4]
-        p[0] = (module_id, body)
+        p[0] = Module(module_id, body)
 
     def p_BODY(self, p):
         """BODY : OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE
-                | OPEN_BRACE IMPORT_DECLARATIONS CLOSE_BRACE
                 | OPEN_BRACE TOP_DECLARATIONS CLOSE_BRACE
         """
-        print(p.__dict__)
+        if len(p) == 6:
+            imports, top_declarations = p[2], p[4]
+        else:
+            imports, top_declarations = None, p[2]
 
+        p[0] = ProgramBody(imports, top_declarations)
+        
     def p_IMPORT_DECLARATIONS(self, p):
         """IMPORT_DECLARATIONS : IMPORT_DECLARATIONS ENDSTATEMENT IMPORT_DECLARATION
                                | IMPORT_DECLARATION
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
 
     def p_IMPORT_DECLARATION(self, p):
         """IMPORT_DECLARATION : IMPORT IDENTIFIER
                               | IMPORT IDENTIFIER AS IDENTIFIER
         """
-        # TODO: may have to change IDENTIFIER to a more robust module ID here.
-        pass
+        module_id, alias = p[2], p[4] if len(p) == 5 else None
+        p[0] = ImportStatement(module_id, alias)
 
     def p_TOP_DECLARATIONS(self, p):
         """TOP_DECLARATIONS : TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
                             | TOP_DECLARATION
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + p[3]
+        else:
+            p[0] = p[1]
 
     def p_TOP_DECLARATION(self, p):
         """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT
                            | DECLARATION
         """
-        pass
+        if len(p) == 6:
+            p[0] = NewTypeStatement(p[2], p[4])
+        else:
+            p[0] = p[1]
 
     def p_DECLARATIONS(self, p):
         """DECLARATIONS : OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
                         | OPEN_BRACE CLOSE_BRACE
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[2]
+        else:
+            p[0] = []
 
     def p_DECLARATIONS_LIST(self, p):
         """DECLARATIONS_LIST : DECLARATION ENDSTATEMENT DECLARATIONS_LIST
                              | DECLARATION
         """
-        pass
+        if len(p) == 4:
+            p[0] = [*p[1]] + p[3]
+        else:
+            p[0] = [*p[1]]
 
     def p_DECLARATION(self, p):
         """DECLARATION : GEN_DECLARATION
                        | FUNCTION_LHS RHS
-                       | PAT RHS
+                       | PAT RHS 
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        else:
+            # TODO: generate representation for functions.
+            pass
 
     def p_GEN_DECLARATION(self, p):
         """GEN_DECLARATION : VARS TYPESIG TYPE
@@ -81,7 +105,10 @@ class FunkyParser:
                            | FIXITY OPS
                            |
         """
-        pass
+        if len(p) == 4:
+            p[0] = [TypeDeclaration(identifier, p[3]) for identifier in p[1]]
+        elif p[2].type == "INTEGER":
+            p[0] = None # TODO -- won't work!
 
     def p_OPS(self, p):
         """OPS : OPS COMMA OP
@@ -93,7 +120,10 @@ class FunkyParser:
         """VARS : VARS COMMA IDENTIFIER
                 | IDENTIFIER
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
 
     def p_FIXITY(self, p):
         """FIXITY : INFIXL
@@ -106,13 +136,19 @@ class FunkyParser:
         """TYPE : BTYPE
                 | BTYPE ARROW TYPE
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        else:
+            p[0] = (p[1], p[3])
 
     def p_BTYPE(self, p):
         """BTYPE : ATYPE
                  | BTYPE ATYPE
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        else:
+            p[0] = (p[1], p[2])
 
     def p_ATYPE(self, p):
         """ATYPE : TYPENAME
@@ -120,7 +156,15 @@ class FunkyParser:
                  | OPEN_PAREN TYPE CLOSE_PAREN
                  | OPEN_SQUARE TYPE CLOSE_SQUARE
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        elif p[1] == "(":
+            if type(p[2]) == list:
+                p[0] = tuple(p[2])
+            else:
+                p[0] = p[2]
+        else:
+            p[0] = [p[2]]
 
     def p_FUNCTION_LHS(self, p):
         """FUNCTION_LHS : IDENTIFIER APAT APATS
@@ -286,7 +330,10 @@ class FunkyParser:
         """TYPES_LIST : TYPES_LIST COMMA TYPE
                       | TYPE
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
 
     def p_LITERAL(self, p):
         """LITERAL : FLOAT

@@ -19,7 +19,7 @@ class FunkyLexer:
     token represents the basic unit of meaning.
     """
 
-    # Reserved keywords -- variables may not have these names.
+    # Reserved keywords -- variables are not permitted to have these names.
     reserved = {
         "module"   :  "MODULE",
         "import"   :  "IMPORT",
@@ -45,54 +45,29 @@ class FunkyLexer:
         "WHITESPACE",
 
         # 'control' characters
-        "BACKTICK",
-        "COMMA",
-        "TYPESIG",
-        "CONSTRUCTOR",
-        "LAMBDA",
-        "PIPE",
-        "WILDCARD",
-        "ARROW",
-        "ENDSTATEMENT",
+        "BACKTICK", "COMMA", "TYPESIG", "CONSTRUCTOR", "LAMBDA", "PIPE",
+        "WILDCARD", "ARROW", "ENDSTATEMENT",
 
         # literals
-        "FLOAT",
-        "INTEGER",
-        "BOOL",
-        "CHAR",
-        "STRING",
+        "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
 
         # math-related operators
-        "EQUALITY",
-        "INEQUALITY",
-        "LESS",
-        "LEQ",
-        "GREATER",
-        "GEQ",
-        "EQUALS",
-        "POW",
-        "PLUS",
-        "MINUS",
-        "TIMES",
-        "DIVIDE",
+        "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
+        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE",
 
         # brackets
-        "OPEN_PAREN",
-        "CLOSE_PAREN",
-        "OPEN_SQUARE",
-        "CLOSE_SQUARE",
-        "OPEN_BRACE",
-        "CLOSE_BRACE",
+        "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",
+        "OPEN_BRACE", "CLOSE_BRACE",
 
         # identifiers and labels
-        "IDENTIFIER",
-        "TYPENAME",
+        "IDENTIFIER", "TYPENAME",
     ] + list(reserved.values())
 
-    # Ignore spaces and tabs (unless they appear in the context of another
-    # lexeme)
+    # Ignore tabs.
     t_ignore        =  "\t"
 
+    # True if we are at the start of the line -- in this case, we consider any
+    # whitespace to be indentation. False otherwise.
     at_line_start   = True
 
     # Comments are the same as they are in python -- this function returns
@@ -101,13 +76,14 @@ class FunkyLexer:
         r"[ ]*\#[^\n]*"
         pass
 
+    # We only care about whitespace if it's at the start of a line.
     def t_WHITESPACE(self, t):
         r"[ ]+"
-        # we only care about whitespace if it's at the start of a line
         if self.at_line_start:
-            t.value = t.value.count(" ") # level of indentation = number of spaces
+            t.value = len(t.value)
             return t
 
+    # Newlines increment the line number.
     def t_NEWLINE(self, t):
         r"\n+"
         self.at_line_start = True
@@ -140,8 +116,15 @@ class FunkyLexer:
         t.value = t.value == "True"
         return t
 
-    t_CHAR          =  r"'[.]'"
-    t_STRING        =  r"(\".*?\"|'.*?')"
+    def t_CHAR(self, t):
+        r"'.'"
+        t.value = t.value[1:-1]
+        return t
+
+    def t_STRING(self, t):
+        r"(\".*?\"|'.*?')"
+        t.value = t.value[1:-1]
+        return t
 
     # Math operators.
     t_EQUALITY      =  r"=="
@@ -168,19 +151,20 @@ class FunkyLexer:
     # An identifier -- checks for keywords.
     def t_IDENTIFIER(self, t):
          r"[a-z][A-Za-z0-9_]*"
-         t.type = self.reserved.get(t.value, "IDENTIFIER") # Check for keywords
+         t.type = self.reserved.get(t.value, "IDENTIFIER")
          return t
 
     # Typenames are always capitalised, as in Haskell.
-    t_TYPENAME      = r"[A-Z][A-Za-z]*"
+    t_TYPENAME  =  r"[A-Z][A-Za-z]*"
 
     def t_error(self, t):
-        err("Cannot lex input.") # TODO -- make an exception here.
+        raise FunkyLexingError(
+            "Lexing failed on character '{}'.".format(t.value[0]))
 
     def build(self, **kwargs):
         """Build the lexer."""
         self.lexer = lex.lex(module=self, **kwargs)
-    
+
     def do_lex(self, source, *args, **kwargs):
         self.lexer.input(source, *args, **kwargs)
 
@@ -192,6 +176,7 @@ class FunkyLexer:
             self.at_line_start = False
             tokens.append(tok)
 
+        print(tokens)
         return tokens
 
 class IndentationLexer:
@@ -202,15 +187,14 @@ class IndentationLexer:
     """
 
     def __init__(self, lexer):
-        self.lexer = lexer
-        self.ind_stack = []
-        self.new_tokens = []
-        self.source = ""
+        self.lexer       =  lexer
+        self.new_tokens  =  []
+        self.source      =  ""
 
     def input(self, source, *args, **kwargs):
-        self.source = source
-        self.orig_tokens = self.lexer.do_lex(source, *args, **kwargs)
-        self.new_tokens = self._insert_implicit_tokens(self.orig_tokens)
+        self.source       =  source
+        self.orig_tokens  =  self.lexer.do_lex(source, *args, **kwargs)
+        self.new_tokens   =  self._insert_implicit_tokens(self.orig_tokens)
 
     def __iter__(self):
         return self
@@ -229,10 +213,8 @@ class IndentationLexer:
         """Inserts explicit braces into a token stream containing omitted
         braces.
         """
-        new_tokens = []
+        new_tokens, ind_stack = [], []
 
-        ind_stack = []
-        
         i = 0
         while i < len(tokens):
             tok = tokens[i]
@@ -264,11 +246,11 @@ class IndentationLexer:
         return new_tokens
 
     def _make_token(self, type, value=None, lineno=None, lexpos=None):
-        tok = lex.LexToken()
-        tok.type = type
-        tok.value = value
-        tok.lineno = 0
-        tok.lexpos = 0
+        tok         =  lex.LexToken()
+        tok.type    =  type
+        tok.value   =  value
+        tok.lineno  =  0
+        tok.lexpos  =  0
         return tok
 
     def _find_column(self, token):
@@ -277,5 +259,4 @@ class IndentationLexer:
         layout ruling.
         """
         line_start = self.source.rfind("\n", 0, token.lexpos) + 1
-        retval = (token.lexpos - line_start)
-        return retval
+        return (token.lexpos - line_start)

@@ -4,11 +4,13 @@ from funky.util import err
 from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
 from funky.parser import FunkySyntaxError
 
+from funky.core.intermediate import Module
+
 class FunkyParser:
 
-    tokens = FunkyLexer.tokens
-    start = "MODULE_DEFINITION"
-    precedence = (
+    tokens      =  FunkyLexer.tokens
+    start       =  "MODULE_DEFINITION"
+    precedence  =  (
         ("nonassoc", "EQUALITY"),
         ("left", "LESS", "LEQ", "GREATER", "GEQ"),
         ("left", "PLUS", "MINUS"),
@@ -19,7 +21,8 @@ class FunkyParser:
     def p_MODULE_DEFINITION(self, p):
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
         """
-        pass
+        module_id, body = p[2], p[4]
+        p[0] = Module(module_id, body)
 
     def p_BODY(self, p):
         """BODY : OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE
@@ -44,7 +47,7 @@ class FunkyParser:
     def p_TOP_DECLARATIONS(self, p):
         """TOP_DECLARATIONS : TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
                             | TOP_DECLARATION
-        """ # TODO: you cannot have an empty list here, if it matters.
+        """
         pass
 
     def p_TOP_DECLARATION(self, p):
@@ -216,7 +219,7 @@ class FunkyParser:
         """LPAT : APAT
                 | MINUS OPEN_PAREN INTEGER CLOSE_PAREN
                 | MINUS OPEN_PAREN FLOAT CLOSE_PAREN
-        """ # TODO: gcon apat1 … apatk
+        """
         pass
 
     def p_APAT(self, p):
@@ -228,14 +231,12 @@ class FunkyParser:
                 | OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN
                 | OPEN_SQUARE PAT_LIST CLOSE_SQUARE
         """
-        # TODO: might need to add qcon {fpat, ...} here
-        # also irrefutable pattern? Maybe.
         pass
 
     def p_GCON(self, p):
         """GCON : OPEN_PAREN CLOSE_PAREN
                 | OPEN_SQUARE CLOSE_SQUARE
-        """ # TODO: might need to add QCON here
+        """
         pass
 
     def p_VAROP(self, p):
@@ -288,8 +289,9 @@ class FunkyParser:
         pass
 
     def p_LITERAL(self, p):
-        """LITERAL : INTEGER
-                   | FLOAT
+        """LITERAL : FLOAT
+                   | INTEGER
+                   | BOOL
                    | CHAR
                    | STRING
         """

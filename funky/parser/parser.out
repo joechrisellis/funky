@@ -14,8 +14,8 @@ Rule 3     BODY -> OPEN_BRACE IMPORT_DECLARATIONS CLOSE_BRACE
 Rule 4     BODY -> OPEN_BRACE TOP_DECLARATIONS CLOSE_BRACE
 Rule 5     IMPORT_DECLARATIONS -> IMPORT_DECLARATIONS ENDSTATEMENT IMPORT_DECLARATION
 Rule 6     IMPORT_DECLARATIONS -> IMPORT_DECLARATION
-Rule 7     IMPORT_DECLARATION -> IMPORT IDENTIFIER ENDSTATEMENT
-Rule 8     IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT
+Rule 7     IMPORT_DECLARATION -> IMPORT IDENTIFIER
+Rule 8     IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER
 Rule 9     TOP_DECLARATIONS -> TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
 Rule 10    TOP_DECLARATIONS -> TOP_DECLARATION
 Rule 11    TOP_DECLARATION -> NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT
@@ -136,7 +136,7 @@ COMMA                : 24 26 67 69 84 91 95 107
 CONSTRUCTOR          : 74
 DIVIDE               : 100
 ELSE                 : 58
-ENDSTATEMENT         : 2 5 7 8 9 11 15 70
+ENDSTATEMENT         : 2 5 9 11 15 70
 EQUALITY             : 102
 EQUALS               : 11 42 43 46 47
 FLOAT                : 78 109
@@ -278,8 +278,8 @@ state 6
     (6) IMPORT_DECLARATIONS -> . IMPORT_DECLARATION
     (9) TOP_DECLARATIONS -> . TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
     (10) TOP_DECLARATIONS -> . TOP_DECLARATION
-    (7) IMPORT_DECLARATION -> . IMPORT IDENTIFIER ENDSTATEMENT
-    (8) IMPORT_DECLARATION -> . IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT
+    (7) IMPORT_DECLARATION -> . IMPORT IDENTIFIER
+    (8) IMPORT_DECLARATION -> . IMPORT IDENTIFIER AS IDENTIFIER
     (11) TOP_DECLARATION -> . NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT
     (12) TOP_DECLARATION -> . DECLARATION
     (17) DECLARATION -> . GEN_DECLARATION
@@ -387,8 +387,8 @@ state 10
 
 state 11
 
-    (7) IMPORT_DECLARATION -> IMPORT . IDENTIFIER ENDSTATEMENT
-    (8) IMPORT_DECLARATION -> IMPORT . IDENTIFIER AS IDENTIFIER ENDSTATEMENT
+    (7) IMPORT_DECLARATION -> IMPORT . IDENTIFIER
+    (8) IMPORT_DECLARATION -> IMPORT . IDENTIFIER AS IDENTIFIER
 
     IDENTIFIER      shift and go to state 40
 
@@ -1099,8 +1099,8 @@ state 36
     (5) IMPORT_DECLARATIONS -> IMPORT_DECLARATIONS ENDSTATEMENT . IMPORT_DECLARATION
     (9) TOP_DECLARATIONS -> . TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
     (10) TOP_DECLARATIONS -> . TOP_DECLARATION
-    (7) IMPORT_DECLARATION -> . IMPORT IDENTIFIER ENDSTATEMENT
-    (8) IMPORT_DECLARATION -> . IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT
+    (7) IMPORT_DECLARATION -> . IMPORT IDENTIFIER
+    (8) IMPORT_DECLARATION -> . IMPORT IDENTIFIER AS IDENTIFIER
     (11) TOP_DECLARATION -> . NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT
     (12) TOP_DECLARATION -> . DECLARATION
     (17) DECLARATION -> . GEN_DECLARATION
@@ -1255,11 +1255,12 @@ state 39
 
 state 40
 
-    (7) IMPORT_DECLARATION -> IMPORT IDENTIFIER . ENDSTATEMENT
-    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER . AS IDENTIFIER ENDSTATEMENT
+    (7) IMPORT_DECLARATION -> IMPORT IDENTIFIER .
+    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER . AS IDENTIFIER
 
-    ENDSTATEMENT    shift and go to state 82
-    AS              shift and go to state 83
+    ENDSTATEMENT    reduce using rule 7 (IMPORT_DECLARATION -> IMPORT IDENTIFIER .)
+    CLOSE_BRACE     reduce using rule 7 (IMPORT_DECLARATION -> IMPORT IDENTIFIER .)
+    AS              shift and go to state 82
 
 
 state 41
@@ -1328,8 +1329,8 @@ state 42
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    APAT                           shift and go to state 84
-    APATS                          shift and go to state 85
+    APAT                           shift and go to state 83
+    APATS                          shift and go to state 84
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
@@ -1370,7 +1371,7 @@ state 43
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    PAT                            shift and go to state 86
+    PAT                            shift and go to state 85
     LPAT                           shift and go to state 23
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
@@ -1380,7 +1381,7 @@ state 44
 
     (11) TOP_DECLARATION -> NEWTYPE TYPENAME . EQUALS TYPENAME ENDSTATEMENT
 
-    EQUALS          shift and go to state 87
+    EQUALS          shift and go to state 86
 
 
 state 45
@@ -1421,27 +1422,27 @@ state 46
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 88
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 87
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
 state 47
 
@@ -1450,7 +1451,7 @@ state 47
 
     CLOSE_BRACE     reduce using rule 44 (RHS -> GDRHS .)
     ENDSTATEMENT    reduce using rule 44 (RHS -> GDRHS .)
-    WHERE           shift and go to state 103
+    WHERE           shift and go to state 102
 
 
 state 48
@@ -1458,7 +1459,7 @@ state 48
     (46) GDRHS -> GUARDS . EQUALS EXP
     (47) GDRHS -> GUARDS . EQUALS EXP GDRHS
 
-    EQUALS          shift and go to state 104
+    EQUALS          shift and go to state 103
 
 
 state 49
@@ -1492,28 +1493,28 @@ state 49
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    GUARD_LIST                     shift and go to state 105
-    GUARD                          shift and go to state 106
-    INFIX_EXP                      shift and go to state 107
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    GUARD_LIST                     shift and go to state 104
+    GUARD                          shift and go to state 105
+    INFIX_EXP                      shift and go to state 106
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
 state 50
 
@@ -1557,7 +1558,7 @@ state 51
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    PAT                            shift and go to state 108
+    PAT                            shift and go to state 107
     LPAT                           shift and go to state 23
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
@@ -1590,7 +1591,7 @@ state 53
 
     (89) VAROP -> BACKTICK . IDENTIFIER BACKTICK
 
-    IDENTIFIER      shift and go to state 109
+    IDENTIFIER      shift and go to state 108
 
 
 state 54
@@ -1835,19 +1836,19 @@ state 64
     (37) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
     (38) ATYPE -> . OPEN_SQUARE TYPE CLOSE_SQUARE
 
-    TYPENAME        shift and go to state 113
-    OPEN_PAREN      shift and go to state 114
-    OPEN_SQUARE     shift and go to state 115
+    TYPENAME        shift and go to state 112
+    OPEN_PAREN      shift and go to state 113
+    OPEN_SQUARE     shift and go to state 114
 
-    TYPE                           shift and go to state 110
-    BTYPE                          shift and go to state 111
-    ATYPE                          shift and go to state 112
+    TYPE                           shift and go to state 109
+    BTYPE                          shift and go to state 110
+    ATYPE                          shift and go to state 111
 
 state 65
 
     (26) VARS -> VARS COMMA . IDENTIFIER
 
-    IDENTIFIER      shift and go to state 116
+    IDENTIFIER      shift and go to state 115
 
 
 state 66
@@ -1881,7 +1882,7 @@ state 66
     GREATER         shift and go to state 62
     GEQ             shift and go to state 63
 
-    OPS                            shift and go to state 117
+    OPS                            shift and go to state 116
     OP                             shift and go to state 68
     VAROP                          shift and go to state 69
     VARSYM                         shift and go to state 52
@@ -1893,7 +1894,7 @@ state 67
 
     CLOSE_BRACE     reduce using rule 22 (GEN_DECLARATION -> FIXITY OPS .)
     ENDSTATEMENT    reduce using rule 22 (GEN_DECLARATION -> FIXITY OPS .)
-    COMMA           shift and go to state 118
+    COMMA           shift and go to state 117
 
 
 state 68
@@ -1931,7 +1932,7 @@ state 70
 
     (41) FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS . CLOSE_PAREN APAT APATS
 
-    CLOSE_PAREN     shift and go to state 119
+    CLOSE_PAREN     shift and go to state 118
 
 
 state 71
@@ -1995,8 +1996,8 @@ state 72
     (105) VARSYM -> . GREATER
     (106) VARSYM -> . GEQ
 
-    CLOSE_PAREN     shift and go to state 120
-    COMMA           shift and go to state 121
+    CLOSE_PAREN     shift and go to state 119
+    COMMA           shift and go to state 120
     BACKTICK        shift and go to state 53
     PLUS            shift and go to state 54
     MINUS           shift and go to state 55
@@ -2094,7 +2095,7 @@ state 74
     STRING          shift and go to state 35
 
     LPAT                           shift and go to state 23
-    PAT                            shift and go to state 122
+    PAT                            shift and go to state 121
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
@@ -2104,8 +2105,8 @@ state 75
     (77) LPAT -> MINUS OPEN_PAREN . INTEGER CLOSE_PAREN
     (78) LPAT -> MINUS OPEN_PAREN . FLOAT CLOSE_PAREN
 
-    INTEGER         shift and go to state 123
-    FLOAT           shift and go to state 124
+    INTEGER         shift and go to state 122
+    FLOAT           shift and go to state 123
 
 
 state 76
@@ -2113,8 +2114,8 @@ state 76
     (85) APAT -> OPEN_SQUARE PAT_LIST . CLOSE_SQUARE
     (95) PAT_LIST -> PAT_LIST . COMMA PAT
 
-    CLOSE_SQUARE    shift and go to state 125
-    COMMA           shift and go to state 126
+    CLOSE_SQUARE    shift and go to state 124
+    COMMA           shift and go to state 125
 
 
 state 77
@@ -2174,7 +2175,7 @@ state 79
     (2) BODY -> OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS . CLOSE_BRACE
     (9) TOP_DECLARATIONS -> TOP_DECLARATIONS . ENDSTATEMENT TOP_DECLARATION
 
-    CLOSE_BRACE     shift and go to state 127
+    CLOSE_BRACE     shift and go to state 126
     ENDSTATEMENT    shift and go to state 39
 
 
@@ -2196,20 +2197,12 @@ state 81
 
 state 82
 
-    (7) IMPORT_DECLARATION -> IMPORT IDENTIFIER ENDSTATEMENT .
+    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER AS . IDENTIFIER
 
-    ENDSTATEMENT    reduce using rule 7 (IMPORT_DECLARATION -> IMPORT IDENTIFIER ENDSTATEMENT .)
-    CLOSE_BRACE     reduce using rule 7 (IMPORT_DECLARATION -> IMPORT IDENTIFIER ENDSTATEMENT .)
+    IDENTIFIER      shift and go to state 127
 
 
 state 83
-
-    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER AS . IDENTIFIER ENDSTATEMENT
-
-    IDENTIFIER      shift and go to state 128
-
-
-state 84
 
     (93) APATS -> APAT . APATS
     (93) APATS -> . APAT APATS
@@ -2243,12 +2236,12 @@ state 84
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    APAT                           shift and go to state 84
-    APATS                          shift and go to state 129
+    APAT                           shift and go to state 83
+    APATS                          shift and go to state 128
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 85
+state 84
 
     (39) FUNCTION_LHS -> IDENTIFIER APAT APATS .
 
@@ -2257,33 +2250,33 @@ state 85
     CLOSE_PAREN     reduce using rule 39 (FUNCTION_LHS -> IDENTIFIER APAT APATS .)
 
 
-state 86
+state 85
 
     (83) APAT -> OPEN_PAREN PAT . CLOSE_PAREN
     (84) APAT -> OPEN_PAREN PAT . COMMA PAT_LIST CLOSE_PAREN
 
-    CLOSE_PAREN     shift and go to state 120
-    COMMA           shift and go to state 121
+    CLOSE_PAREN     shift and go to state 119
+    COMMA           shift and go to state 120
 
 
-state 87
+state 86
 
     (11) TOP_DECLARATION -> NEWTYPE TYPENAME EQUALS . TYPENAME ENDSTATEMENT
 
-    TYPENAME        shift and go to state 130
+    TYPENAME        shift and go to state 129
 
 
-state 88
+state 87
 
     (42) RHS -> EQUALS EXP .
     (43) RHS -> EQUALS EXP . WHERE DECLARATIONS
 
     CLOSE_BRACE     reduce using rule 42 (RHS -> EQUALS EXP .)
     ENDSTATEMENT    reduce using rule 42 (RHS -> EQUALS EXP .)
-    WHERE           shift and go to state 131
+    WHERE           shift and go to state 130
 
 
-state 89
+state 88
 
     (52) EXP -> INFIX_EXP .
 
@@ -2324,7 +2317,7 @@ state 89
     WILDCARD        reduce using rule 52 (EXP -> INFIX_EXP .)
 
 
-state 90
+state 89
 
     (53) INFIX_EXP -> LEXP . OP INFIX_EXP
     (55) INFIX_EXP -> LEXP .
@@ -2401,11 +2394,11 @@ state 90
   ! GREATER         [ reduce using rule 55 (INFIX_EXP -> LEXP .) ]
   ! GEQ             [ reduce using rule 55 (INFIX_EXP -> LEXP .) ]
 
-    OP                             shift and go to state 132
+    OP                             shift and go to state 131
     VAROP                          shift and go to state 69
     VARSYM                         shift and go to state 52
 
-state 91
+state 90
 
     (54) INFIX_EXP -> MINUS . INFIX_EXP
     (53) INFIX_EXP -> . LEXP OP INFIX_EXP
@@ -2433,28 +2426,28 @@ state 91
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    INFIX_EXP                      shift and go to state 133
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    INFIX_EXP                      shift and go to state 132
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 92
+state 91
 
     (56) LEXP -> LAMBDA . APAT APATS ARROW EXP
     (79) APAT -> . IDENTIFIER
@@ -2482,21 +2475,21 @@ state 92
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    APAT                           shift and go to state 134
+    APAT                           shift and go to state 133
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 93
+state 92
 
     (57) LEXP -> LET . DECLARATIONS IN EXP
     (13) DECLARATIONS -> . OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
     (14) DECLARATIONS -> . OPEN_BRACE CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 136
+    OPEN_BRACE      shift and go to state 135
 
-    DECLARATIONS                   shift and go to state 135
+    DECLARATIONS                   shift and go to state 134
 
-state 94
+state 93
 
     (58) LEXP -> IF . EXP THEN EXP ELSE EXP
     (52) EXP -> . INFIX_EXP
@@ -2525,29 +2518,29 @@ state 94
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 137
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 136
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 95
+state 94
 
     (59) LEXP -> MATCH . EXP OF OPEN_BRACE ALTS CLOSE_BRACE
     (52) EXP -> . INFIX_EXP
@@ -2576,29 +2569,29 @@ state 95
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 138
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 137
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 96
+state 95
 
     (60) LEXP -> FEXP .
     (61) FEXP -> FEXP . AEXP
@@ -2652,9 +2645,9 @@ state 96
     PIPE            reduce using rule 60 (LEXP -> FEXP .)
     ELSE            reduce using rule 60 (LEXP -> FEXP .)
     WILDCARD        reduce using rule 60 (LEXP -> FEXP .)
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
@@ -2670,11 +2663,11 @@ state 96
   ! CHAR            [ reduce using rule 60 (LEXP -> FEXP .) ]
   ! STRING          [ reduce using rule 60 (LEXP -> FEXP .) ]
 
-    AEXP                           shift and go to state 139
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    AEXP                           shift and go to state 138
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 97
+state 96
 
     (62) FEXP -> AEXP .
 
@@ -2715,7 +2708,7 @@ state 97
     WILDCARD        reduce using rule 62 (FEXP -> AEXP .)
 
 
-state 98
+state 97
 
     (63) AEXP -> IDENTIFIER .
 
@@ -2756,7 +2749,7 @@ state 98
     WILDCARD        reduce using rule 63 (AEXP -> IDENTIFIER .)
 
 
-state 99
+state 98
 
     (64) AEXP -> GCON .
 
@@ -2797,7 +2790,7 @@ state 99
     WILDCARD        reduce using rule 64 (AEXP -> GCON .)
 
 
-state 100
+state 99
 
     (65) AEXP -> LITERAL .
 
@@ -2838,7 +2831,7 @@ state 100
     WILDCARD        reduce using rule 65 (AEXP -> LITERAL .)
 
 
-state 101
+state 100
 
     (66) AEXP -> OPEN_PAREN . EXP CLOSE_PAREN
     (67) AEXP -> OPEN_PAREN . EXP COMMA EXP_LIST CLOSE_PAREN
@@ -2870,29 +2863,29 @@ state 101
     (113) LITERAL -> . STRING
 
     CLOSE_PAREN     shift and go to state 71
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 140
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 139
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 102
+state 101
 
     (68) AEXP -> OPEN_SQUARE . EXP CLOSE_SQUARE
     (69) AEXP -> OPEN_SQUARE . EXP COMMA EXP_LIST CLOSE_SQUARE
@@ -2924,39 +2917,39 @@ state 102
     (113) LITERAL -> . STRING
 
     CLOSE_SQUARE    shift and go to state 77
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 141
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 140
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 103
+state 102
 
     (45) RHS -> GDRHS WHERE . DECLARATIONS
     (13) DECLARATIONS -> . OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
     (14) DECLARATIONS -> . OPEN_BRACE CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 136
+    OPEN_BRACE      shift and go to state 135
 
-    DECLARATIONS                   shift and go to state 142
+    DECLARATIONS                   shift and go to state 141
 
-state 104
+state 103
 
     (46) GDRHS -> GUARDS EQUALS . EXP
     (47) GDRHS -> GUARDS EQUALS . EXP GDRHS
@@ -2986,29 +2979,29 @@ state 104
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 143
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 142
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 105
+state 104
 
     (48) GUARDS -> PIPE GUARD_LIST .
     (49) GUARD_LIST -> GUARD_LIST . GUARD
@@ -3039,29 +3032,29 @@ state 105
     (113) LITERAL -> . STRING
 
     EQUALS          reduce using rule 48 (GUARDS -> PIPE GUARD_LIST .)
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    GUARD                          shift and go to state 144
-    INFIX_EXP                      shift and go to state 107
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    GUARD                          shift and go to state 143
+    INFIX_EXP                      shift and go to state 106
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 106
+state 105
 
     (50) GUARD_LIST -> GUARD .
 
@@ -3081,7 +3074,7 @@ state 106
     EQUALS          reduce using rule 50 (GUARD_LIST -> GUARD .)
 
 
-state 107
+state 106
 
     (51) GUARD -> INFIX_EXP .
 
@@ -3101,7 +3094,7 @@ state 107
     EQUALS          reduce using rule 51 (GUARD -> INFIX_EXP .)
 
 
-state 108
+state 107
 
     (40) FUNCTION_LHS -> PAT VAROP PAT .
 
@@ -3110,14 +3103,14 @@ state 108
     CLOSE_PAREN     reduce using rule 40 (FUNCTION_LHS -> PAT VAROP PAT .)
 
 
-state 109
+state 108
 
     (89) VAROP -> BACKTICK IDENTIFIER . BACKTICK
 
-    BACKTICK        shift and go to state 145
+    BACKTICK        shift and go to state 144
 
 
-state 110
+state 109
 
     (20) GEN_DECLARATION -> VARS TYPESIG TYPE .
 
@@ -3125,7 +3118,7 @@ state 110
     ENDSTATEMENT    reduce using rule 20 (GEN_DECLARATION -> VARS TYPESIG TYPE .)
 
 
-state 111
+state 110
 
     (31) TYPE -> BTYPE .
     (32) TYPE -> BTYPE . ARROW TYPE
@@ -3140,14 +3133,14 @@ state 111
     CLOSE_PAREN     reduce using rule 31 (TYPE -> BTYPE .)
     COMMA           reduce using rule 31 (TYPE -> BTYPE .)
     CLOSE_SQUARE    reduce using rule 31 (TYPE -> BTYPE .)
-    ARROW           shift and go to state 146
-    TYPENAME        shift and go to state 113
-    OPEN_PAREN      shift and go to state 114
-    OPEN_SQUARE     shift and go to state 115
+    ARROW           shift and go to state 145
+    TYPENAME        shift and go to state 112
+    OPEN_PAREN      shift and go to state 113
+    OPEN_SQUARE     shift and go to state 114
 
-    ATYPE                          shift and go to state 147
+    ATYPE                          shift and go to state 146
 
-state 112
+state 111
 
     (33) BTYPE -> ATYPE .
 
@@ -3162,7 +3155,7 @@ state 112
     CLOSE_SQUARE    reduce using rule 33 (BTYPE -> ATYPE .)
 
 
-state 113
+state 112
 
     (35) ATYPE -> TYPENAME .
 
@@ -3177,7 +3170,7 @@ state 113
     CLOSE_SQUARE    reduce using rule 35 (ATYPE -> TYPENAME .)
 
 
-state 114
+state 113
 
     (36) ATYPE -> OPEN_PAREN . TYPES_LIST CLOSE_PAREN
     (37) ATYPE -> OPEN_PAREN . TYPE CLOSE_PAREN
@@ -3192,16 +3185,16 @@ state 114
     (37) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
     (38) ATYPE -> . OPEN_SQUARE TYPE CLOSE_SQUARE
 
-    TYPENAME        shift and go to state 113
-    OPEN_PAREN      shift and go to state 114
-    OPEN_SQUARE     shift and go to state 115
+    TYPENAME        shift and go to state 112
+    OPEN_PAREN      shift and go to state 113
+    OPEN_SQUARE     shift and go to state 114
 
-    TYPES_LIST                     shift and go to state 148
-    TYPE                           shift and go to state 149
-    BTYPE                          shift and go to state 111
-    ATYPE                          shift and go to state 112
+    TYPES_LIST                     shift and go to state 147
+    TYPE                           shift and go to state 148
+    BTYPE                          shift and go to state 110
+    ATYPE                          shift and go to state 111
 
-state 115
+state 114
 
     (38) ATYPE -> OPEN_SQUARE . TYPE CLOSE_SQUARE
     (31) TYPE -> . BTYPE
@@ -3213,15 +3206,15 @@ state 115
     (37) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
     (38) ATYPE -> . OPEN_SQUARE TYPE CLOSE_SQUARE
 
-    TYPENAME        shift and go to state 113
-    OPEN_PAREN      shift and go to state 114
-    OPEN_SQUARE     shift and go to state 115
+    TYPENAME        shift and go to state 112
+    OPEN_PAREN      shift and go to state 113
+    OPEN_SQUARE     shift and go to state 114
 
-    TYPE                           shift and go to state 150
-    BTYPE                          shift and go to state 111
-    ATYPE                          shift and go to state 112
+    TYPE                           shift and go to state 149
+    BTYPE                          shift and go to state 110
+    ATYPE                          shift and go to state 111
 
-state 116
+state 115
 
     (26) VARS -> VARS COMMA IDENTIFIER .
 
@@ -3229,17 +3222,17 @@ state 116
     COMMA           reduce using rule 26 (VARS -> VARS COMMA IDENTIFIER .)
 
 
-state 117
+state 116
 
     (21) GEN_DECLARATION -> FIXITY INTEGER OPS .
     (24) OPS -> OPS . COMMA OP
 
     CLOSE_BRACE     reduce using rule 21 (GEN_DECLARATION -> FIXITY INTEGER OPS .)
     ENDSTATEMENT    reduce using rule 21 (GEN_DECLARATION -> FIXITY INTEGER OPS .)
-    COMMA           shift and go to state 118
+    COMMA           shift and go to state 117
 
 
-state 118
+state 117
 
     (24) OPS -> OPS COMMA . OP
     (90) OP -> . VAROP
@@ -3268,11 +3261,11 @@ state 118
     GREATER         shift and go to state 62
     GEQ             shift and go to state 63
 
-    OP                             shift and go to state 151
+    OP                             shift and go to state 150
     VAROP                          shift and go to state 69
     VARSYM                         shift and go to state 52
 
-state 119
+state 118
 
     (41) FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN . APAT APATS
     (79) APAT -> . IDENTIFIER
@@ -3300,11 +3293,11 @@ state 119
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    APAT                           shift and go to state 152
+    APAT                           shift and go to state 151
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 120
+state 119
 
     (83) APAT -> OPEN_PAREN PAT CLOSE_PAREN .
 
@@ -3337,7 +3330,7 @@ state 120
     ARROW           reduce using rule 83 (APAT -> OPEN_PAREN PAT CLOSE_PAREN .)
 
 
-state 121
+state 120
 
     (84) APAT -> OPEN_PAREN PAT COMMA . PAT_LIST CLOSE_PAREN
     (95) PAT_LIST -> . PAT_LIST COMMA PAT
@@ -3374,13 +3367,13 @@ state 121
     STRING          shift and go to state 35
 
     PAT                            shift and go to state 78
-    PAT_LIST                       shift and go to state 153
+    PAT_LIST                       shift and go to state 152
     LPAT                           shift and go to state 23
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 122
+state 121
 
     (74) PAT -> LPAT CONSTRUCTOR PAT .
 
@@ -3403,21 +3396,21 @@ state 122
     ARROW           reduce using rule 74 (PAT -> LPAT CONSTRUCTOR PAT .)
 
 
-state 123
+state 122
 
     (77) LPAT -> MINUS OPEN_PAREN INTEGER . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 153
+
+
+state 123
+
+    (78) LPAT -> MINUS OPEN_PAREN FLOAT . CLOSE_PAREN
 
     CLOSE_PAREN     shift and go to state 154
 
 
 state 124
-
-    (78) LPAT -> MINUS OPEN_PAREN FLOAT . CLOSE_PAREN
-
-    CLOSE_PAREN     shift and go to state 155
-
-
-state 125
 
     (85) APAT -> OPEN_SQUARE PAT_LIST CLOSE_SQUARE .
 
@@ -3450,7 +3443,7 @@ state 125
     ARROW           reduce using rule 85 (APAT -> OPEN_SQUARE PAT_LIST CLOSE_SQUARE .)
 
 
-state 126
+state 125
 
     (95) PAT_LIST -> PAT_LIST COMMA . PAT
     (74) PAT -> . LPAT CONSTRUCTOR PAT
@@ -3484,27 +3477,28 @@ state 126
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    PAT                            shift and go to state 156
+    PAT                            shift and go to state 155
     LPAT                           shift and go to state 23
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 127
+state 126
 
     (2) BODY -> OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE .
 
     $end            reduce using rule 2 (BODY -> OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE .)
 
 
+state 127
+
+    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER .
+
+    ENDSTATEMENT    reduce using rule 8 (IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER .)
+    CLOSE_BRACE     reduce using rule 8 (IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER .)
+
+
 state 128
-
-    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER . ENDSTATEMENT
-
-    ENDSTATEMENT    shift and go to state 157
-
-
-state 129
 
     (93) APATS -> APAT APATS .
 
@@ -3514,24 +3508,24 @@ state 129
     ARROW           reduce using rule 93 (APATS -> APAT APATS .)
 
 
-state 130
+state 129
 
     (11) TOP_DECLARATION -> NEWTYPE TYPENAME EQUALS TYPENAME . ENDSTATEMENT
 
-    ENDSTATEMENT    shift and go to state 158
+    ENDSTATEMENT    shift and go to state 156
 
 
-state 131
+state 130
 
     (43) RHS -> EQUALS EXP WHERE . DECLARATIONS
     (13) DECLARATIONS -> . OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
     (14) DECLARATIONS -> . OPEN_BRACE CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 136
+    OPEN_BRACE      shift and go to state 135
 
-    DECLARATIONS                   shift and go to state 159
+    DECLARATIONS                   shift and go to state 157
 
-state 132
+state 131
 
     (53) INFIX_EXP -> LEXP OP . INFIX_EXP
     (53) INFIX_EXP -> . LEXP OP INFIX_EXP
@@ -3559,28 +3553,28 @@ state 132
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    LEXP                           shift and go to state 90
-    INFIX_EXP                      shift and go to state 160
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    LEXP                           shift and go to state 89
+    INFIX_EXP                      shift and go to state 158
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 133
+state 132
 
     (54) INFIX_EXP -> MINUS INFIX_EXP .
 
@@ -3621,7 +3615,7 @@ state 133
     WILDCARD        reduce using rule 54 (INFIX_EXP -> MINUS INFIX_EXP .)
 
 
-state 134
+state 133
 
     (56) LEXP -> LAMBDA APAT . APATS ARROW EXP
     (93) APATS -> . APAT APATS
@@ -3652,19 +3646,19 @@ state 134
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    APAT                           shift and go to state 84
-    APATS                          shift and go to state 161
+    APAT                           shift and go to state 83
+    APATS                          shift and go to state 159
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 135
+state 134
 
     (57) LEXP -> LET DECLARATIONS . IN EXP
 
-    IN              shift and go to state 162
+    IN              shift and go to state 160
 
 
-state 136
+state 135
 
     (13) DECLARATIONS -> OPEN_BRACE . DECLARATIONS_LIST CLOSE_BRACE
     (14) DECLARATIONS -> OPEN_BRACE . CLOSE_BRACE
@@ -3706,7 +3700,7 @@ state 136
     (113) LITERAL -> . STRING
 
   ! shift/reduce conflict for CLOSE_BRACE resolved as shift
-    CLOSE_BRACE     shift and go to state 164
+    CLOSE_BRACE     shift and go to state 162
     ENDSTATEMENT    reduce using rule 23 (GEN_DECLARATION -> .)
     IDENTIFIER      shift and go to state 12
     OPEN_PAREN      shift and go to state 22
@@ -3724,8 +3718,8 @@ state 136
 
   ! CLOSE_BRACE     [ reduce using rule 23 (GEN_DECLARATION -> .) ]
 
-    DECLARATIONS_LIST              shift and go to state 163
-    DECLARATION                    shift and go to state 165
+    DECLARATIONS_LIST              shift and go to state 161
+    DECLARATION                    shift and go to state 163
     GEN_DECLARATION                shift and go to state 15
     FUNCTION_LHS                   shift and go to state 16
     PAT                            shift and go to state 17
@@ -3736,21 +3730,21 @@ state 136
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 137
+state 136
 
     (58) LEXP -> IF EXP . THEN EXP ELSE EXP
 
-    THEN            shift and go to state 166
+    THEN            shift and go to state 164
 
 
-state 138
+state 137
 
     (59) LEXP -> MATCH EXP . OF OPEN_BRACE ALTS CLOSE_BRACE
 
-    OF              shift and go to state 167
+    OF              shift and go to state 165
 
 
-state 139
+state 138
 
     (61) FEXP -> FEXP AEXP .
 
@@ -3791,25 +3785,25 @@ state 139
     WILDCARD        reduce using rule 61 (FEXP -> FEXP AEXP .)
 
 
-state 140
+state 139
 
     (66) AEXP -> OPEN_PAREN EXP . CLOSE_PAREN
     (67) AEXP -> OPEN_PAREN EXP . COMMA EXP_LIST CLOSE_PAREN
 
-    CLOSE_PAREN     shift and go to state 168
-    COMMA           shift and go to state 169
+    CLOSE_PAREN     shift and go to state 166
+    COMMA           shift and go to state 167
 
 
-state 141
+state 140
 
     (68) AEXP -> OPEN_SQUARE EXP . CLOSE_SQUARE
     (69) AEXP -> OPEN_SQUARE EXP . COMMA EXP_LIST CLOSE_SQUARE
 
-    CLOSE_SQUARE    shift and go to state 170
-    COMMA           shift and go to state 171
+    CLOSE_SQUARE    shift and go to state 168
+    COMMA           shift and go to state 169
 
 
-state 142
+state 141
 
     (45) RHS -> GDRHS WHERE DECLARATIONS .
 
@@ -3817,7 +3811,7 @@ state 142
     ENDSTATEMENT    reduce using rule 45 (RHS -> GDRHS WHERE DECLARATIONS .)
 
 
-state 143
+state 142
 
     (46) GDRHS -> GUARDS EQUALS EXP .
     (47) GDRHS -> GUARDS EQUALS EXP . GDRHS
@@ -3831,9 +3825,9 @@ state 143
     PIPE            shift and go to state 49
 
     GUARDS                         shift and go to state 48
-    GDRHS                          shift and go to state 172
+    GDRHS                          shift and go to state 170
 
-state 144
+state 143
 
     (49) GUARD_LIST -> GUARD_LIST GUARD .
 
@@ -3853,7 +3847,7 @@ state 144
     EQUALS          reduce using rule 49 (GUARD_LIST -> GUARD_LIST GUARD .)
 
 
-state 145
+state 144
 
     (89) VAROP -> BACKTICK IDENTIFIER BACKTICK .
 
@@ -3876,7 +3870,7 @@ state 145
     MATCH           reduce using rule 89 (VAROP -> BACKTICK IDENTIFIER BACKTICK .)
 
 
-state 146
+state 145
 
     (32) TYPE -> BTYPE ARROW . TYPE
     (31) TYPE -> . BTYPE
@@ -3888,15 +3882,15 @@ state 146
     (37) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
     (38) ATYPE -> . OPEN_SQUARE TYPE CLOSE_SQUARE
 
-    TYPENAME        shift and go to state 113
-    OPEN_PAREN      shift and go to state 114
-    OPEN_SQUARE     shift and go to state 115
+    TYPENAME        shift and go to state 112
+    OPEN_PAREN      shift and go to state 113
+    OPEN_SQUARE     shift and go to state 114
 
-    BTYPE                          shift and go to state 111
-    TYPE                           shift and go to state 173
-    ATYPE                          shift and go to state 112
+    BTYPE                          shift and go to state 110
+    TYPE                           shift and go to state 171
+    ATYPE                          shift and go to state 111
 
-state 147
+state 146
 
     (34) BTYPE -> BTYPE ATYPE .
 
@@ -3911,35 +3905,35 @@ state 147
     CLOSE_SQUARE    reduce using rule 34 (BTYPE -> BTYPE ATYPE .)
 
 
-state 148
+state 147
 
     (36) ATYPE -> OPEN_PAREN TYPES_LIST . CLOSE_PAREN
     (107) TYPES_LIST -> TYPES_LIST . COMMA TYPE
 
-    CLOSE_PAREN     shift and go to state 174
-    COMMA           shift and go to state 175
+    CLOSE_PAREN     shift and go to state 172
+    COMMA           shift and go to state 173
 
 
-state 149
+state 148
 
     (37) ATYPE -> OPEN_PAREN TYPE . CLOSE_PAREN
     (108) TYPES_LIST -> TYPE .
 
   ! shift/reduce conflict for CLOSE_PAREN resolved as shift
-    CLOSE_PAREN     shift and go to state 176
+    CLOSE_PAREN     shift and go to state 174
     COMMA           reduce using rule 108 (TYPES_LIST -> TYPE .)
 
   ! CLOSE_PAREN     [ reduce using rule 108 (TYPES_LIST -> TYPE .) ]
 
 
-state 150
+state 149
 
     (38) ATYPE -> OPEN_SQUARE TYPE . CLOSE_SQUARE
 
-    CLOSE_SQUARE    shift and go to state 177
+    CLOSE_SQUARE    shift and go to state 175
 
 
-state 151
+state 150
 
     (24) OPS -> OPS COMMA OP .
 
@@ -3948,7 +3942,7 @@ state 151
     ENDSTATEMENT    reduce using rule 24 (OPS -> OPS COMMA OP .)
 
 
-state 152
+state 151
 
     (41) FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT . APATS
     (93) APATS -> . APAT APATS
@@ -3981,21 +3975,21 @@ state 152
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    APAT                           shift and go to state 84
-    APATS                          shift and go to state 178
+    APAT                           shift and go to state 83
+    APATS                          shift and go to state 176
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 153
+state 152
 
     (84) APAT -> OPEN_PAREN PAT COMMA PAT_LIST . CLOSE_PAREN
     (95) PAT_LIST -> PAT_LIST . COMMA PAT
 
-    CLOSE_PAREN     shift and go to state 179
-    COMMA           shift and go to state 126
+    CLOSE_PAREN     shift and go to state 177
+    COMMA           shift and go to state 125
 
 
-state 154
+state 153
 
     (77) LPAT -> MINUS OPEN_PAREN INTEGER CLOSE_PAREN .
 
@@ -4019,7 +4013,7 @@ state 154
     ARROW           reduce using rule 77 (LPAT -> MINUS OPEN_PAREN INTEGER CLOSE_PAREN .)
 
 
-state 155
+state 154
 
     (78) LPAT -> MINUS OPEN_PAREN FLOAT CLOSE_PAREN .
 
@@ -4043,7 +4037,7 @@ state 155
     ARROW           reduce using rule 78 (LPAT -> MINUS OPEN_PAREN FLOAT CLOSE_PAREN .)
 
 
-state 156
+state 155
 
     (95) PAT_LIST -> PAT_LIST COMMA PAT .
 
@@ -4052,15 +4046,7 @@ state 156
     CLOSE_PAREN     reduce using rule 95 (PAT_LIST -> PAT_LIST COMMA PAT .)
 
 
-state 157
-
-    (8) IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT .
-
-    ENDSTATEMENT    reduce using rule 8 (IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT .)
-    CLOSE_BRACE     reduce using rule 8 (IMPORT_DECLARATION -> IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT .)
-
-
-state 158
+state 156
 
     (11) TOP_DECLARATION -> NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT .
 
@@ -4068,7 +4054,7 @@ state 158
     ENDSTATEMENT    reduce using rule 11 (TOP_DECLARATION -> NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT .)
 
 
-state 159
+state 157
 
     (43) RHS -> EQUALS EXP WHERE DECLARATIONS .
 
@@ -4076,7 +4062,7 @@ state 159
     ENDSTATEMENT    reduce using rule 43 (RHS -> EQUALS EXP WHERE DECLARATIONS .)
 
 
-state 160
+state 158
 
     (53) INFIX_EXP -> LEXP OP INFIX_EXP .
 
@@ -4117,14 +4103,14 @@ state 160
     WILDCARD        reduce using rule 53 (INFIX_EXP -> LEXP OP INFIX_EXP .)
 
 
-state 161
+state 159
 
     (56) LEXP -> LAMBDA APAT APATS . ARROW EXP
 
-    ARROW           shift and go to state 180
+    ARROW           shift and go to state 178
 
 
-state 162
+state 160
 
     (57) LEXP -> LET DECLARATIONS IN . EXP
     (52) EXP -> . INFIX_EXP
@@ -4153,36 +4139,36 @@ state 162
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 181
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 179
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 163
+state 161
 
     (13) DECLARATIONS -> OPEN_BRACE DECLARATIONS_LIST . CLOSE_BRACE
 
-    CLOSE_BRACE     shift and go to state 182
+    CLOSE_BRACE     shift and go to state 180
 
 
-state 164
+state 162
 
     (14) DECLARATIONS -> OPEN_BRACE CLOSE_BRACE .
 
@@ -4191,16 +4177,16 @@ state 164
     ENDSTATEMENT    reduce using rule 14 (DECLARATIONS -> OPEN_BRACE CLOSE_BRACE .)
 
 
-state 165
+state 163
 
     (15) DECLARATIONS_LIST -> DECLARATION . ENDSTATEMENT DECLARATIONS_LIST
     (16) DECLARATIONS_LIST -> DECLARATION .
 
-    ENDSTATEMENT    shift and go to state 183
+    ENDSTATEMENT    shift and go to state 181
     CLOSE_BRACE     reduce using rule 16 (DECLARATIONS_LIST -> DECLARATION .)
 
 
-state 166
+state 164
 
     (58) LEXP -> IF EXP THEN . EXP ELSE EXP
     (52) EXP -> . INFIX_EXP
@@ -4229,36 +4215,36 @@ state 166
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 184
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 182
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 167
+state 165
 
     (59) LEXP -> MATCH EXP OF . OPEN_BRACE ALTS CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 185
+    OPEN_BRACE      shift and go to state 183
 
 
-state 168
+state 166
 
     (66) AEXP -> OPEN_PAREN EXP CLOSE_PAREN .
 
@@ -4299,7 +4285,7 @@ state 168
     WILDCARD        reduce using rule 66 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
 
 
-state 169
+state 167
 
     (67) AEXP -> OPEN_PAREN EXP COMMA . EXP_LIST CLOSE_PAREN
     (91) EXP_LIST -> . EXP_LIST COMMA EXP
@@ -4330,30 +4316,30 @@ state 169
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 186
-    EXP_LIST                       shift and go to state 187
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 184
+    EXP_LIST                       shift and go to state 185
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 170
+state 168
 
     (68) AEXP -> OPEN_SQUARE EXP CLOSE_SQUARE .
 
@@ -4394,7 +4380,7 @@ state 170
     WILDCARD        reduce using rule 68 (AEXP -> OPEN_SQUARE EXP CLOSE_SQUARE .)
 
 
-state 171
+state 169
 
     (69) AEXP -> OPEN_SQUARE EXP COMMA . EXP_LIST CLOSE_SQUARE
     (91) EXP_LIST -> . EXP_LIST COMMA EXP
@@ -4425,30 +4411,30 @@ state 171
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 186
-    EXP_LIST                       shift and go to state 188
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 184
+    EXP_LIST                       shift and go to state 186
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 172
+state 170
 
     (47) GDRHS -> GUARDS EQUALS EXP GDRHS .
 
@@ -4457,7 +4443,7 @@ state 172
     ENDSTATEMENT    reduce using rule 47 (GDRHS -> GUARDS EQUALS EXP GDRHS .)
 
 
-state 173
+state 171
 
     (32) TYPE -> BTYPE ARROW TYPE .
 
@@ -4468,7 +4454,7 @@ state 173
     CLOSE_SQUARE    reduce using rule 32 (TYPE -> BTYPE ARROW TYPE .)
 
 
-state 174
+state 172
 
     (36) ATYPE -> OPEN_PAREN TYPES_LIST CLOSE_PAREN .
 
@@ -4483,7 +4469,7 @@ state 174
     CLOSE_SQUARE    reduce using rule 36 (ATYPE -> OPEN_PAREN TYPES_LIST CLOSE_PAREN .)
 
 
-state 175
+state 173
 
     (107) TYPES_LIST -> TYPES_LIST COMMA . TYPE
     (31) TYPE -> . BTYPE
@@ -4495,15 +4481,15 @@ state 175
     (37) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
     (38) ATYPE -> . OPEN_SQUARE TYPE CLOSE_SQUARE
 
-    TYPENAME        shift and go to state 113
-    OPEN_PAREN      shift and go to state 114
-    OPEN_SQUARE     shift and go to state 115
+    TYPENAME        shift and go to state 112
+    OPEN_PAREN      shift and go to state 113
+    OPEN_SQUARE     shift and go to state 114
 
-    TYPE                           shift and go to state 189
-    BTYPE                          shift and go to state 111
-    ATYPE                          shift and go to state 112
+    TYPE                           shift and go to state 187
+    BTYPE                          shift and go to state 110
+    ATYPE                          shift and go to state 111
 
-state 176
+state 174
 
     (37) ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .
 
@@ -4518,7 +4504,7 @@ state 176
     CLOSE_SQUARE    reduce using rule 37 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
 
 
-state 177
+state 175
 
     (38) ATYPE -> OPEN_SQUARE TYPE CLOSE_SQUARE .
 
@@ -4533,7 +4519,7 @@ state 177
     CLOSE_SQUARE    reduce using rule 38 (ATYPE -> OPEN_SQUARE TYPE CLOSE_SQUARE .)
 
 
-state 178
+state 176
 
     (41) FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS .
 
@@ -4542,7 +4528,7 @@ state 178
     CLOSE_PAREN     reduce using rule 41 (FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS .)
 
 
-state 179
+state 177
 
     (84) APAT -> OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN .
 
@@ -4575,7 +4561,7 @@ state 179
     ARROW           reduce using rule 84 (APAT -> OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN .)
 
 
-state 180
+state 178
 
     (56) LEXP -> LAMBDA APAT APATS ARROW . EXP
     (52) EXP -> . INFIX_EXP
@@ -4604,29 +4590,29 @@ state 180
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 190
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 188
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 181
+state 179
 
     (57) LEXP -> LET DECLARATIONS IN EXP .
 
@@ -4667,7 +4653,7 @@ state 181
     WILDCARD        reduce using rule 57 (LEXP -> LET DECLARATIONS IN EXP .)
 
 
-state 182
+state 180
 
     (13) DECLARATIONS -> OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE .
 
@@ -4676,7 +4662,7 @@ state 182
     ENDSTATEMENT    reduce using rule 13 (DECLARATIONS -> OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE .)
 
 
-state 183
+state 181
 
     (15) DECLARATIONS_LIST -> DECLARATION ENDSTATEMENT . DECLARATIONS_LIST
     (15) DECLARATIONS_LIST -> . DECLARATION ENDSTATEMENT DECLARATIONS_LIST
@@ -4732,8 +4718,8 @@ state 183
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    DECLARATION                    shift and go to state 165
-    DECLARATIONS_LIST              shift and go to state 191
+    DECLARATION                    shift and go to state 163
+    DECLARATIONS_LIST              shift and go to state 189
     GEN_DECLARATION                shift and go to state 15
     FUNCTION_LHS                   shift and go to state 16
     PAT                            shift and go to state 17
@@ -4744,14 +4730,14 @@ state 183
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 184
+state 182
 
     (58) LEXP -> IF EXP THEN EXP . ELSE EXP
 
-    ELSE            shift and go to state 192
+    ELSE            shift and go to state 190
 
 
-state 185
+state 183
 
     (59) LEXP -> MATCH EXP OF OPEN_BRACE . ALTS CLOSE_BRACE
     (70) ALTS -> . ALTS ALT ENDSTATEMENT
@@ -4812,15 +4798,15 @@ state 185
   ! CHAR            [ reduce using rule 73 (ALT -> .) ]
   ! STRING          [ reduce using rule 73 (ALT -> .) ]
 
-    ALTS                           shift and go to state 193
-    ALT                            shift and go to state 194
-    PAT                            shift and go to state 195
+    ALTS                           shift and go to state 191
+    ALT                            shift and go to state 192
+    PAT                            shift and go to state 193
     LPAT                           shift and go to state 23
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 186
+state 184
 
     (92) EXP_LIST -> EXP .
 
@@ -4829,25 +4815,25 @@ state 186
     CLOSE_SQUARE    reduce using rule 92 (EXP_LIST -> EXP .)
 
 
-state 187
+state 185
 
     (67) AEXP -> OPEN_PAREN EXP COMMA EXP_LIST . CLOSE_PAREN
     (91) EXP_LIST -> EXP_LIST . COMMA EXP
 
-    CLOSE_PAREN     shift and go to state 197
-    COMMA           shift and go to state 196
+    CLOSE_PAREN     shift and go to state 195
+    COMMA           shift and go to state 194
 
 
-state 188
+state 186
 
     (69) AEXP -> OPEN_SQUARE EXP COMMA EXP_LIST . CLOSE_SQUARE
     (91) EXP_LIST -> EXP_LIST . COMMA EXP
 
-    CLOSE_SQUARE    shift and go to state 198
-    COMMA           shift and go to state 196
+    CLOSE_SQUARE    shift and go to state 196
+    COMMA           shift and go to state 194
 
 
-state 189
+state 187
 
     (107) TYPES_LIST -> TYPES_LIST COMMA TYPE .
 
@@ -4855,7 +4841,7 @@ state 189
     COMMA           reduce using rule 107 (TYPES_LIST -> TYPES_LIST COMMA TYPE .)
 
 
-state 190
+state 188
 
     (56) LEXP -> LAMBDA APAT APATS ARROW EXP .
 
@@ -4896,14 +4882,14 @@ state 190
     WILDCARD        reduce using rule 56 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
 
 
-state 191
+state 189
 
     (15) DECLARATIONS_LIST -> DECLARATION ENDSTATEMENT DECLARATIONS_LIST .
 
     CLOSE_BRACE     reduce using rule 15 (DECLARATIONS_LIST -> DECLARATION ENDSTATEMENT DECLARATIONS_LIST .)
 
 
-state 192
+state 190
 
     (58) LEXP -> IF EXP THEN EXP ELSE . EXP
     (52) EXP -> . INFIX_EXP
@@ -4932,29 +4918,29 @@ state 192
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 199
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 197
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 193
+state 191
 
     (59) LEXP -> MATCH EXP OF OPEN_BRACE ALTS . CLOSE_BRACE
     (70) ALTS -> ALTS . ALT ENDSTATEMENT
@@ -4980,7 +4966,7 @@ state 193
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    CLOSE_BRACE     shift and go to state 200
+    CLOSE_BRACE     shift and go to state 198
     ENDSTATEMENT    reduce using rule 73 (ALT -> .)
     MINUS           shift and go to state 27
     IDENTIFIER      shift and go to state 41
@@ -4993,14 +4979,14 @@ state 193
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    ALT                            shift and go to state 201
-    PAT                            shift and go to state 195
+    ALT                            shift and go to state 199
+    PAT                            shift and go to state 193
     LPAT                           shift and go to state 23
     APAT                           shift and go to state 21
     GCON                           shift and go to state 29
     LITERAL                        shift and go to state 30
 
-state 194
+state 192
 
     (71) ALTS -> ALT .
 
@@ -5018,14 +5004,14 @@ state 194
     ENDSTATEMENT    reduce using rule 71 (ALTS -> ALT .)
 
 
-state 195
+state 193
 
     (72) ALT -> PAT . ARROW EXP
 
-    ARROW           shift and go to state 202
+    ARROW           shift and go to state 200
 
 
-state 196
+state 194
 
     (91) EXP_LIST -> EXP_LIST COMMA . EXP
     (52) EXP -> . INFIX_EXP
@@ -5054,29 +5040,29 @@ state 196
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 203
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 201
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 197
+state 195
 
     (67) AEXP -> OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN .
 
@@ -5117,7 +5103,7 @@ state 197
     WILDCARD        reduce using rule 67 (AEXP -> OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN .)
 
 
-state 198
+state 196
 
     (69) AEXP -> OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE .
 
@@ -5158,7 +5144,7 @@ state 198
     WILDCARD        reduce using rule 69 (AEXP -> OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE .)
 
 
-state 199
+state 197
 
     (58) LEXP -> IF EXP THEN EXP ELSE EXP .
 
@@ -5199,7 +5185,7 @@ state 199
     WILDCARD        reduce using rule 58 (LEXP -> IF EXP THEN EXP ELSE EXP .)
 
 
-state 200
+state 198
 
     (59) LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .
 
@@ -5240,14 +5226,14 @@ state 200
     WILDCARD        reduce using rule 59 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
 
 
-state 201
+state 199
 
     (70) ALTS -> ALTS ALT . ENDSTATEMENT
 
-    ENDSTATEMENT    shift and go to state 204
+    ENDSTATEMENT    shift and go to state 202
 
 
-state 202
+state 200
 
     (72) ALT -> PAT ARROW . EXP
     (52) EXP -> . INFIX_EXP
@@ -5276,29 +5262,29 @@ state 202
     (112) LITERAL -> . CHAR
     (113) LITERAL -> . STRING
 
-    MINUS           shift and go to state 91
-    LAMBDA          shift and go to state 92
-    LET             shift and go to state 93
-    IF              shift and go to state 94
-    MATCH           shift and go to state 95
-    IDENTIFIER      shift and go to state 98
-    OPEN_PAREN      shift and go to state 101
-    OPEN_SQUARE     shift and go to state 102
+    MINUS           shift and go to state 90
+    LAMBDA          shift and go to state 91
+    LET             shift and go to state 92
+    IF              shift and go to state 93
+    MATCH           shift and go to state 94
+    IDENTIFIER      shift and go to state 97
+    OPEN_PAREN      shift and go to state 100
+    OPEN_SQUARE     shift and go to state 101
     FLOAT           shift and go to state 28
     INTEGER         shift and go to state 20
     BOOL            shift and go to state 33
     CHAR            shift and go to state 34
     STRING          shift and go to state 35
 
-    EXP                            shift and go to state 205
-    INFIX_EXP                      shift and go to state 89
-    LEXP                           shift and go to state 90
-    FEXP                           shift and go to state 96
-    AEXP                           shift and go to state 97
-    GCON                           shift and go to state 99
-    LITERAL                        shift and go to state 100
+    EXP                            shift and go to state 203
+    INFIX_EXP                      shift and go to state 88
+    LEXP                           shift and go to state 89
+    FEXP                           shift and go to state 95
+    AEXP                           shift and go to state 96
+    GCON                           shift and go to state 98
+    LITERAL                        shift and go to state 99
 
-state 203
+state 201
 
     (91) EXP_LIST -> EXP_LIST COMMA EXP .
 
@@ -5307,7 +5293,7 @@ state 203
     CLOSE_SQUARE    reduce using rule 91 (EXP_LIST -> EXP_LIST COMMA EXP .)
 
 
-state 204
+state 202
 
     (70) ALTS -> ALTS ALT ENDSTATEMENT .
 
@@ -5325,7 +5311,7 @@ state 204
     ENDSTATEMENT    reduce using rule 70 (ALTS -> ALTS ALT ENDSTATEMENT .)
 
 
-state 205
+state 203
 
     (72) ALT -> PAT ARROW EXP .
 
@@ -5345,34 +5331,34 @@ state 205
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for BACKTICK in state 90 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 90 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 90 resolved as shift
-WARNING: shift/reduce conflict for TIMES in state 90 resolved as shift
-WARNING: shift/reduce conflict for DIVIDE in state 90 resolved as shift
-WARNING: shift/reduce conflict for POW in state 90 resolved as shift
-WARNING: shift/reduce conflict for EQUALITY in state 90 resolved as shift
-WARNING: shift/reduce conflict for LESS in state 90 resolved as shift
-WARNING: shift/reduce conflict for LEQ in state 90 resolved as shift
-WARNING: shift/reduce conflict for GREATER in state 90 resolved as shift
-WARNING: shift/reduce conflict for GEQ in state 90 resolved as shift
-WARNING: shift/reduce conflict for IDENTIFIER in state 96 resolved as shift
-WARNING: shift/reduce conflict for OPEN_PAREN in state 96 resolved as shift
-WARNING: shift/reduce conflict for OPEN_SQUARE in state 96 resolved as shift
-WARNING: shift/reduce conflict for FLOAT in state 96 resolved as shift
-WARNING: shift/reduce conflict for INTEGER in state 96 resolved as shift
-WARNING: shift/reduce conflict for BOOL in state 96 resolved as shift
-WARNING: shift/reduce conflict for CHAR in state 96 resolved as shift
-WARNING: shift/reduce conflict for STRING in state 96 resolved as shift
-WARNING: shift/reduce conflict for CLOSE_BRACE in state 136 resolved as shift
-WARNING: shift/reduce conflict for CLOSE_PAREN in state 149 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 185 resolved as shift
-WARNING: shift/reduce conflict for IDENTIFIER in state 185 resolved as shift
-WARNING: shift/reduce conflict for WILDCARD in state 185 resolved as shift
-WARNING: shift/reduce conflict for OPEN_PAREN in state 185 resolved as shift
-WARNING: shift/reduce conflict for OPEN_SQUARE in state 185 resolved as shift
-WARNING: shift/reduce conflict for FLOAT in state 185 resolved as shift
-WARNING: shift/reduce conflict for INTEGER in state 185 resolved as shift
-WARNING: shift/reduce conflict for BOOL in state 185 resolved as shift
-WARNING: shift/reduce conflict for CHAR in state 185 resolved as shift
-WARNING: shift/reduce conflict for STRING in state 185 resolved as shift
+WARNING: shift/reduce conflict for BACKTICK in state 89 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 89 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 89 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 89 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 89 resolved as shift
+WARNING: shift/reduce conflict for POW in state 89 resolved as shift
+WARNING: shift/reduce conflict for EQUALITY in state 89 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 89 resolved as shift
+WARNING: shift/reduce conflict for LEQ in state 89 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 89 resolved as shift
+WARNING: shift/reduce conflict for GEQ in state 89 resolved as shift
+WARNING: shift/reduce conflict for IDENTIFIER in state 95 resolved as shift
+WARNING: shift/reduce conflict for OPEN_PAREN in state 95 resolved as shift
+WARNING: shift/reduce conflict for OPEN_SQUARE in state 95 resolved as shift
+WARNING: shift/reduce conflict for FLOAT in state 95 resolved as shift
+WARNING: shift/reduce conflict for INTEGER in state 95 resolved as shift
+WARNING: shift/reduce conflict for BOOL in state 95 resolved as shift
+WARNING: shift/reduce conflict for CHAR in state 95 resolved as shift
+WARNING: shift/reduce conflict for STRING in state 95 resolved as shift
+WARNING: shift/reduce conflict for CLOSE_BRACE in state 135 resolved as shift
+WARNING: shift/reduce conflict for CLOSE_PAREN in state 148 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 183 resolved as shift
+WARNING: shift/reduce conflict for IDENTIFIER in state 183 resolved as shift
+WARNING: shift/reduce conflict for WILDCARD in state 183 resolved as shift
+WARNING: shift/reduce conflict for OPEN_PAREN in state 183 resolved as shift
+WARNING: shift/reduce conflict for OPEN_SQUARE in state 183 resolved as shift
+WARNING: shift/reduce conflict for FLOAT in state 183 resolved as shift
+WARNING: shift/reduce conflict for INTEGER in state 183 resolved as shift
+WARNING: shift/reduce conflict for BOOL in state 183 resolved as shift
+WARNING: shift/reduce conflict for CHAR in state 183 resolved as shift
+WARNING: shift/reduce conflict for STRING in state 183 resolved as shift

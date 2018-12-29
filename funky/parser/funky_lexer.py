@@ -87,7 +87,6 @@ class FunkyLexer:
     def t_NEWLINE(self, t):
         r"\n+"
         self.at_line_start = True
-        t.lexer.lineno += len(t.value)
 
     # Regexes for the control characters.
     t_BACKTICK      =  r"`"
@@ -176,7 +175,6 @@ class FunkyLexer:
             self.at_line_start = False
             tokens.append(tok)
 
-        print(tokens)
         return tokens
 
 class IndentationLexer:
@@ -214,6 +212,7 @@ class IndentationLexer:
         braces.
         """
         new_tokens, ind_stack = [], []
+        print(tokens)
 
         i = 0
         while i < len(tokens):
@@ -222,16 +221,18 @@ class IndentationLexer:
                tokens[i + 1].type != "OPEN_BRACE":
                 j = i + 1
                 while tokens[j].type == "WHITESPACE":
-                    j += 1
+                    tokens.pop(j)
                 ind_stack.append(self._find_column(tokens[j]))
                 new_tokens.append(tok)
                 new_tokens.append(self._make_token("OPEN_BRACE", value="{"))
             elif tok.type == "WHITESPACE":
                 if ind_stack:
                     if tok.value == ind_stack[-1]:
-                        new_tokens.append(self._make_token("ENDSTATEMENT", value=";"))
+                        new_tokens.append(self._make_token("ENDSTATEMENT",
+                                                           value=";"))
                     elif tok.value < ind_stack[-1]:
-                        new_tokens.append(self._make_token("CLOSE_BRACE", value="}"))
+                        new_tokens.append(self._make_token("CLOSE_BRACE",
+                                                           value="}"))
                         ind_stack.pop()
                         continue
             else:

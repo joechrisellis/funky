@@ -22,14 +22,14 @@ class FunkyParser:
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
         """
         module_id, body = p[2], p[4]
-        p[0] = Module(module_id, body)
+        p[0] = (module_id, body)
 
     def p_BODY(self, p):
         """BODY : OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE
                 | OPEN_BRACE IMPORT_DECLARATIONS CLOSE_BRACE
                 | OPEN_BRACE TOP_DECLARATIONS CLOSE_BRACE
         """
-        pass
+        print(p.__dict__)
 
     def p_IMPORT_DECLARATIONS(self, p):
         """IMPORT_DECLARATIONS : IMPORT_DECLARATIONS ENDSTATEMENT IMPORT_DECLARATION
@@ -38,8 +38,8 @@ class FunkyParser:
         pass
 
     def p_IMPORT_DECLARATION(self, p):
-        """IMPORT_DECLARATION : IMPORT IDENTIFIER ENDSTATEMENT
-                              | IMPORT IDENTIFIER AS IDENTIFIER ENDSTATEMENT
+        """IMPORT_DECLARATION : IMPORT IDENTIFIER
+                              | IMPORT IDENTIFIER AS IDENTIFIER
         """
         # TODO: may have to change IDENTIFIER to a more robust module ID here.
         pass
@@ -298,8 +298,7 @@ class FunkyParser:
         pass
 
     def p_error(self, p):
-        raise FunkySyntaxError("Parsing failed at symbol " \
-                               "'{}' on line {}.".format(p.value, p.lineno))
+        raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
     def build(self, **kwargs):
         self.lexer = FunkyLexer()
@@ -310,6 +309,6 @@ class FunkyParser:
     def do_parse(self, source):
         self.lexer.input(source)
         for tok in self.lexer:
-            print(tok, end=" ")
+            print(tok.value, end=" ")
         print()
         return self.parser.parse(source, self.lexer)

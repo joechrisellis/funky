@@ -1,6 +1,3 @@
 module math where
 
-    import stdlib as alias
-    import math
-
-    factorial :: Integer -> Integer -> Integer
+    n = 10 * 2 + 10

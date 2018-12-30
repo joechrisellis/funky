@@ -33,9 +33,6 @@ class FunkyLexer:
         "where"    :  "WHERE",
         "match"    :  "MATCH",
         "of"       :  "OF",
-        "infix"    :  "INFIX",
-        "infixl"   :  "INFIXL",
-        "infixr"   :  "INFIXR",
     }
 
     # All the tokens known to the lexer.

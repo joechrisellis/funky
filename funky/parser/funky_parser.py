@@ -4,8 +4,17 @@ from funky.util import err
 from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
 from funky.parser import FunkySyntaxError
 
-from funky.core.intermediate import Module, ProgramBody, ImportStatement, \
-                                    NewTypeStatement, TypeDeclaration
+from funky.core.intermediate import Module, ProgramBody, ImportStatement,      \
+                                    NewTypeStatement, TypeDeclaration, Type,   \
+                                    TupleType, ListType, FunctionType,         \
+                                    FunctionDefinition, FunctionLHS,           \
+                                    FunctionRHS, GuardedExpression,            \
+                                    PatternDefinition,                         \
+                                    ConstructorChain, Pattern, PatternTuple,   \
+                                    PatternList, Alternative, InfixExpression, \
+                                    Lambda, Let, If, Match,                    \
+                                    FunctionApplication, Literal,              \
+                                    BinaryOperator                             \
 
 class FunkyParser:
 
@@ -35,7 +44,7 @@ class FunkyParser:
             imports, top_declarations = None, p[2]
 
         p[0] = ProgramBody(imports, top_declarations)
-        
+
     def p_IMPORT_DECLARATIONS(self, p):
         """IMPORT_DECLARATIONS : IMPORT_DECLARATIONS ENDSTATEMENT IMPORT_DECLARATION
                                | IMPORT_DECLARATION
@@ -57,9 +66,9 @@ class FunkyParser:
                             | TOP_DECLARATION
         """
         if len(p) == 4:
-            p[0] = p[1] + p[3]
+            p[0] = p[1] + [p[3]]
         else:
-            p[0] = p[1]
+            p[0] =[p[1]]
 
     def p_TOP_DECLARATION(self, p):
         """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT
@@ -84,37 +93,30 @@ class FunkyParser:
                              | DECLARATION
         """
         if len(p) == 4:
-            p[0] = [*p[1]] + p[3]
+            p[0] = [p[1]] + p[3]
         else:
-            p[0] = [*p[1]]
+            p[0] = [p[1]]
 
     def p_DECLARATION(self, p):
         """DECLARATION : GEN_DECLARATION
                        | FUNCTION_LHS RHS
-                       | PAT RHS 
+                       | PAT RHS
         """
         if len(p) == 2:
             p[0] = p[1]
+        elif type(p[1]) == FunctionLHS:
+            p[0] = FunctionDefinition(p[1], p[2])
         else:
-            # TODO: generate representation for functions.
-            pass
+            p[0] = PatternDefinition(p[1], p[2])
 
     def p_GEN_DECLARATION(self, p):
         """GEN_DECLARATION : VARS TYPESIG TYPE
-                           | FIXITY INTEGER OPS
-                           | FIXITY OPS
                            |
         """
+        # NOTE: Fixity declarations removed -- may not be needed for this
+        #       project.
         if len(p) == 4:
             p[0] = [TypeDeclaration(identifier, p[3]) for identifier in p[1]]
-        elif p[2].type == "INTEGER":
-            p[0] = None # TODO -- won't work!
-
-    def p_OPS(self, p):
-        """OPS : OPS COMMA OP
-               | OP
-        """
-        pass
 
     def p_VARS(self, p):
         """VARS : VARS COMMA IDENTIFIER
@@ -125,30 +127,14 @@ class FunkyParser:
         else:
             p[0] = [p[1]]
 
-    def p_FIXITY(self, p):
-        """FIXITY : INFIXL
-                  | INFIXR
-                  | INFIX
-        """
-        pass
-
     def p_TYPE(self, p):
-        """TYPE : BTYPE
-                | BTYPE ARROW TYPE
+        """TYPE : ATYPE
+                | ATYPE ARROW TYPE
         """
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = (p[1], p[3])
-
-    def p_BTYPE(self, p):
-        """BTYPE : ATYPE
-                 | BTYPE ATYPE
-        """
-        if len(p) == 2:
-            p[0] = p[1]
-        else:
-            p[0] = (p[1], p[2])
+            p[0] = FunctionType(p[1], p[3])
 
     def p_ATYPE(self, p):
         """ATYPE : TYPENAME
@@ -157,21 +143,26 @@ class FunkyParser:
                  | OPEN_SQUARE TYPE CLOSE_SQUARE
         """
         if len(p) == 2:
-            p[0] = p[1]
+            p[0] = Type(p[1])
         elif p[1] == "(":
             if type(p[2]) == list:
-                p[0] = tuple(p[2])
+                p[0] = TupleType(tuple(p[2]))
             else:
-                p[0] = p[2]
+                p[0] = Type(p[2])
         else:
-            p[0] = [p[2]]
+            p[0] = ListType(p[2])
 
     def p_FUNCTION_LHS(self, p):
         """FUNCTION_LHS : IDENTIFIER APAT APATS
                         | PAT VAROP PAT
                         | OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
         """
-        pass
+        if type(p[1]) in [Pattern, ConstructorChain]:
+            p[0] = FunctionLHS(p[2], [p[1], p[3]])
+        elif p[1] == "(":
+            p[0] = None
+        else:
+            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
 
     def p_RHS(self, p):
         """RHS : EQUALS EXP
@@ -179,41 +170,60 @@ class FunkyParser:
                | GDRHS
                | GDRHS WHERE DECLARATIONS
         """
-        pass
+        if len(p) == 3:
+            p[0] = FunctionRHS([GuardedExpression(None, p[2])])
+        elif len(p) == 5:
+            p[0] = FunctionRHS([GuardedExpression(None, p[2])],
+                               declarations=p[4])
+        elif len(p) == 2:
+            p[0] = FunctionRHS(p[1])
+        else:
+            p[0] = FunctionRHS(p[1], declarations=p[3])
 
     def p_GDRHS(self, p):
         """GDRHS : GUARDS EQUALS EXP
                  | GUARDS EQUALS EXP GDRHS
         """
-        pass
+        if len(p) == 4:
+            p[0] = [GuardedExpression(p[1], p[3])]
+        else:
+            p[0] = [GuardedExpression(p[1], p[3])] + p[4]
 
     def p_GUARDS(self, p):
         """GUARDS : PIPE GUARD_LIST
         """
-        pass
+        p[0] = p[2]
 
     def p_GUARD_LIST(self, p):
-        """GUARD_LIST : GUARD_LIST GUARD
+        """GUARD_LIST : GUARD_LIST COMMA GUARD
                       | GUARD
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
 
     def p_GUARD(self, p):
         """GUARD : INFIX_EXP
         """ # we only allow for BOOLEAN guards.
-        pass
+        p[0] = p[1]
 
     def p_EXP(self, p):
         """EXP : INFIX_EXP
         """
-        pass
-    
+        p[0] = p[1]
+
     def p_INFIX_EXP(self, p):
         """INFIX_EXP : LEXP OP INFIX_EXP
                      | MINUS INFIX_EXP
                      | LEXP
         """ # did use qualified operators before.
-        pass
+        if len(p) == 4:
+            p[0] = FunctionApplication(FunctionApplication(p[2], p[1]), p[3])
+        elif len(p) == 3:
+            p[0] = FunctionApplication("-", p[2])
+        else:
+            p[0] = p[1]
 
     def p_LEXP(self, p):
         """LEXP : LAMBDA APAT APATS ARROW EXP
@@ -222,13 +232,26 @@ class FunkyParser:
                 | MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
                 | FEXP
         """
-        pass
+        if len(p) == 6:
+            p[0] = Lambda([p[2], *p[3]], p[5])
+        elif len(p) == 5:
+            p[0] = Let(p[2], p[4])
+        elif len(p) == 7:
+            if p[1] == "if":
+                p[0] = If(p[2], p[4], p[6])
+            else:
+                p[0] = Match(p[2], p[5])
+        else:
+            p[0] = p[1]
 
     def p_FEXP(self, p):
         """FEXP : FEXP AEXP
                 | AEXP
         """
-        pass
+        if len(p) == 3:
+            p[0] = FunctionApplication(p[1], p[2])
+        else:
+            p[0] = p[1]
 
     def p_AEXP(self, p):
         """AEXP : IDENTIFIER
@@ -238,33 +261,54 @@ class FunkyParser:
                 | OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN
                 | OPEN_SQUARE EXP CLOSE_SQUARE
                 | OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE
-        """ # few things missing, should be ok tho
-        pass
+        """
+        if len(p) == 2:
+            p[0] = p[1]
+        elif p[1] == "(":
+            if len(p) == 4:
+                p[0] = p[2]
+            else:
+                p[0] = Tuple((p[2], *p[4]))
+        else:
+            if len(p) == 4:
+                p[0] = List([p[2]])
+            else:
+                p[0] = List([p[2], *p[4]])
 
     def p_ALTS(self, p):
         """ALTS : ALTS ALT ENDSTATEMENT
                 | ALT
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[2]]
+        else:
+            p[0] = [p[1]]
 
     def p_ALT(self, p):
         """ALT : PAT ARROW EXP
                |
         """
-        pass
+        if len(p) == 4:
+            p[0] = Alternative(p[1], p[2])
 
     def p_PAT(self, p):
         """PAT : LPAT CONSTRUCTOR PAT
                | LPAT
         """
-        pass
+        if len(p) == 4:
+            p[0] = ConstructorChain(p[1], p[3])
+        else:
+            p[0] = Pattern(p[1])
 
     def p_LPAT(self, p):
         """LPAT : APAT
                 | MINUS OPEN_PAREN INTEGER CLOSE_PAREN
                 | MINUS OPEN_PAREN FLOAT CLOSE_PAREN
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        else:
+            p[0] = Literal(-p[3])
 
     def p_APAT(self, p):
         """APAT : IDENTIFIER
@@ -275,42 +319,65 @@ class FunkyParser:
                 | OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN
                 | OPEN_SQUARE PAT_LIST CLOSE_SQUARE
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        elif len(p) == 4:
+            if type(p[2]) == Pattern:
+                p[0] = p[2]
+            else:
+                p[0] = PatternList(p[2])
+        else:
+            p[0] = PatternList((p[2], *p[4]))
 
     def p_GCON(self, p):
         """GCON : OPEN_PAREN CLOSE_PAREN
                 | OPEN_SQUARE CLOSE_SQUARE
         """
-        pass
+        if p[1] == "(":
+            p[0] = ()
+        else:
+            p[0] = []
 
     def p_VAROP(self, p):
         """VAROP : VARSYM
                  | BACKTICK IDENTIFIER BACKTICK
         """
-        pass
+        if len(p) == 2:
+            p[0] = p[1]
+        else:
+            p[0] = p[2]
 
     def p_OP(self, p):
         """OP : VAROP
         """
-        pass
+        p[0] = p[1]
 
     def p_EXP_LIST(self, p):
         """EXP_LIST : EXP_LIST COMMA EXP
                     | EXP
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
 
     def p_APATS(self, p):
         """APATS : APAT APATS
                  |
         """
-        pass
+        if len(p) == 1:
+            p[0] = []
+        else:
+            p[0] = [p[1]] + p[2]
 
     def p_PAT_LIST(self, p):
         """PAT_LIST : PAT_LIST COMMA PAT
                     | PAT
         """
-        pass
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
 
     def p_VARSYM(self, p):
         """VARSYM : PLUS
@@ -324,7 +391,7 @@ class FunkyParser:
                   | GREATER
                   | GEQ
         """
-        pass
+        p[0] = p[1]
 
     def p_TYPES_LIST(self, p):
         """TYPES_LIST : TYPES_LIST COMMA TYPE
@@ -342,7 +409,7 @@ class FunkyParser:
                    | CHAR
                    | STRING
         """
-        pass
+        p[0] = Literal(p[1])
 
     def p_error(self, p):
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))

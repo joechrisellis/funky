@@ -1,3 +1,4 @@
 module math where
-
-    n = 10 * 2 + 10
+    
+    f x t v = a * b + c -> + (* a b) c
+    f x t v = a + b * c

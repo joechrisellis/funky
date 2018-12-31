@@ -11,22 +11,22 @@ from funky.core.intermediate import Module, ProgramBody, ImportStatement,      \
                                     FunctionRHS, GuardedExpression,            \
                                     PatternDefinition,                         \
                                     ConstructorChain, Pattern, PatternTuple,   \
-                                    PatternList, Alternative, InfixExpression, \
-                                    Lambda, Let, If, Match,                    \
-                                    FunctionApplication, Literal,              \
-                                    BinaryOperator                             \
+                                    PatternList, Alternative, Lambda, Let,     \
+                                    If, Match, FunctionApplication, Literal
+from funky.core.types import python_to_funky
+
+precedence  =  (
+    ("nonassoc", "EQUALITY"),
+    ("left", "LESS", "LEQ", "GREATER", "GEQ"),
+    ("left", "PLUS", "MINUS"),
+    ("left", "TIMES", "DIVIDE"),
+    ("right", "POW"),
+)
 
 class FunkyParser:
 
     tokens      =  FunkyLexer.tokens
     start       =  "MODULE_DEFINITION"
-    precedence  =  (
-        ("nonassoc", "EQUALITY"),
-        ("left", "LESS", "LEQ", "GREATER", "GEQ"),
-        ("left", "PLUS", "MINUS"),
-        ("left", "TIMES", "DIVIDE"),
-        ("right", "POW"),
-    )
 
     def p_MODULE_DEFINITION(self, p):
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
@@ -71,7 +71,7 @@ class FunkyParser:
             p[0] =[p[1]]
 
     def p_TOP_DECLARATION(self, p):
-        """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPENAME ENDSTATEMENT
+        """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPENAME
                            | DECLARATION
         """
         if len(p) == 6:
@@ -160,7 +160,9 @@ class FunkyParser:
         if type(p[1]) in [Pattern, ConstructorChain]:
             p[0] = FunctionLHS(p[2], [p[1], p[3]])
         elif p[1] == "(":
-            p[0] = None
+            p[0] = p[2]
+            p[0].parameters.append(p[4])
+            p[0].parameters.extend(p[5])
         else:
             p[0] = FunctionLHS(p[1], [p[2], *p[3]])
 
@@ -171,9 +173,9 @@ class FunkyParser:
                | GDRHS WHERE DECLARATIONS
         """
         if len(p) == 3:
-            p[0] = FunctionRHS([GuardedExpression(None, p[2])])
+            p[0] = FunctionRHS([p[2]])
         elif len(p) == 5:
-            p[0] = FunctionRHS([GuardedExpression(None, p[2])],
+            p[0] = FunctionRHS([p[2]],
                                declarations=p[4])
         elif len(p) == 2:
             p[0] = FunctionRHS(p[1])
@@ -219,6 +221,11 @@ class FunkyParser:
                      | LEXP
         """ # did use qualified operators before.
         if len(p) == 4:
+            if type(p[3]) == FunctionApplication:
+                op1, op2 = p[2], p[3].func
+                print(op1, op2)
+            else:
+                pass
             p[0] = FunctionApplication(FunctionApplication(p[2], p[1]), p[3])
         elif len(p) == 3:
             p[0] = FunctionApplication("-", p[2])
@@ -308,7 +315,7 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = Literal(-p[3])
+            p[0] = Literal(-p[3], python_to_funky[type(p[3])])
 
     def p_APAT(self, p):
         """APAT : IDENTIFIER
@@ -409,7 +416,7 @@ class FunkyParser:
                    | CHAR
                    | STRING
         """
-        p[0] = Literal(p[1])
+        p[0] = Literal(p[1], python_to_funky[type(p[1])])
 
     def p_error(self, p):
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))

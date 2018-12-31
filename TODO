@@ -1,0 +1,2 @@
+* get rid of guarded expressions where they're not needed 00 i.e. when declaring a variable?
+* sort out operator precedence and associativity

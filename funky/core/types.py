@@ -8,3 +8,11 @@ class Primitives(Enum):
     INTEGER  =  auto()
     BOOL     =  auto()
     CHAR     =  auto()
+
+# Mapping of Python types to Funky types.
+python_to_funky = {
+    float  :  Primitives.FLOAT,
+    int    :  Primitives.INTEGER,
+    bool   :  Primitives.BOOL,
+    str    :  Primitives.CHAR,
+}

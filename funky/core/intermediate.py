@@ -246,7 +246,7 @@ class BinOpApplication(ASTNode):
         self.operator = operator
         self.operand2 = operand2
 
-class UnaryOpApplication(object):
+class UnaryOpApplication(ASTNode):
 
     def __init__(self, operator, operand):
         self.operator = operator

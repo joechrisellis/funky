@@ -3,6 +3,7 @@ import ply.yacc as yacc
 from funky.util import err
 from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
 from funky.parser import FunkySyntaxError
+from funky.parser.fixity import resolve_fixity
 
 from funky.core.intermediate import Module, ProgramBody, ImportStatement,      \
                                     NewTypeStatement, TypeDeclaration, Type,   \
@@ -12,16 +13,10 @@ from funky.core.intermediate import Module, ProgramBody, ImportStatement,      \
                                     PatternDefinition,                         \
                                     ConstructorChain, Pattern, PatternTuple,   \
                                     PatternList, Alternative, Lambda, Let,     \
-                                    If, Match, FunctionApplication, Literal
-from funky.core.types import python_to_funky
+                                    If, Match, FunctionApplication, Literal,   \
+                                    InfixExpression
 
-precedence  =  (
-    ("nonassoc", "EQUALITY"),
-    ("left", "LESS", "LEQ", "GREATER", "GEQ"),
-    ("left", "PLUS", "MINUS"),
-    ("left", "TIMES", "DIVIDE"),
-    ("right", "POW"),
-)
+from funky.core.types import python_to_funky
 
 class FunkyParser:
 
@@ -214,23 +209,27 @@ class FunkyParser:
         """EXP : INFIX_EXP
         """
         p[0] = p[1]
+        p[0] = resolve_fixity(p[0])
 
     def p_INFIX_EXP(self, p):
         """INFIX_EXP : LEXP OP INFIX_EXP
                      | MINUS INFIX_EXP
                      | LEXP
-        """ # did use qualified operators before.
+        """
+        # NOTE: we keep infix expressions FLAT for now -- we perform fixity
+        # resolution at a later step.
+        tokens = []
         if len(p) == 4:
-            if type(p[3]) == FunctionApplication:
-                op1, op2 = p[2], p[3].func
-                print(op1, op2)
-            else:
-                pass
-            p[0] = FunctionApplication(FunctionApplication(p[2], p[1]), p[3])
+            tokens.append(p[1])
+            tokens.append(p[2])
+            tokens.extend(p[3].tokens)
         elif len(p) == 3:
-            p[0] = FunctionApplication("-", p[2])
+            tokens.append("-")
+            tokens.extend(p[2].tokens)
         else:
-            p[0] = p[1]
+            tokens.append(p[1])
+
+        p[0] = InfixExpression(tokens)
 
     def p_LEXP(self, p):
         """LEXP : LAMBDA APAT APATS ARROW EXP
@@ -432,4 +431,6 @@ class FunkyParser:
         for tok in self.lexer:
             print(tok.value, end=" ")
         print()
-        return self.parser.parse(source, self.lexer)
+
+        parsed = self.parser.parse(source, self.lexer)
+        return parsed

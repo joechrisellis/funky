@@ -229,3 +229,25 @@ class Literal(ASTNode):
     def __init__(self, value, typ):
         self.value  =  value
         self.typ    =  typ
+
+class InfixExpression(ASTNode):
+    """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --
+    we perform fixity resolution later, whereby infix expressions become
+    instances of FunctionApplications.
+    """
+
+    def __init__(self, tokens):
+        self.tokens = tokens
+
+class BinOpApplication(ASTNode):
+
+    def __init__(self, operand1, operator, operand2):
+        self.operand1 = operand1
+        self.operator = operator
+        self.operand2 = operand2
+
+class UnaryOpApplication(object):
+
+    def __init__(self, operator, operand):
+        self.operator = operator
+        self.operand = operand

@@ -1,4 +1,4 @@
 module math where
     
-    f x t v = a * b + c -> + (* a b) c
-    f x t v = a + b * c
+    n :: Integer
+    n = 1 / 2 ** 2 / 4

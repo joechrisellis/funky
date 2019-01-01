@@ -33,6 +33,7 @@ class FunkyLexer:
         "where"    :  "WHERE",
         "match"    :  "MATCH",
         "of"       :  "OF",
+        "lambda"   :  "LAMBDA",
     }
 
     # All the tokens known to the lexer.
@@ -42,7 +43,7 @@ class FunkyLexer:
         "WHITESPACE",
 
         # 'control' characters
-        "BACKTICK", "COMMA", "TYPESIG", "CONSTRUCTOR", "LAMBDA", "PIPE",
+        "BACKTICK", "COMMA", "TYPESIG", "CONSTRUCTOR", "PIPE",
         "WILDCARD", "ARROW", "ENDSTATEMENT",
 
         # literals
@@ -90,7 +91,6 @@ class FunkyLexer:
     t_COMMA         =  r","
     t_TYPESIG       =  r"::"
     t_CONSTRUCTOR   =  r":"
-    t_LAMBDA        =  r"\\"
     t_PIPE          =  r"\|"
     t_WILDCARD      =  r"_"
     t_ARROW         =  r"->"

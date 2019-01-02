@@ -51,10 +51,9 @@ class FunkyParser:
 
     def p_IMPORT_DECLARATION(self, p):
         """IMPORT_DECLARATION : IMPORT IDENTIFIER
-                              | IMPORT IDENTIFIER AS IDENTIFIER
         """
-        module_id, alias = p[2], p[4] if len(p) == 5 else None
-        p[0] = ImportStatement(module_id, alias)
+        module_id, = p[2]
+        p[0] = ImportStatement(module_id)
 
     def p_TOP_DECLARATIONS(self, p):
         """TOP_DECLARATIONS : TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION

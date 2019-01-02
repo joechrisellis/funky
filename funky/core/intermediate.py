@@ -36,9 +36,8 @@ class ImportStatement(ASTNode):
     the name of the module to import and (optionally) an alias.
     """
 
-    def __init__(self, module_id, alias=None):
+    def __init__(self, module_id):
         self.module_id  =  module_id
-        self.alias      =  alias
 
 class NewTypeStatement(ASTNode):
     """Node representing a type alias. Consists of a new identifier and an

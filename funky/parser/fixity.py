@@ -3,16 +3,29 @@ resolution algorithm, described at:
     https://prime.haskell.org/wiki/FixityResolution
 """
 
-from funky.core.intermediate import BinOpApplication, UnaryOpApplication
+from funky.parser import FunkySyntaxError
+from funky.parser.ast import BinOpApplication, UnaryOpApplication
+from funky.parser.funky_lexer import FunkyLexer
 
-# TODO: make sure these are consistent with what appears in the lexer!
+def _rmb(s):
+    """Removes backslashes from a string."""
+    return s.replace("\\", "")
+
 precedence  =  (
-    ("nonassoc", "!!!"), # Imaginary operator!
-    ("nonassoc", "=="),
-    ("left", "<", "<=", ">", ">="),
-    ("left", "+", "-"),
-    ("left", "*", "/"),
-    ("right", "**"),
+    # imaginary operator -- has a lower precedence than everything else, and is
+    # used *exclusively* to kick off the fixity resolution recursive algorith,
+    # This is not a legal operator in Funky code.
+    ("nonassoc", "!!!"),
+
+    # Remove backslashes from the lexer regexes for operators. This gets the
+    # 'raw' operator string. If the operator lexemes are changed in the lexer,
+    # the change is automatically propagated to here.
+    ("nonassoc", _rmb(FunkyLexer.t_EQUALITY)),
+    ("left",     _rmb(FunkyLexer.t_LESS), _rmb(FunkyLexer.t_LEQ),
+                 _rmb(FunkyLexer.t_GREATER), _rmb(FunkyLexer.t_GEQ)),
+    ("left",     _rmb(FunkyLexer.t_PLUS), _rmb(FunkyLexer.t_MINUS)),
+    ("left",     _rmb(FunkyLexer.t_TIMES), _rmb(FunkyLexer.t_DIVIDE)),
+    ("right",    _rmb(FunkyLexer.t_POW)),
 )
 
 def get_precedence(operator):
@@ -28,7 +41,7 @@ def get_precedence(operator):
     for i, pclass in enumerate(precedence):
         if operator in pclass:
             return (pclass[0], i)
-    return None
+    raise FunkySyntaxError("Invalid operator '{}'.".format(operator))
 
 def resolve_fixity(infix_expr):
     """Performs fixity resolution for an INFIX_EXP from the parser. Infix
@@ -44,7 +57,6 @@ def resolve_fixity(infix_expr):
         expression.
     """
     retval = parse_neg("!!!", infix_expr.tokens)[0]
-    print(retval)
     return retval
 
 def parse_neg(operator, tokens):
@@ -53,7 +65,7 @@ def parse_neg(operator, tokens):
     if tokens[0] == "-":
         fix1, prec1 = get_precedence(operator)
         if prec1 >= minus_precedence:
-            raise ValueError("Invalid negation.")
+            raise FunkySyntaxError("Invalid negation.")
         r, rest = parse_neg("-", tokens[1:])
         return parse(operator, UnaryOpApplication("-", r), rest)
     else:
@@ -70,7 +82,7 @@ def parse(op1, exp, tokens):
     # same precedence, but they do not have the same associativity, or they are
     # declared to be nonfix, then the expression is illegal.
     if prec1 == prec2 and (fix1 != fix2 or fix1 == "nonassoc"):
-        raise ValueError("Invalid expression.")
+        raise FunkySyntaxError("Illegal expression.")
 
     # Case 2: op1 and op2 are left associative.
     if prec1 > prec2 or (prec1 == prec2 and fix1 == "left"):

@@ -5,16 +5,14 @@ from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
 from funky.parser import FunkySyntaxError
 from funky.parser.fixity import resolve_fixity
 
-from funky.core.intermediate import Module, ProgramBody, ImportStatement,      \
-                                    NewTypeStatement, TypeDeclaration, Type,   \
-                                    TupleType, ListType, FunctionType,         \
-                                    FunctionDefinition, FunctionLHS,           \
-                                    FunctionRHS, GuardedExpression,            \
-                                    PatternDefinition,                         \
-                                    ConstructorChain, Pattern, PatternTuple,   \
-                                    PatternList, Alternative, Lambda, Let,     \
-                                    If, Match, FunctionApplication, Literal,   \
-                                    InfixExpression
+from funky.parser.ast import Module, ProgramBody, ImportStatement,             \
+                             NewTypeStatement, TypeDeclaration, Type,          \
+                             TupleType, ListType, FunctionType,                \
+                             FunctionDefinition, FunctionLHS, FunctionRHS,     \
+                             GuardedExpression, PatternDefinition,             \
+                             ConstructorChain, Pattern, PatternTuple,          \
+                             PatternList, Alternative, Lambda, Let, Match,     \
+                             FunctionApplication, Literal, InfixExpression
 
 from funky.core.types import python_to_funky
 

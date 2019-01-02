@@ -23,8 +23,6 @@ def compile_to_c(source):
         parser = FunkyParser()
         parser.build()
         parsed = parser.do_parse(source)
-        from pprint import pprint
-        pprint(parsed)
     except FunkySyntaxError as e:
         err("Syntax error in given program.")
         err("Error: \"{}\"".format(e.args[0]))

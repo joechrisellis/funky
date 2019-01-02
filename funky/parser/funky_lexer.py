@@ -43,8 +43,8 @@ class FunkyLexer:
         "WHITESPACE",
 
         # 'control' characters
-        "BACKTICK", "COMMA", "TYPESIG", "CONSTRUCTOR", "PIPE",
-        "WILDCARD", "ARROW", "ENDSTATEMENT",
+        "BACKTICK", "COMMA", "TYPESIG", "CONSTRUCTOR", "PIPE", "ARROW",
+        "ENDSTATEMENT",
 
         # literals
         "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
@@ -92,7 +92,6 @@ class FunkyLexer:
     t_TYPESIG       =  r"::"
     t_CONSTRUCTOR   =  r":"
     t_PIPE          =  r"\|"
-    t_WILDCARD      =  r"_"
     t_ARROW         =  r"->"
     t_ENDSTATEMENT  =  r";"
 
@@ -146,7 +145,7 @@ class FunkyLexer:
 
     # An identifier -- checks for keywords.
     def t_IDENTIFIER(self, t):
-         r"[a-z][A-Za-z0-9_]*"
+         r"([a-z][A-Za-z0-9_]*|_)"
          t.type = self.reserved.get(t.value, "IDENTIFIER")
          return t
 

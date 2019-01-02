@@ -2,6 +2,8 @@
 
 from enum import Enum, auto
 
+primitives = ["Float", "Integer", "Bool", "Char"]
+
 class Primitives(Enum):
     """Primitive types -- the most 'basic' types available."""
     FLOAT    =  auto()

@@ -1,5 +1,27 @@
-module math where
+module stdlib where
     
-    factorial :: Integer -> Integer
-    factorial 0 = 1
-    factorial n = n * factorial (n - 1)
+    newtype A = Integer
+    newtype B = Integer
+
+    newtype String = [Char]
+
+    otherwise :: Bool
+    otherwise = True
+
+    # Tuple operations
+    fst :: (A, B) -> A
+    snd :: (A, B) -> B
+
+    fst (x, _) = x
+    snd (_, x) = x
+
+    # List operations
+    head :: [A] -> A
+    tail :: [A] -> A
+
+    head (x : xs) = x
+    tail (x : xs) | xs == []  = x
+                  | otherwise = tail xs
+
+    a `pow` b = a ** b
+    sqrt x = pow x 0.5

@@ -12,7 +12,8 @@ from funky.parser.ast import Module, ProgramBody, ImportStatement,             \
                              GuardedExpression, PatternDefinition,             \
                              ConstructorChain, Pattern, PatternTuple,          \
                              PatternList, Alternative, Lambda, Let, Match,     \
-                             FunctionApplication, Literal, InfixExpression
+                             FunctionApplication, Tuple, List, Literal,        \
+                             Parameter, UsedVar, InfixExpression
 
 class FunkyParser:
 
@@ -32,7 +33,7 @@ class FunkyParser:
         if len(p) == 6:
             imports, top_declarations = p[2], p[4]
         else:
-            imports, top_declarations = None, p[2]
+            imports, top_declarations = [], p[2]
 
         p[0] = ProgramBody(imports, top_declarations)
 
@@ -48,8 +49,7 @@ class FunkyParser:
     def p_IMPORT_DECLARATION(self, p):
         """IMPORT_DECLARATION : IMPORT IDENTIFIER
         """
-        module_id, = p[2]
-        p[0] = ImportStatement(module_id)
+        p[0] = ImportStatement(p[2])
 
     def p_TOP_DECLARATIONS(self, p):
         """TOP_DECLARATIONS : TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
@@ -61,10 +61,10 @@ class FunkyParser:
             p[0] =[p[1]]
 
     def p_TOP_DECLARATION(self, p):
-        """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPENAME
+        """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPE
                            | DECLARATION
         """
-        if len(p) == 6:
+        if len(p) == 5:
             p[0] = NewTypeStatement(p[2], p[4])
         else:
             p[0] = p[1]
@@ -100,22 +100,13 @@ class FunkyParser:
             p[0] = PatternDefinition(p[1], p[2])
 
     def p_GEN_DECLARATION(self, p):
-        """GEN_DECLARATION : VARS TYPESIG TYPE
+        """GEN_DECLARATION : IDENTIFIER TYPESIG TYPE
                            |
         """
         # NOTE: Fixity declarations removed -- may not be needed for this
         #       project.
         if len(p) == 4:
-            p[0] = [TypeDeclaration(identifier, p[3]) for identifier in p[1]]
-
-    def p_VARS(self, p):
-        """VARS : VARS COMMA IDENTIFIER
-                | IDENTIFIER
-        """
-        if len(p) == 4:
-            p[0] = p[1] + [p[3]]
-        else:
-            p[0] = [p[1]]
+            p[0] = TypeDeclaration(p[1], p[3])
 
     def p_TYPE(self, p):
         """TYPE : ATYPE
@@ -199,6 +190,7 @@ class FunkyParser:
         """GUARD : INFIX_EXP
         """ # we only allow for BOOLEAN guards.
         p[0] = p[1]
+        p[0] = resolve_fixity(p[0])
 
     def p_EXP(self, p):
         """EXP : INFIX_EXP
@@ -255,7 +247,7 @@ class FunkyParser:
             p[0] = p[1]
 
     def p_AEXP(self, p):
-        """AEXP : IDENTIFIER
+        """AEXP : USED_VAR
                 | GCON
                 | LITERAL
                 | OPEN_PAREN EXP CLOSE_PAREN
@@ -264,7 +256,12 @@ class FunkyParser:
                 | OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE
         """
         if len(p) == 2:
-            p[0] = p[1]
+            if p[1] == ():
+                p[0] = PatternTuple(p[1])
+            elif p[1] == []:
+                p[0] = PatternTuple(p[1])
+            else:
+                p[0] = p[1]
         elif p[1] == "(":
             if len(p) == 4:
                 p[0] = p[2]
@@ -312,23 +309,24 @@ class FunkyParser:
             p[0] = Literal(-p[3])
 
     def p_APAT(self, p):
-        """APAT : IDENTIFIER
+        """APAT : PARAM
                 | GCON
                 | LITERAL
-                | WILDCARD
                 | OPEN_PAREN PAT CLOSE_PAREN
                 | OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN
                 | OPEN_SQUARE PAT_LIST CLOSE_SQUARE
         """
         if len(p) == 2:
-            p[0] = p[1]
-        elif len(p) == 4:
-            if type(p[2]) == Pattern:
-                p[0] = p[2]
+            if p[1] == ():
+                p[0] = PatternTuple(p[1])
+            elif p[1] == []:
+                p[0] = PatternTuple(p[1])
             else:
-                p[0] = PatternList(p[2])
+                p[0] = p[1]
+        elif len(p) == 4:
+            p[0] = p[2]
         else:
-            p[0] = PatternList((p[2], *p[4]))
+            p[0] = PatternTuple((p[2], *p[4].patterns))
 
     def p_GCON(self, p):
         """GCON : OPEN_PAREN CLOSE_PAREN
@@ -376,9 +374,10 @@ class FunkyParser:
                     | PAT
         """
         if len(p) == 4:
-            p[0] = p[1] + [p[3]]
+            p[0] = p[1]
+            p[0].patterns.append(p[3])
         else:
-            p[0] = [p[1]]
+            p[0] = PatternList([p[1]])
 
     def p_VARSYM(self, p):
         """VARSYM : PLUS
@@ -412,6 +411,14 @@ class FunkyParser:
         """
         p[0] = Literal(p[1])
 
+    def p_USED_VAR(self, p):
+        """USED_VAR : IDENTIFIER"""
+        p[0] = UsedVar(p[1])
+
+    def p_PARAM(self, p):
+        """PARAM : IDENTIFIER"""
+        p[0] = Parameter(p[1])
+    
     def p_error(self, p):
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
@@ -428,4 +435,6 @@ class FunkyParser:
         print()
 
         parsed = self.parser.parse(source, self.lexer)
+        print(parsed)
+        parsed.sanity_check()
         return parsed

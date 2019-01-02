@@ -11,3 +11,7 @@ class FunkySyntaxError(FunkyParsingError):
 class FunkyLexingError(FunkyParsingError):
     """Raised when the lexer fails to lex the source code."""
     pass
+
+class FunkySanityError(FunkyParsingError):
+    """Raised when the parser fails a sanity check -- i.e. duplicate vars."""
+    pass

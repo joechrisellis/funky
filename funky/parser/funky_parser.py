@@ -14,8 +14,6 @@ from funky.parser.ast import Module, ProgramBody, ImportStatement,             \
                              PatternList, Alternative, Lambda, Let, Match,     \
                              FunctionApplication, Literal, InfixExpression
 
-from funky.core.types import python_to_funky
-
 class FunkyParser:
 
     tokens      =  FunkyLexer.tokens
@@ -311,7 +309,7 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = Literal(-p[3], python_to_funky[type(p[3])])
+            p[0] = Literal(-p[3])
 
     def p_APAT(self, p):
         """APAT : IDENTIFIER
@@ -412,7 +410,7 @@ class FunkyParser:
                    | CHAR
                    | STRING
         """
-        p[0] = Literal(p[1], python_to_funky[type(p[1])])
+        p[0] = Literal(p[1])
 
     def p_error(self, p):
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))

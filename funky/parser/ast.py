@@ -1,3 +1,4 @@
+from funky.core.types import python_to_funky
 from funky.util import get_user_attributes
 
 class ASTNode:
@@ -225,9 +226,9 @@ class List(ASTNode):
 class Literal(ASTNode):
     """Any literal value. Has a value and a type."""
 
-    def __init__(self, value, typ):
+    def __init__(self, value):
         self.value  =  value
-        self.typ    =  typ
+        self.typ    =  python_to_funky[type(value)]
 
 class InfixExpression(ASTNode):
     """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --

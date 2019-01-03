@@ -65,7 +65,7 @@ Rule 53    AEXP -> OPEN_PAREN EXP CLOSE_PAREN
 Rule 54    AEXP -> OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN
 Rule 55    AEXP -> OPEN_SQUARE EXP CLOSE_SQUARE
 Rule 56    AEXP -> OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE
-Rule 57    ALTS -> ALTS ALT ENDSTATEMENT
+Rule 57    ALTS -> ALT ENDSTATEMENT ALTS
 Rule 58    ALTS -> ALT
 Rule 59    ALT -> PAT ARROW EXP
 Rule 60    ALT -> <empty>
@@ -2036,14 +2036,6 @@ state 81
     GREATER         reduce using rule 39 (EXP -> INFIX_EXP .)
     GEQ             reduce using rule 39 (EXP -> INFIX_EXP .)
     ELSE            reduce using rule 39 (EXP -> INFIX_EXP .)
-    OPEN_PAREN      reduce using rule 39 (EXP -> INFIX_EXP .)
-    OPEN_SQUARE     reduce using rule 39 (EXP -> INFIX_EXP .)
-    IDENTIFIER      reduce using rule 39 (EXP -> INFIX_EXP .)
-    FLOAT           reduce using rule 39 (EXP -> INFIX_EXP .)
-    INTEGER         reduce using rule 39 (EXP -> INFIX_EXP .)
-    BOOL            reduce using rule 39 (EXP -> INFIX_EXP .)
-    CHAR            reduce using rule 39 (EXP -> INFIX_EXP .)
-    STRING          reduce using rule 39 (EXP -> INFIX_EXP .)
 
 
 state 82
@@ -2086,14 +2078,6 @@ state 82
     CLOSE_SQUARE    reduce using rule 42 (INFIX_EXP -> LEXP .)
     PIPE            reduce using rule 42 (INFIX_EXP -> LEXP .)
     ELSE            reduce using rule 42 (INFIX_EXP -> LEXP .)
-    OPEN_PAREN      reduce using rule 42 (INFIX_EXP -> LEXP .)
-    OPEN_SQUARE     reduce using rule 42 (INFIX_EXP -> LEXP .)
-    IDENTIFIER      reduce using rule 42 (INFIX_EXP -> LEXP .)
-    FLOAT           reduce using rule 42 (INFIX_EXP -> LEXP .)
-    INTEGER         reduce using rule 42 (INFIX_EXP -> LEXP .)
-    BOOL            reduce using rule 42 (INFIX_EXP -> LEXP .)
-    CHAR            reduce using rule 42 (INFIX_EXP -> LEXP .)
-    STRING          reduce using rule 42 (INFIX_EXP -> LEXP .)
     BACKTICK        shift and go to state 48
     PLUS            shift and go to state 49
     MINUS           shift and go to state 50
@@ -2341,14 +2325,6 @@ state 88
     (98) LITERAL -> . CHAR
     (99) LITERAL -> . STRING
 
-  ! shift/reduce conflict for OPEN_PAREN resolved as shift
-  ! shift/reduce conflict for OPEN_SQUARE resolved as shift
-  ! shift/reduce conflict for IDENTIFIER resolved as shift
-  ! shift/reduce conflict for FLOAT resolved as shift
-  ! shift/reduce conflict for INTEGER resolved as shift
-  ! shift/reduce conflict for BOOL resolved as shift
-  ! shift/reduce conflict for CHAR resolved as shift
-  ! shift/reduce conflict for STRING resolved as shift
     BACKTICK        reduce using rule 47 (LEXP -> FEXP .)
     PLUS            reduce using rule 47 (LEXP -> FEXP .)
     MINUS           reduce using rule 47 (LEXP -> FEXP .)
@@ -2379,15 +2355,6 @@ state 88
     BOOL            shift and go to state 28
     CHAR            shift and go to state 29
     STRING          shift and go to state 30
-
-  ! OPEN_PAREN      [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! OPEN_SQUARE     [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! IDENTIFIER      [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! FLOAT           [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! INTEGER         [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! BOOL            [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! CHAR            [ reduce using rule 47 (LEXP -> FEXP .) ]
-  ! STRING          [ reduce using rule 47 (LEXP -> FEXP .) ]
 
     AEXP                           shift and go to state 127
     USED_VAR                       shift and go to state 90
@@ -3183,14 +3150,6 @@ state 121
     GREATER         reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
     GEQ             reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
     ELSE            reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    OPEN_PAREN      reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    OPEN_SQUARE     reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    IDENTIFIER      reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    FLOAT           reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    INTEGER         reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    BOOL            reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    CHAR            reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
-    STRING          reduce using rule 41 (INFIX_EXP -> MINUS INFIX_EXP .)
 
 
 state 122
@@ -3662,14 +3621,6 @@ state 145
     GREATER         reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     GEQ             reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     ELSE            reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    OPEN_PAREN      reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    OPEN_SQUARE     reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    IDENTIFIER      reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    FLOAT           reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    INTEGER         reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    BOOL            reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    CHAR            reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    STRING          reduce using rule 40 (INFIX_EXP -> LEXP OP INFIX_EXP .)
 
 
 state 146
@@ -4146,14 +4097,6 @@ state 163
     CLOSE_SQUARE    reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
     PIPE            reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
     ELSE            reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    OPEN_PAREN      reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    OPEN_SQUARE     reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    IDENTIFIER      reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    FLOAT           reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    INTEGER         reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    BOOL            reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    CHAR            reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
-    STRING          reduce using rule 44 (LEXP -> LET DECLARATIONS IN EXP .)
 
 
 state 164
@@ -4231,7 +4174,7 @@ state 166
 state 167
 
     (46) LEXP -> MATCH EXP OF OPEN_BRACE . ALTS CLOSE_BRACE
-    (57) ALTS -> . ALTS ALT ENDSTATEMENT
+    (57) ALTS -> . ALT ENDSTATEMENT ALTS
     (58) ALTS -> . ALT
     (59) ALT -> . PAT ARROW EXP
     (60) ALT -> .
@@ -4255,17 +4198,8 @@ state 167
     (98) LITERAL -> . CHAR
     (99) LITERAL -> . STRING
 
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for OPEN_PAREN resolved as shift
-  ! shift/reduce conflict for OPEN_SQUARE resolved as shift
-  ! shift/reduce conflict for IDENTIFIER resolved as shift
-  ! shift/reduce conflict for FLOAT resolved as shift
-  ! shift/reduce conflict for INTEGER resolved as shift
-  ! shift/reduce conflict for BOOL resolved as shift
-  ! shift/reduce conflict for CHAR resolved as shift
-  ! shift/reduce conflict for STRING resolved as shift
-    CLOSE_BRACE     reduce using rule 60 (ALT -> .)
     ENDSTATEMENT    reduce using rule 60 (ALT -> .)
+    CLOSE_BRACE     reduce using rule 60 (ALT -> .)
     MINUS           shift and go to state 21
     OPEN_PAREN      shift and go to state 38
     OPEN_SQUARE     shift and go to state 27
@@ -4275,16 +4209,6 @@ state 167
     BOOL            shift and go to state 28
     CHAR            shift and go to state 29
     STRING          shift and go to state 30
-
-  ! MINUS           [ reduce using rule 60 (ALT -> .) ]
-  ! OPEN_PAREN      [ reduce using rule 60 (ALT -> .) ]
-  ! OPEN_SQUARE     [ reduce using rule 60 (ALT -> .) ]
-  ! IDENTIFIER      [ reduce using rule 60 (ALT -> .) ]
-  ! FLOAT           [ reduce using rule 60 (ALT -> .) ]
-  ! INTEGER         [ reduce using rule 60 (ALT -> .) ]
-  ! BOOL            [ reduce using rule 60 (ALT -> .) ]
-  ! CHAR            [ reduce using rule 60 (ALT -> .) ]
-  ! STRING          [ reduce using rule 60 (ALT -> .) ]
 
     ALTS                           shift and go to state 174
     ALT                            shift and go to state 175
@@ -4348,14 +4272,6 @@ state 171
     CLOSE_SQUARE    reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
     PIPE            reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
     ELSE            reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    OPEN_PAREN      reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    OPEN_SQUARE     reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    IDENTIFIER      reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    FLOAT           reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    INTEGER         reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    BOOL            reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    CHAR            reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
-    STRING          reduce using rule 43 (LEXP -> LAMBDA APAT APATS ARROW EXP .)
 
 
 state 172
@@ -4421,64 +4337,17 @@ state 173
 state 174
 
     (46) LEXP -> MATCH EXP OF OPEN_BRACE ALTS . CLOSE_BRACE
-    (57) ALTS -> ALTS . ALT ENDSTATEMENT
-    (59) ALT -> . PAT ARROW EXP
-    (60) ALT -> .
-    (61) PAT -> . LPAT CONSTRUCTOR PAT
-    (62) PAT -> . LPAT
-    (63) LPAT -> . APAT
-    (64) LPAT -> . MINUS OPEN_PAREN INTEGER CLOSE_PAREN
-    (65) LPAT -> . MINUS OPEN_PAREN FLOAT CLOSE_PAREN
-    (66) APAT -> . PARAM
-    (67) APAT -> . GCON
-    (68) APAT -> . LITERAL
-    (69) APAT -> . OPEN_PAREN PAT CLOSE_PAREN
-    (70) APAT -> . OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN
-    (71) APAT -> . OPEN_SQUARE PAT_LIST CLOSE_SQUARE
-    (101) PARAM -> . IDENTIFIER
-    (72) GCON -> . OPEN_PAREN CLOSE_PAREN
-    (73) GCON -> . OPEN_SQUARE CLOSE_SQUARE
-    (95) LITERAL -> . FLOAT
-    (96) LITERAL -> . INTEGER
-    (97) LITERAL -> . BOOL
-    (98) LITERAL -> . CHAR
-    (99) LITERAL -> . STRING
 
     CLOSE_BRACE     shift and go to state 181
-    ENDSTATEMENT    reduce using rule 60 (ALT -> .)
-    MINUS           shift and go to state 21
-    OPEN_PAREN      shift and go to state 38
-    OPEN_SQUARE     shift and go to state 27
-    IDENTIFIER      shift and go to state 35
-    FLOAT           shift and go to state 23
-    INTEGER         shift and go to state 22
-    BOOL            shift and go to state 28
-    CHAR            shift and go to state 29
-    STRING          shift and go to state 30
 
-    ALT                            shift and go to state 182
-    PAT                            shift and go to state 176
-    LPAT                           shift and go to state 20
-    APAT                           shift and go to state 18
-    PARAM                          shift and go to state 24
-    GCON                           shift and go to state 25
-    LITERAL                        shift and go to state 26
 
 state 175
 
+    (57) ALTS -> ALT . ENDSTATEMENT ALTS
     (58) ALTS -> ALT .
 
+    ENDSTATEMENT    shift and go to state 182
     CLOSE_BRACE     reduce using rule 58 (ALTS -> ALT .)
-    MINUS           reduce using rule 58 (ALTS -> ALT .)
-    OPEN_PAREN      reduce using rule 58 (ALTS -> ALT .)
-    OPEN_SQUARE     reduce using rule 58 (ALTS -> ALT .)
-    IDENTIFIER      reduce using rule 58 (ALTS -> ALT .)
-    FLOAT           reduce using rule 58 (ALTS -> ALT .)
-    INTEGER         reduce using rule 58 (ALTS -> ALT .)
-    BOOL            reduce using rule 58 (ALTS -> ALT .)
-    CHAR            reduce using rule 58 (ALTS -> ALT .)
-    STRING          reduce using rule 58 (ALTS -> ALT .)
-    ENDSTATEMENT    reduce using rule 58 (ALTS -> ALT .)
 
 
 state 176
@@ -4639,14 +4508,6 @@ state 180
     CLOSE_SQUARE    reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
     PIPE            reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
     ELSE            reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    OPEN_PAREN      reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    OPEN_SQUARE     reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    IDENTIFIER      reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    FLOAT           reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    INTEGER         reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    BOOL            reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    CHAR            reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
-    STRING          reduce using rule 45 (LEXP -> IF EXP THEN EXP ELSE EXP .)
 
 
 state 181
@@ -4675,22 +4536,55 @@ state 181
     CLOSE_SQUARE    reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
     PIPE            reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
     ELSE            reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    OPEN_PAREN      reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    OPEN_SQUARE     reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    IDENTIFIER      reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    FLOAT           reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    INTEGER         reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    BOOL            reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    CHAR            reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    STRING          reduce using rule 46 (LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
 
 
 state 182
 
-    (57) ALTS -> ALTS ALT . ENDSTATEMENT
+    (57) ALTS -> ALT ENDSTATEMENT . ALTS
+    (57) ALTS -> . ALT ENDSTATEMENT ALTS
+    (58) ALTS -> . ALT
+    (59) ALT -> . PAT ARROW EXP
+    (60) ALT -> .
+    (61) PAT -> . LPAT CONSTRUCTOR PAT
+    (62) PAT -> . LPAT
+    (63) LPAT -> . APAT
+    (64) LPAT -> . MINUS OPEN_PAREN INTEGER CLOSE_PAREN
+    (65) LPAT -> . MINUS OPEN_PAREN FLOAT CLOSE_PAREN
+    (66) APAT -> . PARAM
+    (67) APAT -> . GCON
+    (68) APAT -> . LITERAL
+    (69) APAT -> . OPEN_PAREN PAT CLOSE_PAREN
+    (70) APAT -> . OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN
+    (71) APAT -> . OPEN_SQUARE PAT_LIST CLOSE_SQUARE
+    (101) PARAM -> . IDENTIFIER
+    (72) GCON -> . OPEN_PAREN CLOSE_PAREN
+    (73) GCON -> . OPEN_SQUARE CLOSE_SQUARE
+    (95) LITERAL -> . FLOAT
+    (96) LITERAL -> . INTEGER
+    (97) LITERAL -> . BOOL
+    (98) LITERAL -> . CHAR
+    (99) LITERAL -> . STRING
 
-    ENDSTATEMENT    shift and go to state 185
+    ENDSTATEMENT    reduce using rule 60 (ALT -> .)
+    CLOSE_BRACE     reduce using rule 60 (ALT -> .)
+    MINUS           shift and go to state 21
+    OPEN_PAREN      shift and go to state 38
+    OPEN_SQUARE     shift and go to state 27
+    IDENTIFIER      shift and go to state 35
+    FLOAT           shift and go to state 23
+    INTEGER         shift and go to state 22
+    BOOL            shift and go to state 28
+    CHAR            shift and go to state 29
+    STRING          shift and go to state 30
 
+    ALT                            shift and go to state 175
+    ALTS                           shift and go to state 185
+    PAT                            shift and go to state 176
+    LPAT                           shift and go to state 20
+    APAT                           shift and go to state 18
+    PARAM                          shift and go to state 24
+    GCON                           shift and go to state 25
+    LITERAL                        shift and go to state 26
 
 state 183
 
@@ -4756,36 +4650,17 @@ state 184
 
 state 185
 
-    (57) ALTS -> ALTS ALT ENDSTATEMENT .
+    (57) ALTS -> ALT ENDSTATEMENT ALTS .
 
-    CLOSE_BRACE     reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    MINUS           reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    OPEN_PAREN      reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    OPEN_SQUARE     reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    IDENTIFIER      reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    FLOAT           reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    INTEGER         reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    BOOL            reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    CHAR            reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    STRING          reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
-    ENDSTATEMENT    reduce using rule 57 (ALTS -> ALTS ALT ENDSTATEMENT .)
+    CLOSE_BRACE     reduce using rule 57 (ALTS -> ALT ENDSTATEMENT ALTS .)
 
 
 state 186
 
     (59) ALT -> PAT ARROW EXP .
 
-    CLOSE_BRACE     reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    MINUS           reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    OPEN_PAREN      reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    OPEN_SQUARE     reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    IDENTIFIER      reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    FLOAT           reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    INTEGER         reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    BOOL            reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    CHAR            reduce using rule 59 (ALT -> PAT ARROW EXP .)
-    STRING          reduce using rule 59 (ALT -> PAT ARROW EXP .)
     ENDSTATEMENT    reduce using rule 59 (ALT -> PAT ARROW EXP .)
+    CLOSE_BRACE     reduce using rule 59 (ALT -> PAT ARROW EXP .)
 
 WARNING: 
 WARNING: Conflicts:
@@ -4801,22 +4676,5 @@ WARNING: shift/reduce conflict for LESS in state 82 resolved as shift
 WARNING: shift/reduce conflict for LEQ in state 82 resolved as shift
 WARNING: shift/reduce conflict for GREATER in state 82 resolved as shift
 WARNING: shift/reduce conflict for GEQ in state 82 resolved as shift
-WARNING: shift/reduce conflict for OPEN_PAREN in state 88 resolved as shift
-WARNING: shift/reduce conflict for OPEN_SQUARE in state 88 resolved as shift
-WARNING: shift/reduce conflict for IDENTIFIER in state 88 resolved as shift
-WARNING: shift/reduce conflict for FLOAT in state 88 resolved as shift
-WARNING: shift/reduce conflict for INTEGER in state 88 resolved as shift
-WARNING: shift/reduce conflict for BOOL in state 88 resolved as shift
-WARNING: shift/reduce conflict for CHAR in state 88 resolved as shift
-WARNING: shift/reduce conflict for STRING in state 88 resolved as shift
 WARNING: shift/reduce conflict for CLOSE_PAREN in state 114 resolved as shift
 WARNING: shift/reduce conflict for CLOSE_BRACE in state 124 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 167 resolved as shift
-WARNING: shift/reduce conflict for OPEN_PAREN in state 167 resolved as shift
-WARNING: shift/reduce conflict for OPEN_SQUARE in state 167 resolved as shift
-WARNING: shift/reduce conflict for IDENTIFIER in state 167 resolved as shift
-WARNING: shift/reduce conflict for FLOAT in state 167 resolved as shift
-WARNING: shift/reduce conflict for INTEGER in state 167 resolved as shift
-WARNING: shift/reduce conflict for BOOL in state 167 resolved as shift
-WARNING: shift/reduce conflict for CHAR in state 167 resolved as shift
-WARNING: shift/reduce conflict for STRING in state 167 resolved as shift

@@ -276,11 +276,11 @@ class FunkyParser:
                 p[0] = List([p[2], *p[4]])
 
     def p_ALTS(self, p):
-        """ALTS : ALTS ALT ENDSTATEMENT
+        """ALTS : ALT ENDSTATEMENT ALTS
                 | ALT
         """
         if len(p) == 4:
-            p[0] = p[1] + p[2]
+            p[0] = p[1] + p[3]
         else:
             p[0] = p[1]
 
@@ -288,7 +288,7 @@ class FunkyParser:
         """ALT : PAT ARROW EXP
                |
         """
-        p[0] = [Alternative(p[1], p[2])] if len(p) == 4 else []
+        p[0] = [Alternative(p[1], p[3])] if len(p) == 4 else []
 
     def p_PAT(self, p):
         """PAT : LPAT CONSTRUCTOR PAT
@@ -297,7 +297,7 @@ class FunkyParser:
         if len(p) == 4:
             p[0] = ConstructorChain(p[1], p[3])
         else:
-            p[0] = Pattern(p[1])
+            p[0] = p[1]
 
     def p_LPAT(self, p):
         """LPAT : APAT
@@ -307,7 +307,7 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         else:
-            p[0] = Literal(-p[3])
+            p[0] = Pattern(Literal(-p[3]))
 
     def p_APAT(self, p):
         """APAT : PARAM
@@ -321,9 +321,9 @@ class FunkyParser:
             if p[1] == ():
                 p[0] = PatternTuple(p[1])
             elif p[1] == []:
-                p[0] = PatternTuple(p[1])
+                p[0] = PatternList(p[1])
             else:
-                p[0] = p[1]
+                p[0] = Pattern(p[1])
         elif len(p) == 4:
             p[0] = p[2]
         else:

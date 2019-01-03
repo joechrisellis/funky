@@ -1,19 +1,5 @@
 module stdlib where
 
-    newtype Circle = Float
-    
-    otherwise = True
-    in_america = False
-    pi | in_america = 3.14
-       | otherwise  = 0
-
-    area  ::  Circle  ->  Float
-    circ  ::  Circle  ->  Float
-    area r = pi * (r ** 2)
-    circ r = 2 * pi * r
-
-    diameter  ::  Circle  ->  Float
-    radius    ::  Circle  ->  Float
-    diameter r = r * 2
-    radius   d = k
-                 where k = d / 2
+    tail (x : xs) = tail xs
+    tail (x : []) = x
+    tail [x] = x

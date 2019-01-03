@@ -41,6 +41,8 @@ def compile_to_c(source):
         err("Error: \"{}\"".format(e.args[0]))
         exit(GENERIC_PARSING_ERROR)
 
+    print("Parsing completed successfully.")
+
     # TODO: semantic analysis
     pass
 

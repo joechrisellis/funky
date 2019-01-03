@@ -35,6 +35,8 @@ class FunkyParser:
         else:
             imports, top_declarations = [], p[2]
 
+        imports = [i for i in imports if i]
+        top_declarations = [t for t in top_declarations if t]
         p[0] = ProgramBody(imports, top_declarations)
 
     def p_IMPORT_DECLARATIONS(self, p):
@@ -278,16 +280,15 @@ class FunkyParser:
                 | ALT
         """
         if len(p) == 4:
-            p[0] = p[1] + [p[2]]
+            p[0] = p[1] + p[2]
         else:
-            p[0] = [p[1]]
+            p[0] = p[1]
 
     def p_ALT(self, p):
         """ALT : PAT ARROW EXP
                |
         """
-        if len(p) == 4:
-            p[0] = Alternative(p[1], p[2])
+        p[0] = [Alternative(p[1], p[2])] if len(p) == 4 else []
 
     def p_PAT(self, p):
         """PAT : LPAT CONSTRUCTOR PAT

@@ -8,6 +8,11 @@ class ASTNode:
     """
 
     def sanity_check(self, scope):
+        """Must be implemented by subclasses -- checks that, in the context of
+        this node's position, the node is 'sane' -- i.e. all referenced
+        variables are defined, functions have a consistent number of arguments,
+        etc.
+        """
         raise NotImplementedError
 
     def __repr__(self):
@@ -389,6 +394,8 @@ class Parameter(ASTNode):
         self.name  =  name
     
     def sanity_check(self, scope):
+        if self.name in scope:
+            raise FunkySanityError("Duplicate identifier '{}'.".format(self.name))
         scope = scope + [self.name]
         return scope
 
@@ -402,7 +409,7 @@ class UsedVar(ASTNode):
     
     def sanity_check(self, scope):
         if self.name not in scope:
-            raise FunkySanityError("Referenced item '{}' expected to " \
+            raise FunkySanityError("Referenced item '{}' does not " \
                                    "exist.".format(self.name))
         return scope
 

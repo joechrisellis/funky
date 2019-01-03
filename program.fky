@@ -1,27 +1,19 @@
 module stdlib where
+
+    newtype Circle = Float
     
-    newtype A = Integer
-    newtype B = Integer
-
-    newtype String = [Char]
-
-    otherwise :: Bool
     otherwise = True
+    in_america = False
+    pi | in_america = 3.14
+       | otherwise  = 0
 
-    # Tuple operations
-    fst :: (A, B) -> A
-    snd :: (A, B) -> B
+    area  ::  Circle  ->  Float
+    circ  ::  Circle  ->  Float
+    area r = pi * (r ** 2)
+    circ r = 2 * pi * r
 
-    fst (x, _) = x
-    snd (_, x) = x
-
-    # List operations
-    head :: [A] -> A
-    tail :: [A] -> A
-
-    head (x : xs) = x
-    tail (x : xs) | xs == []  = x
-                  | otherwise = tail xs
-
-    a `pow` b = a ** b
-    sqrt x = pow x 0.5
+    diameter  ::  Circle  ->  Float
+    radius    ::  Circle  ->  Float
+    diameter r = r * 2
+    radius   d = k
+                 where k = d / 2

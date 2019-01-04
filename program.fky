@@ -1,6 +1,0 @@
-module stdlib where
-
-    head [x] = x
-    head (x : xs) = x
-    head [] = []
-    head _ = 12

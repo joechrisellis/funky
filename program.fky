@@ -1,5 +1,6 @@
 module stdlib where
 
-    tail (x : xs) = tail xs
-    tail (x : []) = x
-    tail [x] = x
+    head [x] = x
+    head (x : xs) = x
+    head [] = []
+    head _ = 12

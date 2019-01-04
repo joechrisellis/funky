@@ -131,7 +131,7 @@ class FunkyParser:
             if type(p[2]) == list:
                 p[0] = TupleType(tuple(p[2]))
             else:
-                p[0] = Type(p[2])
+                p[0] = p[2]
         else:
             p[0] = ListType(p[2])
 

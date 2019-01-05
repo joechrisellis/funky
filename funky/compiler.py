@@ -3,10 +3,10 @@ import sys
 
 from funky.exitcode import *
 
-from funky.parser import FunkyLexingError, FunkySyntaxError, FunkySanityError, \
-                         FunkyParsingError
-from funky.parser.funky_parser import FunkyParser
-from funky.parser.sanity import do_sanity_check
+from funky.frontend import FunkyLexingError, FunkySyntaxError, \
+                           FunkySanityError, FunkyParsingError
+from funky.frontend.funky_parser import FunkyParser
+from funky.frontend.sanity import do_sanity_check
 
 from funky.util import err, get_user_attributes
 import funky

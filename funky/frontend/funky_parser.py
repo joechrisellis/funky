@@ -1,11 +1,11 @@
 import ply.yacc as yacc
 
 from funky.util import err
-from funky.parser.funky_lexer import FunkyLexer, IndentationLexer
-from funky.parser import FunkySyntaxError
-from funky.parser.fixity import resolve_fixity
+from funky.frontend.funky_lexer import FunkyLexer, IndentationLexer
+from funky.frontend import FunkySyntaxError
+from funky.frontend.fixity import resolve_fixity
 
-from funky.parser.ast import Module, ProgramBody, ImportStatement,             \
+from funky.frontend.ast import Module, ProgramBody, ImportStatement,           \
                              NewTypeStatement, TypeDeclaration, Type,          \
                              TupleType, ListType, FunctionType,                \
                              FunctionDefinition, FunctionLHS, FunctionRHS,     \

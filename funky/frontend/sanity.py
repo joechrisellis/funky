@@ -1,5 +1,5 @@
 from funky.util import add_method
-from funky.parser.ast import *
+from funky.frontend.ast import *
 
 class Scope:
     """A scope maps identifiers to arbitrary items."""

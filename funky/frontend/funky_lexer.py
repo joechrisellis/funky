@@ -11,7 +11,7 @@ that we handle this is very similar to the 'layout' rule in Haskell.
 import ply.lex as lex
 
 from funky.util import err
-from funky.parser import FunkyLexingError
+from funky.frontend import FunkyLexingError
 
 class FunkyLexer:
     """PLY lexer for funky. This performs the first stage of lexical analysis

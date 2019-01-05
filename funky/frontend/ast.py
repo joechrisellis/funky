@@ -1,5 +1,5 @@
 from funky.core.types import python_to_funky, primitives
-from funky.parser import FunkySanityError
+from funky.frontend import FunkySanityError
 from funky.util import get_user_attributes
 
 class ASTNode:

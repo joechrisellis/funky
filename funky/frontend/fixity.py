@@ -3,9 +3,9 @@ resolution algorithm, described at:
     https://prime.haskell.org/wiki/FixityResolution
 """
 
-from funky.parser import FunkySyntaxError
-from funky.parser.ast import BinOpApplication, UnaryOpApplication
-from funky.parser.funky_lexer import FunkyLexer
+from funky.frontend import FunkySyntaxError
+from funky.frontend.ast import BinOpApplication, UnaryOpApplication
+from funky.frontend.funky_lexer import FunkyLexer
 
 def _rmb(s):
     """Removes backslashes from a string."""

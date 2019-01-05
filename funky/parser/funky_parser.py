@@ -435,7 +435,7 @@ class FunkyParser:
             print(tok.value, end=" ")
         print()
 
-        parsed = self.parser.parse(source, self.lexer)
-        print(parsed)
-        parsed.sanity_check()
-        return parsed
+        ast = self.parser.parse(source, self.lexer)
+        ast.parsed = True
+        ast.fixities_resolved = True
+        return ast

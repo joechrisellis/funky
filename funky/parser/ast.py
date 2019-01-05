@@ -2,70 +2,19 @@ from funky.core.types import python_to_funky, primitives
 from funky.parser import FunkySanityError
 from funky.util import get_user_attributes
 
-class Scope:
-    """A scope maps identifiers to arbitrary items."""
-
-    def __init__(self, parent=None):
-        self.local = {}
-        self.parent = parent
-
-    def search(self, item):
-        """Searches the local scope for the item.
-        
-        Input:
-            item -- the item in question
-
-        Returns:
-            the corresponding dict item if found, None otherwise
-        """
-        return self.local.get(item)
-
-    def rsearch(self, item):
-        """Recursively searches the scope for an item. First checks if the item
-        is in this scope, then recursively searches the parent scope to see if
-        it is defined at a higher level.
-
-        Input:
-            item -- the item in question
-
-        Output:
-            the corresponding dict item if found, None otherwise
-        """
-        if item in self.local:
-            return self.local[item]
-        elif self.parent:
-            return self.parent.rsearch(item)
-        else:
-            return None
-    
-    def __getitem__(self, key):
-        return self.rsearch(key)
-
-    def __setitem__(self, key, value):
-        self.local[key] = value
-
-    def __contains__(self, item):
-        """A scope 'contains' an item (in other words, that item is defined)
-        if it can be found with a recursive search.
-
-        Input:
-            item -- the item in question
-
-        Returns:
-            True if the item is defined in the scope, False otherwise
-        """
-        return self.rsearch(item) is not None
-
-    def __repr__(self):
-        if self.parent:
-            return "({}, parent={})".format(self.local, self.parent)
-        else:
-            return "({})".format(self.local)
-
 class ASTNode:
     """Superclass for all abstract syntax tree nodes. Provides a __repr__
     function which allows the nodes to be printed nicely.
     """
+
+    def __init__(self):
+        # These booleans represent the operations that have been performed on
+        # the parse tree thus far. They are used to ensure that we don't
+        # perform the stages in the incorrect order, which could give undefined
+        # results.
+        self.parsed             =  False
+        self.fixities_resolved  =  False
+        self.sanity_checks      =  False
 
     def sanity_check(self, scope):
         """Must be implemented by subclasses -- checks that, in the context of
@@ -92,9 +41,6 @@ class Module(ASTNode):
         self.module_id  =  module_id
         self.body       =  body
 
-    def sanity_check(self, scope=Scope()):
-        self.body.sanity_check(scope)
-
 class ProgramBody(ASTNode):
     """Node representing the body of a program -- this consists of zero or more
     import statements, followed by one or more top-level definitions.
@@ -104,13 +50,6 @@ class ProgramBody(ASTNode):
         self.import_statements      =  import_statements
         self.toplevel_declarations  =  toplevel_declarations
 
-    def sanity_check(self, scope):
-        for decl in self.import_statements:
-            decl.sanity_check(scope)
-
-        for decl in self.toplevel_declarations:
-            decl.sanity_check(scope)
-
 class ImportStatement(ASTNode):
     """Node representing an import statement -- an import statement includes
     the name of the module to import and (optionally) an alias.
@@ -118,10 +57,6 @@ class ImportStatement(ASTNode):
 
     def __init__(self, module_id):
         self.module_id  =  module_id
-
-    def sanity_check(self, scope):
-        # TODO: import all variables from the module into the scope
-        pass
 
 class NewTypeStatement(ASTNode):
     """Node representing a type alias. Consists of a new identifier and an
@@ -133,13 +68,6 @@ class NewTypeStatement(ASTNode):
         self.identifier  =  identifier
         self.typ         =  typ
 
-    def sanity_check(self, scope):
-        if self.identifier in scope or self.identifier in primitives:
-            raise FunkySanityError("Duplicate type '{}'.".format(self.identifier))
-        self.typ.sanity_check(scope)
-
-        scope[self.identifier] = True
-
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.
         'f :: Integer -> Integer' becomes TypeDeclaration('f', ...)
@@ -149,22 +77,11 @@ class TypeDeclaration(ASTNode):
         self.identifier  =  identifier
         self.typ         =  typ
 
-    def sanity_check(self, scope):
-        # We do not add the identifier to the scope -- simply defining the type
-        # of a variable is not enough to say that it can be used. We handle this
-        # further in type checking. We only sanity check the type definition
-        # here.
-        self.typ.sanity_check(scope)
-
 class Type(ASTNode):
     """A type -- e.g. Integer."""
 
     def __init__(self, type_name):
         self.type_name  =  type_name
-
-    def sanity_check(self, scope):
-        if self.type_name not in scope and self.type_name not in primitives:
-            raise FunkySanityError("Undefined type '{}'.".format(self.type_name))
 
 class TupleType(ASTNode):
     """A tuple-type -- e.g. (Integer, Integer)."""
@@ -173,18 +90,11 @@ class TupleType(ASTNode):
         self.types  =  types
         self.arity  =  len(types)
 
-    def sanity_check(self, scope):
-        for typ in self.types:
-            typ.sanity_check(scope)
-
 class ListType(ASTNode):
     """A list-type --  e.g. [Integer]."""
 
     def __init__(self, typ):
         self.typ  =  typ
-
-    def sanity_check(self, scope):
-        self.typ.sanity_check(scope)
 
 class FunctionType(ASTNode):
     """A function type -- e.g. [Integer] -> (Integer -> Integer) -> [Integer]"""
@@ -192,10 +102,6 @@ class FunctionType(ASTNode):
     def __init__(self, input_type, output_type=None):
         self.input_type   =  input_type
         self.output_type  =  output_type
-
-    def sanity_check(self, scope):
-        self.input_type.sanity_check(scope)
-        self.output_type.sanity_check(scope)
 
 class FunctionDefinition(ASTNode):
     """A function definition -- functions have a left hand side and a right
@@ -207,20 +113,6 @@ class FunctionDefinition(ASTNode):
         self.lhs  =  lhs
         self.rhs  =  rhs
 
-    def sanity_check(self, scope):
-        tmp_scope = Scope(parent=scope)
-        self.lhs.sanity_check(tmp_scope)
-
-        if self.lhs.identifier in scope.local:
-            scope[self.lhs.identifier].append(self.lhs.get_parameter_signature())
-        else:
-            scope[self.lhs.identifier] = [self.lhs.get_parameter_signature()]
-
-        tmp_scope2 = Scope(parent=tmp_scope)
-        self.rhs.sanity_check(tmp_scope2)
-
-        print(tmp_scope2)
-
 class FunctionLHS(ASTNode):
     """Function left-hand-sides consist of an identifier for the function and a
     list of parameters.
@@ -230,21 +122,6 @@ class FunctionLHS(ASTNode):
         self.identifier  =  identifier
         self.parameters  =  parameters
         self.arity       =  len(parameters)
-
-    def sanity_check(self, scope):
-        if self.identifier in scope.parent.local:
-            sigs = scope[self.identifier]
-            for sig in sigs:
-                if sig == self.get_parameter_signature():
-                    raise FunkySanityError("Duplicate definition of " \
-                                           "'{}'.".format(self.identifier))
-                elif sig[0] != self.arity:
-                    raise FunkySanityError("Definition of '{}' has different " \
-                                           "number of parameters than previous " \
-                                           "definition.".format(self.identifier))
-
-        for param in self.parameters:
-            param.sanity_check(scope)
 
     def get_parameter_signature(self):
         """Multiple definitions for the LHS can exist for implicit pattern
@@ -271,13 +148,6 @@ class FunctionRHS(ASTNode):
         self.expressions   =  expressions
         self.declarations  =  declarations
 
-    def sanity_check(self, scope):
-        for decl in self.declarations:
-            decl.sanity_check(scope)
-
-        for exp in self.expressions:
-            exp.sanity_check(scope)
-
 class GuardedExpression(ASTNode):
     """A guarded expression is a feature of function right-hand-sides. It is an
     expression which should only be evaluated when one or more of its guard
@@ -289,12 +159,6 @@ class GuardedExpression(ASTNode):
         self.guard_conditions  =  guard_conditions
         self.expression        =  expression
 
-    def sanity_check(self, scope):
-        for cond in self.guard_conditions:
-            cond.sanity_check(scope)
-
-        self.expression.sanity_check(scope)
-
 class PatternDefinition(ASTNode):
     """Definition of a pattern -- i.e. pi = 3.14."""
 
@@ -302,20 +166,12 @@ class PatternDefinition(ASTNode):
         self.pattern     =  pattern
         self.expression  =  expression
 
-    def sanity_check(self, scope):
-        self.pattern.sanity_check(scope)
-        self.expression.sanity_check(scope)
-
 class ConstructorChain(ASTNode):
     """A chain of list constructor calls. I.e. x : xs : []."""
 
     def __init__(self, head, tail):
         self.head = head
         self.tail = tail
-
-    def sanity_check(self, scope):
-        self.head.sanity_check(scope)
-        self.tail.sanity_check(scope)
 
     def get_pattern_signature(self):
         if type(self.head) == Literal:
@@ -332,9 +188,6 @@ class Pattern(ASTNode):
     def __init__(self, pat):
         self.pat  =  pat
 
-    def sanity_check(self, scope):
-        self.pat.sanity_check(scope)
-
     def get_pattern_signature(self):
         if type(self.pat) == Literal:
             return self.pat.value
@@ -349,10 +202,6 @@ class PatternTuple(ASTNode):
     def __init__(self, patterns):
         self.patterns = patterns
 
-    def sanity_check(self, scope):
-        for pat in self.patterns:
-            pat.sanity_check(scope)
-
     def get_pattern_signature(self):
         return tuple([p.get_pattern_signature() for p in self.patterns])
 
@@ -361,10 +210,6 @@ class PatternList(ASTNode):
 
     def __init__(self, patterns):
         self.patterns  =  patterns
-
-    def sanity_check(self, scope):
-        for pat in self.patterns:
-            pat.sanity_check(scope)
 
     def get_pattern_signature(self):
         return [p.get_pattern_signature() for p in self.patterns]
@@ -376,23 +221,12 @@ class Alternative(ASTNode):
         self.pattern     =  pattern
         self.expression  =  expression
 
-    def sanity_check(self, scope):
-        self.pattern.sanity_check(scope)
-        self.expression.sanity_check(scope)
-
 class Lambda(ASTNode):
     """A lambda declaration -- e.g. lambda n -> n + 1."""
 
     def __init__(self, parameters, expression):
         self.parameters  =  parameters
         self.expression  =  expression
-
-    def sanity_check(self, scope):
-        tmp_scope = Scope(parent=scope)
-        for p in self.parameters:
-            p.sanity_check(tmp_scope)
-        print(tmp_scope)
-        self.expression.sanity_check(tmp_scope)
 
 class Let(ASTNode):
     """A let statement -- we can set identifiers to declarations only for a
@@ -402,13 +236,6 @@ class Let(ASTNode):
     def __init__(self, declarations, expression):
         self.declarations  =  declarations
         self.expression    =  expression
-
-    def sanity_check(self, scope):
-        tmp_scope = Scope(parent=scope)
-        for decl in self.declarations:
-            decl.sanity_check(tmp_scope)
-
-        self.expression.sanity_check(tmp_scope)
 
 class If(ASTNode):
     """An if statement. If 'expression' evaluates to 'true', the 'then'
@@ -420,11 +247,6 @@ class If(ASTNode):
         self.then        =  then
         self.otherwise   =  otherwise
 
-    def sanity_check(self, scope):
-        self.expression.sanity_check(scope)
-        self.then.sanity_check(scope)
-        self.otherwise.sanity_check(scope)
-
 class Match(ASTNode):
     """A match statement -- like a switch statement that can be used for
     pattern matching.
@@ -433,11 +255,6 @@ class Match(ASTNode):
     def __init__(self, expression, alternatives):
         self.expression    =  expression
         self.alternatives  =  alternatives
-
-    def sanity_check(self, scope):
-        self.expression.sanity_check(scope)
-        for alternative in self.alternatives:
-            alternative.sanity_check(scope)
 
 class FunctionApplication(ASTNode):
     """Application of a function to an expression. Note that the expression may
@@ -449,10 +266,6 @@ class FunctionApplication(ASTNode):
         self.func        =  func
         self.expression  =  expression
 
-    def sanity_check(self, scope):
-        self.func.sanity_check(scope)
-        self.expression.sanity_check(scope)
-
 class Tuple(ASTNode):
     """A tuple of expressions. E.g. (1, 2, 3)."""
 
@@ -460,32 +273,17 @@ class Tuple(ASTNode):
         self.items  =  items
         self.arity  =  len(items)
 
-    def sanity_check(self, scope):
-        for item in self.items:
-            item.sanity_check(scope)
-
 class List(ASTNode):
     """A list of expressions. E.g. [1, 2, 3]."""
 
     def __init__(self, items):
         self.items  =  items
 
-    def sanity_check(self, scope):
-        for item in self.items:
-            item.sanity_check(scope)
-
 class Parameter(ASTNode):
     """A parameter passed to a function."""
 
     def __init__(self, name):
         self.name  =  name
-
-    def sanity_check(self, scope):
-        if self.name in scope.local and \
-           self.name != "_": # _ is the special wildcard variable
-            raise FunkySanityError("Duplicate definition of parameter " \
-                                   "'{}'.".format(self.name))
-        scope[self.name] = True
 
 class UsedVar(ASTNode):
     """An object used in some context -- it should exist by the time that it is
@@ -495,21 +293,12 @@ class UsedVar(ASTNode):
     def __init__(self, name):
         self.name  =  name
 
-    def sanity_check(self, scope):
-        if self.name not in scope:
-            raise FunkySanityError("Referenced item '{}' does not " \
-                                   "exist.".format(self.name))
-
 class Literal(ASTNode):
     """Any literal value. Has a value and a type."""
 
     def __init__(self, value):
         self.value  =  value
         self.typ    =  python_to_funky[type(value)]
-
-    def sanity_check(self, scope):
-         # literals are always 'sane'. Nothing to do here.
-         pass
 
 class InfixExpression(ASTNode):
     """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --
@@ -520,9 +309,6 @@ class InfixExpression(ASTNode):
     def __init__(self, tokens):
         self.tokens = tokens
 
-    # we do not implement sanity checking here -- it should be performed AFTER
-    # fixity resolution.
-
 class BinOpApplication(ASTNode):
     """A binary operator applied to two operands."""
 
@@ -531,25 +317,9 @@ class BinOpApplication(ASTNode):
         self.operator = operator
         self.operand2 = operand2
 
-    def sanity_check(self, scope):
-        if type(self.operand1) == str:
-            if self.operand1 not in scope:
-                raise FunkySanityError("Variable '{}' not defined.".format(self.operand1))
-        else:
-            self.operand1.sanity_check(scope)
-
-        if type(self.operand2) == str:
-            if self.operand2 not in scope:
-                raise FunkySanityError("Variable '{}' not defined.".format(self.operand1))
-        else:
-            self.operand2.sanity_check(scope)
-
 class UnaryOpApplication(ASTNode):
     """A unary operator applied to a single operand."""
 
     def __init__(self, operator, operand):
         self.operator = operator
         self.operand = operand
-
-    def sanity_check(self, scope):
-        self.operand.sanity_check(scope)

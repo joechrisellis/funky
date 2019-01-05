@@ -12,6 +12,8 @@ class FunkyLexingError(FunkyParsingError):
     """Raised when the lexer fails to lex the source code."""
     pass
 
-class FunkySanityError(FunkyParsingError):
-    """Raised when the parser fails a sanity check -- i.e. duplicate vars."""
+class FunkyRenamingError(FunkyParsingError):
+    """Raised when the compiler fails to rename your code -- i.e. duplicate
+    function definitions.
+    """
     pass

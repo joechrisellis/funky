@@ -1,5 +1,19 @@
-from funky.core.types import python_to_funky, primitives
-from funky.frontend import FunkySanityError
+"""Module containing classes used to represent the abstract syntax tree we get
+from parsing the source code. This abstract syntax tree will have the following
+operations performed on it:
+
+* Fixity resolution, whereby infix expressions are 'expanded' to properly
+  encode associativity and order of operations.
+* Renaming, whereby we replace all variable identifiers with machine-given
+  names. This process also involves 'sanity checking' the AST -- i.e. making
+  sure that duplicate definitions do not exist.
+
+This tree is then 'desugared', resulting in a 'core tree' suitable for
+translation.
+"""
+
+from funky.corelang.types import python_to_funky, primitives
+from funky.frontend import FunkyRenamingError
 from funky.util import get_user_attributes
 
 class ASTNode:
@@ -14,15 +28,8 @@ class ASTNode:
         # results.
         self.parsed             =  False
         self.fixities_resolved  =  False
-        self.sanity_checks      =  False
-
-    def sanity_check(self, scope):
-        """Must be implemented by subclasses -- checks that, in the context of
-        this node's position, the node is 'sane' -- i.e. all referenced
-        variables are defined, functions have a consistent number of arguments,
-        etc.
-        """
-        raise NotImplementedError
+        self.renamed            =  False
+        self.desugared          =  False
 
     def __repr__(self):
         """Recursively outputs the node in the format:
@@ -155,9 +162,9 @@ class GuardedExpression(ASTNode):
     correspond to a particular expression.
     """
 
-    def __init__(self, guard_conditions, expression):
-        self.guard_conditions  =  guard_conditions
-        self.expression        =  expression
+    def __init__(self, guard_condition, expression):
+        self.guard_condition  =  guard_condition
+        self.expression       =  expression
 
 class PatternDefinition(ASTNode):
     """Definition of a pattern -- i.e. pi = 3.14."""
@@ -287,7 +294,7 @@ class Parameter(ASTNode):
 
 class UsedVar(ASTNode):
     """An object used in some context -- it should exist by the time that it is
-    used, otherwise we raise a sanity error.
+    used, otherwise we raise a renaming error.
     """
 
     def __init__(self, name):

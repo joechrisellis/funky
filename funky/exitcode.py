@@ -3,5 +3,5 @@
 SUCCESS                =  0
 LEXING_ERROR           =  1
 SYNTAX_ERROR           =  2
-SANITY_ERROR           =  3
+RENAMING_ERROR         =  3
 GENERIC_PARSING_ERROR  =  4

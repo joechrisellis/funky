@@ -5,15 +5,7 @@ from funky.frontend.funky_lexer import FunkyLexer, IndentationLexer
 from funky.frontend import FunkySyntaxError
 from funky.frontend.fixity import resolve_fixity
 
-from funky.frontend.ast import Module, ProgramBody, ImportStatement,           \
-                             NewTypeStatement, TypeDeclaration, Type,          \
-                             TupleType, ListType, FunctionType,                \
-                             FunctionDefinition, FunctionLHS, FunctionRHS,     \
-                             GuardedExpression, PatternDefinition,             \
-                             ConstructorChain, Pattern, PatternTuple,          \
-                             PatternList, Alternative, Lambda, Let, Match,     \
-                             FunctionApplication, Tuple, List, Literal,        \
-                             Parameter, UsedVar, InfixExpression
+from funky.frontend.sourcetree import *
 
 class FunkyParser:
 
@@ -175,18 +167,9 @@ class FunkyParser:
             p[0] = [GuardedExpression(p[1], p[3])] + p[4]
 
     def p_GUARDS(self, p):
-        """GUARDS : PIPE GUARD_LIST
+        """GUARDS : PIPE GUARD
         """
         p[0] = p[2]
-
-    def p_GUARD_LIST(self, p):
-        """GUARD_LIST : GUARD_LIST COMMA GUARD
-                      | GUARD
-        """
-        if len(p) == 4:
-            p[0] = p[1] + [p[3]]
-        else:
-            p[0] = [p[1]]
 
     def p_GUARD(self, p):
         """GUARD : INFIX_EXP

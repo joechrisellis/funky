@@ -1,12 +1,4 @@
 module test where
 
-    otherwise :: Bool
-
-    filter f [] = []
-    filter f (x : xs) | f x       = [x] + filter xs
-                      | otherwise = filter xs
-
-    quicksort [] = []
-    quicksort (x : xs) = quicksort (filter (lambda y -> x < y) xs) 
-                         + [x]
-                         + quicksort (filter (lambda y -> x >= y) xs)
+    f x y | x == y = True
+          | False  = False

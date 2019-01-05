@@ -4,7 +4,7 @@ resolution algorithm, described at:
 """
 
 from funky.frontend import FunkySyntaxError
-from funky.frontend.ast import BinOpApplication, UnaryOpApplication
+from funky.frontend.sourcetree import BinOpApplication, UnaryOpApplication
 from funky.frontend.funky_lexer import FunkyLexer
 
 def _rmb(s):

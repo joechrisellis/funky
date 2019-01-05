@@ -16,26 +16,37 @@ def get_user_attributes(cls):
     attributes = [a for a in attributes if a[0][0] != "_"]
     return attributes
 
-def add_method(cls, attr):
-    """Useful decorator for setting a function as a method for some class
-    without actually defining it inside that class. This is primarily used so
-    that we can distribute AST-traversal-related tasks across different
-    modules.
-    
-    For example:
+# This might look ugly, but the logic of it is simple and it allows us to use a
+# trivial interface for tree-walking, so it's well worth using your brain power
+# to understand it!
+def get_registry_function():
+    """Gets a registry function. Read docstring for 'register' below."""
+    def f(obj, *args, **kwargs):
+        try:
+            return f.register.registry[type(obj)](obj, *args, **kwargs)
+        except KeyError:
+            raise RuntimeError("No function registered for " \
+                               "'{}'.".format(type(obj)))
 
-        @add_method(TestClass, "test_function")
-        def test_function(self):
-            print("Hello world")
-    
-    Means that we can do:
+    def register(typ):
+        """Nifty decorator that allows us to map a particular type to a
+        particular function in some registry. This is useful for tree-walking
+        -- it allows us to define 'visitor' methods for different tree-node
+        types. The advantage of using this over basic polymorphism is:
 
-        t = TestClass()
-        t.test_function() # "Hello world"
+            * We decouple tasks *on* a tree from the data structure itself.  *
+            We can keep the tree node classes small, keeping only basic
+            functions and data members.  * A method is never added to the
+            class, so we don't pollute the namespace.
 
-    Which allows us to define methods for an object externally.
-    """
-    def real_decorator(f):
-        setattr(cls, attr, f)
-        return f
-    return real_decorator
+        Basically this grants us a clean way of keeping the task of
+        walking/augmenting a tree separate from the tree structure itself.
+        """
+        def real_decorator(function):
+            register.registry[typ] = function
+            return function
+        return real_decorator
+
+    f.register = register
+    f.register.registry = {}
+    return f

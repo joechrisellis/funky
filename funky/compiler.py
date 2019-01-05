@@ -4,9 +4,9 @@ import sys
 from funky.exitcode import *
 
 from funky.frontend import FunkyLexingError, FunkySyntaxError, \
-                           FunkySanityError, FunkyParsingError
+                           FunkyRenamingError, FunkyParsingError
 from funky.frontend.funky_parser import FunkyParser
-from funky.frontend.sanity import do_sanity_check
+from funky.frontend.rename import do_rename
 
 from funky.util import err, get_user_attributes
 import funky
@@ -26,7 +26,7 @@ def compile_to_c(source):
         parser = FunkyParser()
         parser.build()
         parsed = parser.do_parse(source)
-        do_sanity_check(parsed)
+        do_rename(parsed)
     except FunkyLexingError as e:
         err("Failed to lex source code.")
         exit(LEXING_ERROR)
@@ -34,10 +34,10 @@ def compile_to_c(source):
         err("Syntax error in given program.")
         err("Error: \"{}\"".format(e.args[0]))
         exit(SYNTAX_ERROR)
-    except FunkySanityError as e:
-        err("Sanity checks for your source code failed.")
+    except FunkyRenamingError as e:
+        err("Renaming your code failed.")
         err("Error: \"{}\"".format(e.args[0]))
-        exit(SANITY_ERROR)
+        exit(RENAMING_ERROR)
     except FunkyParsingError as e:
         err("Parsing error occurred during syntax analysis.")
         err("Error: \"{}\"".format(e.args[0]))

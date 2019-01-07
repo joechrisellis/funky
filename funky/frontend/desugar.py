@@ -7,116 +7,179 @@ our intermediate language. This translation involves, for instance:
 This module is responsible for doing just that.
 """
 
-from funky.util import get_registry_function
+from funky.corelang.builtins import Functions
 from funky.corelang.coretree import *
+from funky.corelang.types import *
 from funky.frontend.sourcetree import *
+
+from funky.util import get_registry_function
 
 desugar = get_registry_function()
 
 @desugar.register(Module)
 def module_desugar(node):
-    desugar(node.body)
+    return desugar(node.body)
 
 @desugar.register(ProgramBody)
 def program_body_desugar(node):
-    # TODO: sort out imports at a later date
-    # for decl in node.import_statements:
-        # desugar(decl)
+    # TODO: imports should already be in the parse tree by now, so no need to
+    #       do anything with imports.
 
-    # desugar all toplevel bindings and return as a recursive bind.
-    bindings = [desugar(decl) for decl in node.toplevel_declarations]
-    return CoreRecBind(bindings)
+    # we will end up with a list of binds.
+    return [desugar(t) for t in node.toplevel_declarations]
 
 @desugar.register(ImportStatement)
 def import_statement_desugar(node):
-    # TODO: import all variables from the module into the scope
-    pass
+    raise NotImplementedError
 
 @desugar.register(NewTypeStatement)
 def new_type_statement_desugar(node):
-    desugar(node.typ)
+    typ = desugar(node.typ)
+    return CoreBind(node.identifier, typ)
 
 @desugar.register(TypeDeclaration)
 def type_declaration_desugar(node):
-    desugar(node.identifier)
-    desugar(node.typ)
+    typ = desugar(node.typ)
+    return CoreTypeDeclaration(node.identifier, typ)
 
 @desugar.register(Type)
 def type_desugar(node):
-    pass
-
-@desugar.register(TupleType)
-def tuple_type_desugar(node):
-    for typ in node.types:
-        desugar(typ)
-
-@desugar.register(ListType)
-def list_type_desugar(node):
-    desugar(node.typ)
-
-@desugar.register(FunctionType)
-def function_type_desugar(node):
-    desugar(node.input_type)
-    desugar(node.output_type)
+    # 'Type' is fine as it is. We don't need to desugar it; it is already a
+    # minimal representation of a type. See types.py.
+    return node
 
 @desugar.register(FunctionDefinition)
 def function_definition_desugar(node):
-    expr = desugar(node.rhs)
-    binding = desugar(node.lhs, expr)
-    return binding
+    rhs_expr = desugar(node.rhs) # first, get the expression.
+    lam = desugar(node.lhs, rhs_expr) # then pass it to lhs, making a lambda
+
+    return lam
 
 @desugar.register(FunctionLHS)
-def function_lhs_desugar(node, expr):
-    lam = Lambda(node.parameters, expr)
-    # delegate the desugaring of this lambda, giving us a CoreLambda
-    lam = desugar(lam)
-
-    # bind the CoreLambda to the identifier and return
-    binding = CoreNonRecBind(node.identifier, lam)
-    return binding
+def function_lhs_desugar(node, rhs_expr):
+    lam = rhs_expr
+    for p in node.parameters:
+        lam = CoreLambda(desugar(p), lam)
+    return lam
 
 @desugar.register(FunctionRHS)
 def function_rhs_desugar(node):
-    # if we have guarded expressions, we need to convert them to a match
-    # statement.
-    if len(node.expressions) > 1:
-        alts = []
-        for guarded_expr in node.expressions:
-            desugar(guarded_expr)
-    else:   
-        # no guarded exp
-        desugar(node.expressions[0])
-        pass
+    if len(node.declarations) == 1:
+        decls = desugar(node.declarations[0])
+    else:
+        decls = CoreRecBind([desugar(d) for d in node.declarations])
 
-    if node.declarations:
-        let = desugar(node.declarations)
+    if len(node.expressions) == 1:
+        expr = desugar(node.expressions[0])
+        return expr
+    else:
+        # convert the guarded expressions into a match statement. To do this,
+        # we build up a chain of match statements by traversing the guards in
+        # reverse order.
+        match = None
+        for guarded_expr in reversed(node.expressions):
+            cond, alt = desugar(guarded_expr)
+            alts = [alt] + ([match] if match else [])
+            match = Match(cond, alts)
 
-@desugar.register(If)
-def if_desugar(node):
-    scrut = desugar(node.expression)
-    then = desugar(node.then)
-    otherwise = desugar(node.otherwise)
+        return match
 
-    match = CoreMatch(
-        scrut,
-        CoreAlt(LiteralAlt(True), then), # TODO: will need to formalise literals here!
-        CoreAlt(LiteralAlt(False), otherwise)
-    )
+@desugar.register(GuardedExpression)
+def guarded_expression_desugar(node):
+    cond = desugar(node.guard_condition)
+    expr = desugar(node.expression)
+    return cond, LiteralAlt(expr)
 
-    return match
+@desugar.register(PatternDefinition)
+def pattern_definition_desugar(node):
+    # TODO
+    pass
+
+@desugar.register(ConstructorChain)
+def constructor_chain_desugar(node):
+    # TODO
+    pass
+
+@desugar.register(Pattern)
+def pattern_desugar(node):
+    # TODO
+    return desugar(node.pat)
+
+@desugar.register(PatternTuple)
+def pattern_tuple_desugar(node):
+    # TODO
+    pass
+
+@desugar.register(PatternList)
+def pattern_list_desugar(node):
+    # TODO
+    pass
+
+@desugar.register(Alternative)
+def alternative_desugar(node):
+    # TODO
+    pass
 
 @desugar.register(Lambda)
 def lambda_desugar(node):
-    lam = node.expression
-    for p in reversed(node.parameters):
-        lam = CoreLambda(p, lam)
+    lam = desugar(node.expression)
+    for p in node.parameters[::-1]:
+        lam = CoreLambda(desugar(p), lam)
     return lam
 
-def do_desugar(source_tree):
-    """Desugars the AST, reducing complex structures down into simpler versions
-    for easier translation later.
-    """
-    assert source_tree.parsed and source_tree.fixities_resolved and \
-           source_tree.renamed
+@desugar.register(Let)
+def let_desugar(node):
+    pass
 
+@desugar.register(If)
+def if_desugar(node):
+    pass
+
+@desugar.register(Match)
+def match_desugar(node):
+    pass
+
+@desugar.register(FunctionApplication)
+def function_application_desugar(node):
+    func = desugar(node.func)
+    expr = desugar(node.expression)
+    return CoreApplication(func, expr)
+
+@desugar.register(Tuple)
+def tuple_desugar(node):
+    pass
+
+@desugar.register(List)
+def list_desugar(node):
+    pass
+
+@desugar.register(Parameter)
+def parameter_desugar(node):
+    return CoreVariable(node.name)
+
+@desugar.register(UsedVar)
+def used_var_desugar(node):
+    return CoreVariable(node.name)
+
+@desugar.register(Literal)
+def literal_desugar(node):
+    return CoreLiteral(node.value)
+
+@desugar.register(Functions)
+def builtin_function_desugar(node):
+    return node # default functions
+
+@desugar.register(InfixExpression)
+def infix_expression_desugar(node):
+    pass
+
+def do_desugar(source_tree):
+    """Desugars the AST, reducing complex syntactic structures down into a
+    simple core language for easier translation later. This constitutes
+    'intermediate code generation'.
+    """
+    assert source_tree.parsed and source_tree.fixities_resolved
+    print(source_tree)
+    desugared = desugar(source_tree)
+    print(desugared)
     return desugar(source_tree)

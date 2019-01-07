@@ -6,6 +6,7 @@ from funky.frontend import FunkySyntaxError
 import funky.frontend.fixity as fixity
 
 from funky.frontend.sourcetree import *
+from funky.corelang.types import Type, TupleType, ListType, FunctionType
 
 log = logging.getLogger(__name__)
 

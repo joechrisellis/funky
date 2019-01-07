@@ -78,32 +78,6 @@ class TypeDeclaration(ASTNode):
         self.identifier  =  identifier
         self.typ         =  typ
 
-class Type(ASTNode):
-    """A type -- e.g. Integer."""
-
-    def __init__(self, type_name):
-        self.type_name  =  type_name
-
-class TupleType(ASTNode):
-    """A tuple-type -- e.g. (Integer, Integer)."""
-
-    def __init__(self, types):
-        self.types  =  types
-        self.arity  =  len(types)
-
-class ListType(ASTNode):
-    """A list-type --  e.g. [Integer]."""
-
-    def __init__(self, typ):
-        self.typ  =  typ
-
-class FunctionType(ASTNode):
-    """A function type -- e.g. [Integer] -> (Integer -> Integer) -> [Integer]"""
-
-    def __init__(self, input_type, output_type=None):
-        self.input_type   =  input_type
-        self.output_type  =  output_type
-
 class FunctionDefinition(ASTNode):
     """A function definition -- functions have a left hand side and a right
     hand side. The left hand side defines its identifier and its parameters,

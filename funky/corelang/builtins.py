@@ -28,7 +28,6 @@ python_to_funky = {
     str    :  Primitives.CHAR,
 }
 
-
 # BUILTIN FUNCTIONS
 # These functions are recognised by the compiler as 'builtin' -- they do not
 # need to be defined anywhere.

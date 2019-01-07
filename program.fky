@@ -1,7 +1,3 @@
 module test where
 
-    True `and` True = True
-    _    `and` _    = False
-    setfix right 2 `and`
-
-    f x y z = x + y + z
+    add x = lambda y -> x + y

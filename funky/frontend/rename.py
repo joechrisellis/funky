@@ -12,6 +12,7 @@ from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
 
 from funky.util import get_registry_function
 from funky.frontend.sourcetree import *
+from funky.corelang.types import *
 
 from itertools import count, product
 from string import ascii_lowercase

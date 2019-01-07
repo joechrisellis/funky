@@ -52,7 +52,6 @@ def type_desugar(node):
 def function_definition_desugar(node):
     rhs_expr = desugar(node.rhs) # first, get the expression.
     lam = desugar(node.lhs, rhs_expr) # then pass it to lhs, making a lambda
-
     return lam
 
 @desugar.register(FunctionLHS)
@@ -64,25 +63,23 @@ def function_lhs_desugar(node, rhs_expr):
 
 @desugar.register(FunctionRHS)
 def function_rhs_desugar(node):
-    if len(node.declarations) == 1:
-        decls = desugar(node.declarations[0])
-    else:
-        decls = CoreRecBind([desugar(d) for d in node.declarations])
+    decls = [desugar(d) for d in node.declarations]
 
     if len(node.expressions) == 1:
         expr = desugar(node.expressions[0])
-        return expr
-    else:
-        # convert the guarded expressions into a match statement. To do this,
-        # we build up a chain of match statements by traversing the guards in
-        # reverse order.
-        match = None
-        for guarded_expr in reversed(node.expressions):
-            cond, alt = desugar(guarded_expr)
-            alts = [alt] + ([match] if match else [])
-            match = Match(cond, alts)
+        return CoreLet(decls, expr) if decls else expr
 
-        return match
+    # convert the guarded expressions into a match statement. To do this,
+    # we build up a chain of match statements by traversing the guards in
+    # reverse order.
+    match = None
+    for guarded_expr in reversed(node.expressions):
+        scrutinee, expr = desugar(guarded_expr)
+        on_true = CoreAlt(CoreLiteral(True), expr)
+        on_false = CoreAlt(CoreLiteral(False), match)
+        match = CoreMatch(scrutinee, [on_true, on_false])
+
+    return CoreLet(decls, match) if decls else expr
 
 @desugar.register(GuardedExpression)
 def guarded_expression_desugar(node):
@@ -97,46 +94,56 @@ def pattern_definition_desugar(node):
 
 @desugar.register(ConstructorChain)
 def constructor_chain_desugar(node):
-    # TODO
+    # TODO: create a primitive list type.
     pass
 
 @desugar.register(Pattern)
 def pattern_desugar(node):
-    # TODO
     return desugar(node.pat)
 
 @desugar.register(PatternTuple)
 def pattern_tuple_desugar(node):
-    # TODO
-    pass
+    return TupleType(node.items)
 
 @desugar.register(PatternList)
 def pattern_list_desugar(node):
-    # TODO
-    pass
+    return ListType(node.items)
 
 @desugar.register(Alternative)
 def alternative_desugar(node):
-    # TODO
-    pass
+    pat = desugar(node.pattern)
+    expression = desugar(node.expression)
+    alt_con = DataAlt(pat)
+    return CoreAlt(alt_con, expr)
 
 @desugar.register(Lambda)
 def lambda_desugar(node):
     lam = desugar(node.expression)
-    for p in node.parameters[::-1]:
+    for p in reversed(node.parameters):
         lam = CoreLambda(desugar(p), lam)
     return lam
 
 @desugar.register(Let)
 def let_desugar(node):
-    pass
+    decls = [desugar(d) for d in node.declarations]
+    expr = desugar(node.expression)
+    return CoreLet(decls, expr)
 
 @desugar.register(If)
 def if_desugar(node):
-    pass
+    # we convert all ifs down to match statements.
+    scrutinee = desugar(node.expression)
+    then = desugar(node.then)
+    otherwise = desugar(node.otherwise)
+
+    on_true = CoreAlt(CoreLiteral(True), then)
+    on_false = CoreAlt(CoreLiteral(False), otherwise)
+    return CoreMatch(scrutinee, [on_true, on_false])
 
 @desugar.register(Match)
 def match_desugar(node):
+    # TODO: apparently this is quite involved when it comes to pattern matching
+    # -- job for tomorrow!
     pass
 
 @desugar.register(FunctionApplication)
@@ -145,13 +152,13 @@ def function_application_desugar(node):
     expr = desugar(node.expression)
     return CoreApplication(func, expr)
 
-@desugar.register(Tuple)
+@desugar.register(CoreTuple)
 def tuple_desugar(node):
-    pass
+    return node # tuples are already 'core' from the parser
 
-@desugar.register(List)
+@desugar.register(CoreList)
 def list_desugar(node):
-    pass
+    return node # lists are already 'core' from the parser
 
 @desugar.register(Parameter)
 def parameter_desugar(node):
@@ -167,11 +174,14 @@ def literal_desugar(node):
 
 @desugar.register(Functions)
 def builtin_function_desugar(node):
-    return node # default functions
+    # default functions -- we must acknowledge these when we translate to C. No
+    # further work here.
+    return node
 
 @desugar.register(InfixExpression)
 def infix_expression_desugar(node):
-    pass
+    raise RuntimeError("Infix expression nodes exist in the tree -- fixity " \
+                       "resolution has not been performed.")
 
 def do_desugar(source_tree):
     """Desugars the AST, reducing complex syntactic structures down into a

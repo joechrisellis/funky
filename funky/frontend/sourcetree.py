@@ -241,19 +241,6 @@ class FunctionApplication(ASTNode):
         self.func        =  func
         self.expression  =  expression
 
-class Tuple(ASTNode):
-    """A tuple of expressions. E.g. (1, 2, 3)."""
-
-    def __init__(self, items):
-        self.items  =  items
-        self.arity  =  len(items)
-
-class List(ASTNode):
-    """A list of expressions. E.g. [1, 2, 3]."""
-
-    def __init__(self, items):
-        self.items  =  items
-
 class Parameter(ASTNode):
     """A parameter passed to a function."""
 

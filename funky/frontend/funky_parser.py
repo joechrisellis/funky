@@ -7,6 +7,7 @@ import funky.frontend.fixity as fixity
 
 from funky.frontend.sourcetree import *
 from funky.corelang.types import Type, TupleType, ListType, FunctionType
+from funky.corelang.coretree import CoreTuple, CoreList
 
 log = logging.getLogger(__name__)
 
@@ -262,12 +263,12 @@ class FunkyParser:
             if len(p) == 4:
                 p[0] = p[2]
             else:
-                p[0] = Tuple((p[2], *p[4]))
+                p[0] = CoreTuple((p[2], *p[4]))
         else:
             if len(p) == 4:
-                p[0] = List([p[2]])
+                p[0] = CoreList([p[2]])
             else:
-                p[0] = List([p[2], *p[4]])
+                p[0] = CoreList([p[2], *p[4]])
 
     def p_ALTS(self, p):
         """ALTS : ALT ENDSTATEMENT ALTS
@@ -317,7 +318,7 @@ class FunkyParser:
             elif p[1] == []:
                 p[0] = PatternList(p[1])
             else:
-                p[0] = Pattern(p[1])
+                p[0] = p[1]
         elif len(p) == 4:
             p[0] = p[2]
         else:
@@ -383,6 +384,7 @@ class FunkyParser:
                   | DIVIDE
                   | POW
                   | EQUALITY
+                  | INEQUALITY
                   | LESS
                   | LEQ
                   | GREATER

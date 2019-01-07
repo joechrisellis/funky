@@ -13,6 +13,7 @@ from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
 from funky.util import get_registry_function
 from funky.frontend.sourcetree import *
 from funky.corelang.types import *
+from funky.corelang.coretree import CoreTuple, CoreList
 
 from itertools import count, product
 from string import ascii_lowercase
@@ -265,12 +266,12 @@ def function_application_rename(node, scope):
     rename(node.func, scope)
     rename(node.expression, scope)
 
-@rename.register(Tuple)
+@rename.register(CoreTuple)
 def tuple_rename(node, scope):
     for item in node.items:
         rename(item, scope)
 
-@rename.register(List)
+@rename.register(CoreList)
 def list_rename(node, scope):
     for item in node.items:
         rename(item, scope)

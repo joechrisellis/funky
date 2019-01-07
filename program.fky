@@ -1,3 +1,3 @@
 module test where
 
-    add x = lambda y -> x + y
+    f = 1 : 2 : 3

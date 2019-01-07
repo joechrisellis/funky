@@ -2,6 +2,7 @@
 intermediate language.
 """
 
+from funky.corelang.builtins import python_to_funky
 from funky.util import output_attributes
 
 class CoreNode:
@@ -34,9 +35,9 @@ class CoreLambda(CoreNode):
 
 class CoreLet(CoreNode):
 
-    def __init__(self, bind, expr):
-        self.bind  =  bind
-        self.expr  =  expr
+    def __init__(self, binds, expr):
+        self.binds  =  binds
+        self.expr   =  expr
 
 class CoreMatch(CoreNode):
     
@@ -52,11 +53,11 @@ class CoreTypeDeclaration(CoreNode):
 
 class CoreAlt(CoreNode):
     
-    def __init__(self, altcon, binders, expr):
+    def __init__(self, altcon, expr):
         self.altcon   =  altcon
         self.expr     =  expr
 
-class CoreAltCon(CoreNode):
+class CoreAltCon(CoreAlt):
     pass
 
 class DataAlt(CoreAltCon):
@@ -74,15 +75,18 @@ class LiteralAlt(CoreAltCon):
         self.literal = literal
 
 class CoreBind(CoreNode):
-    pass
 
-class CoreNonRecBind(CoreBind):
-    
     def __init__(self, identifier, expr):
         self.identifier  =  identifier
         self.expr        =  expr
 
-class CoreRecBind(CoreBind):
+class CoreTuple(CoreNode):
     
-    def __init__(self, binds):
-        self.binds = binds
+    def __init__(self, items):
+        self.items  =  items
+        self.arity  =  len(items)
+
+class CoreList(CoreNode):
+    
+    def __init__(self, items):
+        self.items  =  items

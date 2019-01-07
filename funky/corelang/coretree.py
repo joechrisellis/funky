@@ -1,14 +1,13 @@
+"""Module containing classes used to represent the abstract syntax tree for the
+intermediate language.
+"""
+
+from funky.util import output_attributes
 
 class CoreNode:
     """Superclass."""
 
-    def __repr__(self):
-        """Recursively outputs the node in the format:
-            NodeName(attribute1=..., attribute2=...)
-        """
-        children = ", ".join("{}={}".format(a[0], repr(a[1]))
-                             for a in get_user_attributes(self))
-        return "{}({})".format(type(self).__name__, children)
+    __repr__ = output_attributes
 
 class CoreVariable(CoreNode):
 

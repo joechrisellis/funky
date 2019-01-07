@@ -8,10 +8,12 @@ taking the result of the first stage and inserting any implicit braces. The way
 that we handle this is very similar to the 'layout' rule in Haskell.
 """
 
+import logging
 import ply.lex as lex
 
-from funky.util import err
 from funky.frontend import FunkyLexingError
+
+log = logging.getLogger(__name__)
 
 class FunkyLexer:
     """PLY lexer for funky. This performs the first stage of lexical analysis
@@ -158,9 +160,12 @@ class FunkyLexer:
 
     def build(self, **kwargs):
         """Build the lexer."""
+        log.debug("Using PLY to build the lexer.")
         self.lexer = lex.lex(module=self, **kwargs)
+        log.debug("Lexer built.")
 
     def do_lex(self, source, *args, **kwargs):
+        log.info("Performing basic lexing of the source.")
         self.lexer.input(source, *args, **kwargs)
 
         tokens = []
@@ -171,6 +176,7 @@ class FunkyLexer:
             self.at_line_start = False
             tokens.append(tok)
 
+        log.info("Completed basic lexing.")
         return tokens
 
 class IndentationLexer:
@@ -207,6 +213,7 @@ class IndentationLexer:
         """Inserts explicit braces into a token stream containing omitted
         braces.
         """
+        log.debug("Using the layout rule to convert indentation to explicit braces.")
         new_tokens, ind_stack = [], []
 
         i = 0
@@ -239,6 +246,7 @@ class IndentationLexer:
             new_tokens.append(self._make_token("CLOSE_BRACE", value="}"))
             ind_stack.pop()
 
+        logging.debug("Finished adding explicit braces.")
         return new_tokens
 
     def _make_token(self, type, value=None, lineno=None, lexpos=None):

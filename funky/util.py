@@ -1,20 +1,32 @@
 import inspect
 import sys
 
-def err(*args, **kwargs):
-    """Wrapper around Python's print function -- instead of printing to stdout,
-    we print to stderr.
-    """
-    return print(*args, **kwargs, file=sys.stderr)
-
 def get_user_attributes(cls):
     """Returns the user attributes of a class. These are attributes which are
     not functions, and whose identifier's do not begin with '_' (which
     conventionally denotes a private attribute in Python).
+
+    Input:
+        cls -- the class.
+
+    Returns:
+        a list of the public attributes of the class (those that do not begin
+        with an underscore).
     """
     attributes = inspect.getmembers(cls, lambda a: not(inspect.isroutine(a)))
     attributes = [a for a in attributes if a[0][0] != "_"]
     return attributes
+
+def output_attributes(self):
+    """Recursively outputs the attributes of an object in the format:
+        ObjectName(attribute1=..., attribute2=...)
+
+    This is useful as the __repr__ function for tree-like structures, like the
+    parse tree.
+    """
+    children = ", ".join("{}={}".format(a[0], repr(a[1]))
+                         for a in get_user_attributes(self))
+    return "{}({})".format(type(self).__name__, children)
 
 # This might look ugly, but the logic of it is simple and it allows us to use a
 # trivial interface for tree-walking, so it's well worth using your brain power

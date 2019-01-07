@@ -6,11 +6,15 @@ transformation, we know that names cannot capture and the program can be
 transformed without changing its meaning.
 """
 
+import logging
+
 from funky.util import get_registry_function
 from funky.frontend.sourcetree import *
 
 from itertools import count, product
 from string import ascii_lowercase
+
+log = logging.getLogger(__name__)
 
 def string_generator():
     """Generator that yields as many strings as you need. Returns (a, b, ...,
@@ -283,7 +287,10 @@ def used_var_rename(node, scope):
     if node.name not in scope:
         raise FunkyRenamingError("Referenced item '{}' does not " \
                                  "exist.".format(node.name))
+
     node.name = scope[node.name]
+    if type(node.name) == list: # edge case for functions
+        node.name = node.name[0]
 
 @rename.register(Literal)
 def literal_rename(node, scope):
@@ -316,12 +323,13 @@ def unary_op_application_rename(node, scope):
     rename(node.operand, scope)
 
 def do_rename(source_tree):
-    """Renames items in the source tree so that they all have a unique name.
+    """Renames items in the source tree so that they all have a unique name
     Also performs sanity checks such as making sure that duplicate declarations
     don't exist, etc.
     """
     assert source_tree.parsed and source_tree.fixities_resolved
+    logging.info("Renaming and sanity checking parse tree...")
     scope = Scope()
     rename(source_tree, scope)
     source_tree.renamed = True
-    print(source_tree)
+    logging.info("Renaming and sanity checking parse tree completed.")

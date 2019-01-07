@@ -3,9 +3,13 @@ resolution algorithm, described at:
     https://prime.haskell.org/wiki/FixityResolution
 """
 
+import logging
+
 from funky.frontend import FunkySyntaxError
 from funky.frontend.sourcetree import BinOpApplication, UnaryOpApplication
 from funky.frontend.funky_lexer import FunkyLexer
+
+log = logging.getLogger(__name__)
 
 def _rmb(s):
     """Removes backslashes from a string."""
@@ -56,7 +60,9 @@ def resolve_fixity(infix_expr):
         a BinOpApplication or UnaryOpApplication representing the infix
         expression.
     """
+    log.debug("Resolving fixity for expression '{}'.".format(infix_expr))
     retval = parse_neg("!!!", infix_expr.tokens)[0]
+    log.debug("Result was '{}'.".format(retval))
     return retval
 
 def parse_neg(operator, tokens):

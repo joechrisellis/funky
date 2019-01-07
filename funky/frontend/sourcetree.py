@@ -12,9 +12,9 @@ This tree is then 'desugared', resulting in a 'core tree' suitable for
 translation.
 """
 
-from funky.corelang.types import python_to_funky, primitives
+from funky.corelang.builtins import python_to_funky, primitives
 from funky.frontend import FunkyRenamingError
-from funky.util import get_user_attributes
+from funky.util import output_attributes
 
 class ASTNode:
     """Superclass for all abstract syntax tree nodes. Provides a __repr__
@@ -30,14 +30,8 @@ class ASTNode:
         self.fixities_resolved  =  False
         self.renamed            =  False
         self.desugared          =  False
-
-    def __repr__(self):
-        """Recursively outputs the node in the format:
-            NodeName(attribute1=..., attribute2=...)
-        """
-        children = ", ".join("{}={}".format(a[0], repr(a[1]))
-                             for a in get_user_attributes(self))
-        return "{}({})".format(type(self).__name__, children)
+    
+    __repr__ = output_attributes
 
 class Module(ASTNode):
     """Node representing a module in Funky. Comprises a module ID and a program
@@ -299,6 +293,9 @@ class UsedVar(ASTNode):
 
     def __init__(self, name):
         self.name  =  name
+    
+    def __repr__(self):
+        return self.name
 
 class Literal(ASTNode):
     """Any literal value. Has a value and a type."""
@@ -306,6 +303,9 @@ class Literal(ASTNode):
     def __init__(self, value):
         self.value  =  value
         self.typ    =  python_to_funky[type(value)]
+    
+    def __repr__(self):
+        return repr(self.value)
 
 class InfixExpression(ASTNode):
     """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --
@@ -316,6 +316,9 @@ class InfixExpression(ASTNode):
     def __init__(self, tokens):
         self.tokens = tokens
 
+    def __repr__(self):
+        return " ".join(str(x) for x in self.tokens)
+
 class BinOpApplication(ASTNode):
     """A binary operator applied to two operands."""
 
@@ -323,6 +326,19 @@ class BinOpApplication(ASTNode):
         self.operand1 = operand1
         self.operator = operator
         self.operand2 = operand2
+    
+    def __repr__(self):
+        if isinstance(self.operand1, BinOpApplication) or \
+           isinstance(self.operand1, UnaryOpApplication):
+            a = "(" + repr(self.operand1) + ")"
+        else:
+            a = repr(self.operand1)
+        if isinstance(self.operand2, BinOpApplication) or \
+           isinstance(self.operand2, UnaryOpApplication):
+            b = "(" + repr(self.operand2) + ")"
+        else:
+            b = repr(self.operand2)
+        return "{} {} {}".format(a, self.operator, b)
 
 class UnaryOpApplication(ASTNode):
     """A unary operator applied to a single operand."""
@@ -330,3 +346,12 @@ class UnaryOpApplication(ASTNode):
     def __init__(self, operator, operand):
         self.operator = operator
         self.operand = operand
+
+    def __repr__(self):
+        if isinstance(self.operand, BinOpApplication) or \
+           isinstance(self.operand, UnaryOpApplication):
+            a = "(" + repr(self.operand) + ")"
+        else:
+            a = repr(self.operand)
+            
+        return "-{}".format(a)

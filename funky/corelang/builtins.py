@@ -18,3 +18,11 @@ python_to_funky = {
     bool   :  Primitives.BOOL,
     str    :  Primitives.CHAR,
 }
+
+BUILTIN_FUNCTIONS = [
+    "add",
+    "sub",
+    "mul",
+    "div",
+    "pow",
+]

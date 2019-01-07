@@ -1,11 +1,13 @@
+import logging
 import ply.yacc as yacc
 
-from funky.util import err
 from funky.frontend.funky_lexer import FunkyLexer, IndentationLexer
 from funky.frontend import FunkySyntaxError
 from funky.frontend.fixity import resolve_fixity
 
 from funky.frontend.sourcetree import *
+
+log = logging.getLogger(__name__)
 
 class FunkyParser:
 
@@ -410,15 +412,16 @@ class FunkyParser:
         self.lexer = FunkyLexer()
         self.lexer.build()
         self.lexer = IndentationLexer(self.lexer)
+        log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self, **kwargs)
+        log.debug("Parser built.")
 
     def do_parse(self, source):
         self.lexer.input(source)
-        for tok in self.lexer:
-            print(tok.value, end=" ")
-        print()
 
+        log.info("Parsing lexed source...")
         ast = self.parser.parse(source, self.lexer)
         ast.parsed = True
         ast.fixities_resolved = True
+        log.info("Done parsing source, AST created.")
         return ast

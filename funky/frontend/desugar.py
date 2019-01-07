@@ -112,17 +112,6 @@ def lambda_desugar(node):
         lam = CoreLambda(p, lam)
     return lam
 
-@desugar.register(BinOpApplication)
-def bin_op_application_desugar(node):
-    # desugar to function application.
-    operand1 = desugar(node.operand1)
-    operand2 = desugar(node.operand2)
-    app = CoreApplication(
-        CoreApplication(node.operator, operand1),
-        operand2
-    )
-    return app
-
 def do_desugar(source_tree):
     """Desugars the AST, reducing complex structures down into simpler versions
     for easier translation later.

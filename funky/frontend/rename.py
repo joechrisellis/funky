@@ -258,7 +258,7 @@ def match_rename(node, scope):
         rename(alternative, scope)
 
 @rename.register(FunctionApplication)
-def function_applicatio_rename(node, scope):
+def function_application_rename(node, scope):
     rename(node.func, scope)
     rename(node.expression, scope)
 
@@ -303,24 +303,6 @@ def infix_expression_rename(node, scope):
     # perform sanity checks, as they should have been factored out by fixity
     # resolution performed earlier. Throw an exception if we enocunter one.
     raise RuntimeError("Fixity resolution should be performed before renaming!")
-
-@rename.register(BinOpApplication)
-def bin_op_application_rename(node, scope):
-    if type(node.operand1) == str:
-        if node.operand1 not in scope:
-            raise FunkyRenamingError("Variable '{}' not defined.".format(node.operand1))
-    else:
-        rename(node.operand1, scope)
-
-    if type(node.operand2) == str:
-        if node.operand2 not in scope:
-            raise FunkyRenamingError("Variable '{}' not defined.".format(node.operand1))
-    else:
-        rename(node.operand2, scope)
-
-@rename.register(UnaryOpApplication)
-def unary_op_application_rename(node, scope):
-    rename(node.operand, scope)
 
 def do_rename(source_tree):
     """Renames items in the source tree so that they all have a unique name

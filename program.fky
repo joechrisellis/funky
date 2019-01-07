@@ -1,3 +1,7 @@
 module test where
 
-    f x = 2 ** x ** 3 == 2 * x * 3
+    True `and` True = True
+    _    `and` _    = False
+
+    setfix left 1 `and`
+    f x y = 2 ** 2 ** 3

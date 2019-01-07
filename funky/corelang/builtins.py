@@ -2,6 +2,7 @@
 
 from enum import Enum, auto
 
+## BUILTIN TYPES ##
 primitives = ["Float", "Integer", "Bool", "Char"]
 
 class Primitives(Enum):
@@ -19,6 +20,8 @@ python_to_funky = {
     str    :  Primitives.CHAR,
 }
 
+
+## BUILTIN FUNCTIONS ##
 BUILTIN_FUNCTIONS = [
     "add",
     "sub",

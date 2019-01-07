@@ -23,19 +23,23 @@ class FunkyLexer:
 
     # Reserved keywords -- variables are not permitted to have these names.
     reserved = {
-        "module"   :  "MODULE",
-        "import"   :  "IMPORT",
-        "as"       :  "AS",
-        "newtype"  :  "NEWTYPE",
-        "let"      :  "LET",
-        "in"       :  "IN",
-        "if"       :  "IF",
-        "then"     :  "THEN",
-        "else"     :  "ELSE",
-        "where"    :  "WHERE",
-        "match"    :  "MATCH",
-        "of"       :  "OF",
-        "lambda"   :  "LAMBDA",
+        "module"    :  "MODULE",
+        "import"    :  "IMPORT",
+        "as"        :  "AS",
+        "newtype"   :  "NEWTYPE",
+        "let"       :  "LET",
+        "in"        :  "IN",
+        "if"        :  "IF",
+        "then"      :  "THEN",
+        "else"      :  "ELSE",
+        "where"     :  "WHERE",
+        "match"     :  "MATCH",
+        "of"        :  "OF",
+        "lambda"    :  "LAMBDA",
+        "left"      :  "LEFTASSOC",
+        "right"     :  "RIGHTASSOC",
+        "nonassoc"  :  "NONASSOC",
+        "setfix"    :  "SETFIX",
     }
 
     # All the tokens known to the lexer.

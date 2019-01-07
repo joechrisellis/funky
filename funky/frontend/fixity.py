@@ -6,7 +6,7 @@ resolution algorithm, described at:
 import logging
 
 from funky.frontend import FunkySyntaxError
-from funky.frontend.sourcetree import BinOpApplication, UnaryOpApplication
+from funky.frontend.sourcetree import FunctionApplication
 from funky.frontend.funky_lexer import FunkyLexer
 
 log = logging.getLogger(__name__)
@@ -15,22 +15,28 @@ def _rmb(s):
     """Removes backslashes from a string."""
     return s.replace("\\", "")
 
-precedence  =  (
+precedence = {
     # imaginary operator -- has a lower precedence than everything else, and is
-    # used *exclusively* to kick off the fixity resolution recursive algorith,
+    # used *exclusively* to kick off the fixity resolution recursive algorithm,
     # This is not a legal operator in Funky code.
-    ("nonassoc", "!!!"),
+    "!!!"                           :  ("nonassoc",  0),
 
     # Remove backslashes from the lexer regexes for operators. This gets the
     # 'raw' operator string. If the operator lexemes are changed in the lexer,
     # the change is automatically propagated to here.
-    ("nonassoc", _rmb(FunkyLexer.t_EQUALITY)),
-    ("left",     _rmb(FunkyLexer.t_LESS), _rmb(FunkyLexer.t_LEQ),
-                 _rmb(FunkyLexer.t_GREATER), _rmb(FunkyLexer.t_GEQ)),
-    ("left",     _rmb(FunkyLexer.t_PLUS), _rmb(FunkyLexer.t_MINUS)),
-    ("left",     _rmb(FunkyLexer.t_TIMES), _rmb(FunkyLexer.t_DIVIDE)),
-    ("right",    _rmb(FunkyLexer.t_POW)),
-)
+    _rmb(FunkyLexer.t_EQUALITY)     :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_GEQ)          :  ("left",      4),
+    _rmb(FunkyLexer.t_GREATER)      :  ("left",      4),
+    _rmb(FunkyLexer.t_INEQUALITY)   :  ("left",      4),
+    _rmb(FunkyLexer.t_LEQ)          :  ("left",      4),
+    _rmb(FunkyLexer.t_LESS)         :  ("left",      4),
+    _rmb(FunkyLexer.t_CONSTRUCTOR)  :  ("left",      5),
+    _rmb(FunkyLexer.t_MINUS)        :  ("left",      6),
+    _rmb(FunkyLexer.t_PLUS)         :  ("left",      6),
+    _rmb(FunkyLexer.t_DIVIDE)       :  ("left",      7),
+    _rmb(FunkyLexer.t_TIMES)        :  ("left",      7),
+    _rmb(FunkyLexer.t_POW)          :  ("right",     8),
+}
 
 def get_precedence(operator):
     """Gets the associativity and precedence of an operator.
@@ -42,10 +48,10 @@ def get_precedence(operator):
         a tuple (associativity, precedence), where associativity is either
         "left", "right", or "nonassoc", and precedence is an integer.
     """
-    for i, pclass in enumerate(precedence):
-        if operator in pclass:
-            return (pclass[0], i)
-    raise FunkySyntaxError("Invalid operator '{}'.".format(operator))
+    try:
+        return precedence[operator]
+    except KeyError:
+        raise FunkySyntaxError("Invalid operator '{}'.".format(operator))
 
 def resolve_fixity(infix_expr):
     """Performs fixity resolution for an INFIX_EXP from the parser. Infix
@@ -57,8 +63,7 @@ def resolve_fixity(infix_expr):
         infix_expr -- the infix expression from the parser.
 
     Output:
-        a BinOpApplication or UnaryOpApplication representing the infix
-        expression.
+        a chain of FunctionApplications equivalent to the infix expression.
     """
     log.debug("Resolving fixity for expression '{}'.".format(infix_expr))
     retval = parse_neg("!!!", infix_expr.tokens)[0]
@@ -73,7 +78,7 @@ def parse_neg(operator, tokens):
         if prec1 >= minus_precedence:
             raise FunkySyntaxError("Invalid negation.")
         r, rest = parse_neg("-", tokens[1:])
-        return parse(operator, UnaryOpApplication("-", r), rest)
+        return parse(operator, FunctionApplication("-", r), rest)
     else:
         return parse(operator, tokens[0], tokens[1:])
 
@@ -97,4 +102,4 @@ def parse(op1, exp, tokens):
     # Case 3: op1 and op2 are right associative.
     (r, rest) = parse_neg(op2, tokens[1:])
 
-    return parse(op1, BinOpApplication(exp, op2, r), rest)
+    return parse(op1, FunctionApplication(FunctionApplication(op2, exp), r), rest)

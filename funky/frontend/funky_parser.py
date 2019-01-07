@@ -3,7 +3,7 @@ import ply.yacc as yacc
 
 from funky.frontend.funky_lexer import FunkyLexer, IndentationLexer
 from funky.frontend import FunkySyntaxError
-from funky.frontend.fixity import resolve_fixity
+import funky.frontend.fixity as fixity
 
 from funky.frontend.sourcetree import *
 
@@ -97,12 +97,21 @@ class FunkyParser:
 
     def p_GEN_DECLARATION(self, p):
         """GEN_DECLARATION : IDENTIFIER TYPESIG TYPE
+                           | SETFIX ASSOCIATIVITY INTEGER OP
                            |
         """
-        # NOTE: Fixity declarations removed -- may not be needed for this
-        #       project.
         if len(p) == 4:
             p[0] = TypeDeclaration(p[1], p[3])
+        elif len(p) == 5:
+            fixity.precedence[p[4]] = (p[2], p[3])
+            print(fixity.precedence)
+
+    def p_ASSOCIATIVITY(self, p):
+        """ASSOCIATIVITY : LEFTASSOC
+                         | RIGHTASSOC
+                         | NONASSOC
+        """
+        p[0] = p[1].lower()
 
     def p_TYPE(self, p):
         """TYPE : ATYPE
@@ -177,13 +186,13 @@ class FunkyParser:
         """GUARD : INFIX_EXP
         """ # we only allow for BOOLEAN guards.
         p[0] = p[1]
-        p[0] = resolve_fixity(p[0])
+        p[0] = fixity.resolve_fixity(p[0])
 
     def p_EXP(self, p):
         """EXP : INFIX_EXP
         """
         p[0] = p[1]
-        p[0] = resolve_fixity(p[0])
+        p[0] = fixity.resolve_fixity(p[0])
 
     def p_INFIX_EXP(self, p):
         """INFIX_EXP : LEXP OP INFIX_EXP

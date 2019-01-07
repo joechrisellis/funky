@@ -266,6 +266,9 @@ class FunctionApplication(ASTNode):
     def __init__(self, func, expression):
         self.func        =  func
         self.expression  =  expression
+    
+    def __repr__(self):
+        return "{} ({})".format(self.func, self.expression)
 
 class Tuple(ASTNode):
     """A tuple of expressions. E.g. (1, 2, 3)."""
@@ -318,40 +321,3 @@ class InfixExpression(ASTNode):
 
     def __repr__(self):
         return " ".join(str(x) for x in self.tokens)
-
-class BinOpApplication(ASTNode):
-    """A binary operator applied to two operands."""
-
-    def __init__(self, operand1, operator, operand2):
-        self.operand1 = operand1
-        self.operator = operator
-        self.operand2 = operand2
-    
-    def __repr__(self):
-        if isinstance(self.operand1, BinOpApplication) or \
-           isinstance(self.operand1, UnaryOpApplication):
-            a = "(" + repr(self.operand1) + ")"
-        else:
-            a = repr(self.operand1)
-        if isinstance(self.operand2, BinOpApplication) or \
-           isinstance(self.operand2, UnaryOpApplication):
-            b = "(" + repr(self.operand2) + ")"
-        else:
-            b = repr(self.operand2)
-        return "{} {} {}".format(a, self.operator, b)
-
-class UnaryOpApplication(ASTNode):
-    """A unary operator applied to a single operand."""
-
-    def __init__(self, operator, operand):
-        self.operator = operator
-        self.operand = operand
-
-    def __repr__(self):
-        if isinstance(self.operand, BinOpApplication) or \
-           isinstance(self.operand, UnaryOpApplication):
-            a = "(" + repr(self.operand) + ")"
-        else:
-            a = repr(self.operand)
-            
-        return "-{}".format(a)

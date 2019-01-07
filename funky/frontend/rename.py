@@ -8,6 +8,8 @@ transformed without changing its meaning.
 
 import logging
 
+from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
+
 from funky.util import get_registry_function
 from funky.frontend.sourcetree import *
 
@@ -121,7 +123,7 @@ def import_statement_rename(node, scope):
 
 @rename.register(NewTypeStatement)
 def new_type_statement_rename(node, scope):
-    if node.identifier in scope or node.identifier in primitives:
+    if node.identifier in scope or node.identifier in BUILTIN_PRIMITIVES:
         raise FunkyRenamingError("Duplicate type '{}'.".format(node.identifier))
     rename(node.typ, scope)
 
@@ -139,7 +141,7 @@ def type_declaration_rename(node, scope):
 
 @rename.register(Type)
 def type_rename(node, scope):
-    if node.type_name not in scope and node.type_name not in primitives:
+    if node.type_name not in scope and node.type_name not in BUILTIN_PRIMITIVES:
         raise FunkyRenamingError("Undefined type '{}'.".format(node.type_name))
 
 @rename.register(TupleType)
@@ -296,6 +298,11 @@ def used_var_rename(node, scope):
 def literal_rename(node, scope):
      # literals are always 'sane'. Nothing to do here.
      pass
+
+@rename.register(Functions)
+def builtin_function_rename(node, scope):
+     # builtin functions are always 'sane'. Nothing to do here.
+    pass
 
 @rename.register(InfixExpression)
 def infix_expression_rename(node, scope):

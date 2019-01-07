@@ -2,8 +2,9 @@
 
 from enum import Enum, auto
 
-## BUILTIN TYPES ##
-primitives = ["Float", "Integer", "Bool", "Char"]
+# BUILTIN TYPES
+# These types are recognised by the compiler as 'builtin' -- they do not need
+# to be defined anywhere.
 
 class Primitives(Enum):
     """Primitive types -- the most 'basic' types available."""
@@ -11,6 +12,13 @@ class Primitives(Enum):
     INTEGER  =  auto()
     BOOL     =  auto()
     CHAR     =  auto()
+
+BUILTIN_PRIMITIVES = {
+    "Float"    :  Primitives.FLOAT,
+    "Integer"  :  Primitives.INTEGER,
+    "Bool"     :  Primitives.BOOL,
+    "Char"     :  Primitives.CHAR,
+}
 
 # Mapping of Python types to Funky types.
 python_to_funky = {
@@ -21,11 +29,35 @@ python_to_funky = {
 }
 
 
-## BUILTIN FUNCTIONS ##
-BUILTIN_FUNCTIONS = [
-    "add",
-    "sub",
-    "mul",
-    "div",
-    "pow",
-]
+# BUILTIN FUNCTIONS
+# These functions are recognised by the compiler as 'builtin' -- they do not
+# need to be defined anywhere.
+
+class Functions(Enum):
+    EQUALITY      =  auto()
+    INEQUALITY    =  auto()
+    LESS          =  auto()
+    LEQ           =  auto()
+    GREATER       =  auto()
+    GEQ           =  auto()
+    POW           =  auto()
+    PLUS          =  auto()
+    MINUS         =  auto()
+    TIMES         =  auto()
+    DIVIDE        =  auto()
+    CONSTRUCTOR   =  auto()
+
+BUILTIN_FUNCTIONS = {
+    "=="  :  Functions.EQUALITY,
+    "!="  :  Functions.INEQUALITY,
+    "<"   :  Functions.LESS,
+    "<="  :  Functions.LEQ,
+    ">"   :  Functions.GREATER,
+    ">="  :  Functions.GEQ,
+    "**"  :  Functions.POW,
+    "+"   :  Functions.PLUS,
+    "-"   :  Functions.MINUS,
+    "*"   :  Functions.TIMES,
+    "/"   :  Functions.DIVIDE,
+    ":"   :  Functions.CONSTRUCTOR,
+}

@@ -2,6 +2,6 @@ module test where
 
     True `and` True = True
     _    `and` _    = False
+    setfix right 2 `and`
 
-    setfix left 1 `and`
-    f x y = 2 ** 2 ** 3
+    f x y z = x + y + z

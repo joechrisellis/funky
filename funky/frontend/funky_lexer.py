@@ -96,7 +96,6 @@ class FunkyLexer:
     t_BACKTICK      =  r"`"
     t_COMMA         =  r","
     t_TYPESIG       =  r"::"
-    t_CONSTRUCTOR   =  r":"
     t_PIPE          =  r"\|"
     t_ARROW         =  r"->"
     t_ENDSTATEMENT  =  r";"
@@ -140,6 +139,7 @@ class FunkyLexer:
     t_MINUS         =  r"-"
     t_TIMES         =  r"\*"
     t_DIVIDE        =  r"/"
+    t_CONSTRUCTOR   =  r":"
 
     # Brackets.
     t_OPEN_PAREN    =  r"\("

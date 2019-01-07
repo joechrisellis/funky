@@ -12,7 +12,7 @@ This tree is then 'desugared', resulting in a 'core tree' suitable for
 translation.
 """
 
-from funky.corelang.builtins import python_to_funky, primitives
+from funky.corelang.builtins import python_to_funky
 from funky.frontend import FunkyRenamingError
 from funky.util import output_attributes
 
@@ -266,9 +266,6 @@ class FunctionApplication(ASTNode):
     def __init__(self, func, expression):
         self.func        =  func
         self.expression  =  expression
-    
-    def __repr__(self):
-        return "{} ({})".format(self.func, self.expression)
 
 class Tuple(ASTNode):
     """A tuple of expressions. E.g. (1, 2, 3)."""
@@ -296,9 +293,6 @@ class UsedVar(ASTNode):
 
     def __init__(self, name):
         self.name  =  name
-    
-    def __repr__(self):
-        return self.name
 
 class Literal(ASTNode):
     """Any literal value. Has a value and a type."""
@@ -307,9 +301,6 @@ class Literal(ASTNode):
         self.value  =  value
         self.typ    =  python_to_funky[type(value)]
     
-    def __repr__(self):
-        return repr(self.value)
-
 class InfixExpression(ASTNode):
     """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --
     we perform fixity resolution later, whereby infix expressions become
@@ -318,6 +309,3 @@ class InfixExpression(ASTNode):
 
     def __init__(self, tokens):
         self.tokens = tokens
-
-    def __repr__(self):
-        return " ".join(str(x) for x in self.tokens)

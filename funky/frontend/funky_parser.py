@@ -103,8 +103,7 @@ class FunkyParser:
         if len(p) == 4:
             p[0] = TypeDeclaration(p[1], p[3])
         elif len(p) == 5:
-            fixity.precedence[p[4]] = (p[2], p[3])
-            print(fixity.precedence)
+            fixity.set_fixity(p[4], p[2], p[3])
 
     def p_ASSOCIATIVITY(self, p):
         """ASSOCIATIVITY : LEFTASSOC
@@ -339,6 +338,8 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         else:
+            if p[2] not in fixity.fixities:
+                fixity.set_fixity(p[2], *fixity.DEFAULT_FIXITY)
             p[0] = p[2]
 
     def p_OP(self, p):

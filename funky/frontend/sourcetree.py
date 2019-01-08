@@ -12,7 +12,6 @@ This tree is then 'desugared', resulting in a 'core tree' suitable for
 translation.
 """
 
-from funky.corelang.builtins import python_to_funky
 from funky.frontend import FunkyRenamingError
 from funky.util import output_attributes
 
@@ -105,12 +104,7 @@ class FunctionLHS(ASTNode):
         """
         sig = [self.arity]
         for param in self.parameters:
-            if type(param) == Parameter:
-                sig.append("ID")
-            elif type(param) == Literal:
-                sig.append(param.value)
-            else:
-                sig.append(param.get_pattern_signature())
+            sig.append(param.get_pattern_signature())
 
         return sig
 
@@ -149,13 +143,8 @@ class ConstructorChain(ASTNode):
         self.tail = tail
 
     def get_pattern_signature(self):
-        if type(self.head) == Literal:
-            x = self.head.value
-        elif type(self.head) == Parameter:
-            x = "P"
-        else:
-            x = self.head.get_pattern_signature()
-        return [x, ":"] + [self.tail.get_pattern_signature()]
+        return [self.head.get_pattern_signature(), ":"] + \
+                [self.tail.get_pattern_signature()]
 
 class Pattern(ASTNode):
     """A pattern."""
@@ -164,12 +153,7 @@ class Pattern(ASTNode):
         self.pat  =  pat
 
     def get_pattern_signature(self):
-        if type(self.pat) == Literal:
-            return self.pat.value
-        elif type(self.pat) == Parameter:
-            return "P"
-        else:
-            return self.pat.get_pattern_signature()
+        return self.pat.get_pattern_signature()
 
 class PatternTuple(ASTNode):
     """A tuple-pattern -- i.e. (a, b) or (_, _)."""
@@ -187,7 +171,7 @@ class PatternList(ASTNode):
         self.patterns  =  patterns
 
     def get_pattern_signature(self):
-        return [p.get_pattern_signature() for p in self.patterns]
+        return [[p.get_pattern_signature() for p in self.patterns]]
 
 class Alternative(ASTNode):
     """In a match statement, an alternative is one possible pattern match."""
@@ -246,6 +230,17 @@ class Parameter(ASTNode):
 
     def __init__(self, name):
         self.name  =  name
+    
+    def get_pattern_signature(self):
+        return "PARAM"
+
+class Literal(ASTNode):
+
+    def __init__(self, value):
+        self.value = value
+    
+    def get_pattern_signature(self):
+        return [self.value]
 
 class UsedVar(ASTNode):
     """An object used in some context -- it should exist by the time that it is
@@ -254,13 +249,6 @@ class UsedVar(ASTNode):
 
     def __init__(self, name):
         self.name  =  name
-
-class Literal(ASTNode):
-    """Any literal value. Has a value and a type."""
-
-    def __init__(self, value):
-        self.value  =  value
-        self.typ    =  python_to_funky[type(value)]
     
 class InfixExpression(ASTNode):
     """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --

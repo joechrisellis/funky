@@ -1,3 +1,3 @@
 module test where
-
-    f = 1 : 2 : 3
+    
+    f 0 = 0

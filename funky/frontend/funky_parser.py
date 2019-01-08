@@ -389,7 +389,12 @@ class FunkyParser:
                   | LEQ
                   | GREATER
                   | GEQ
+                  | CONSTRUCTOR
         """
+        p[0] = p[1]
+
+    def p_CONOP(self, p):
+        """CONOP : CONSTRUCTOR"""
         p[0] = p[1]
 
     def p_TYPES_LIST(self, p):

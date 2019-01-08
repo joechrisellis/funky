@@ -49,15 +49,14 @@ class FunkyLexer:
         "WHITESPACE",
 
         # 'control' characters
-        "BACKTICK", "COMMA", "TYPESIG", "CONSTRUCTOR", "PIPE", "ARROW",
-        "ENDSTATEMENT",
+        "BACKTICK", "COMMA", "TYPESIG", "PIPE", "ARROW", "ENDSTATEMENT",
 
         # literals
         "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
 
         # math-related operators
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
-        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE",
+        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "CONSTRUCTOR",
 
         # brackets
         "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",

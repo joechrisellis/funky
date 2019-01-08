@@ -51,15 +51,15 @@ def type_desugar(node):
 @desugar.register(FunctionDefinition)
 def function_definition_desugar(node):
     rhs_expr = desugar(node.rhs) # first, get the expression.
-    lam = desugar(node.lhs, rhs_expr) # then pass it to lhs, making a lambda
-    return lam
+    function_binding = desugar(node.lhs, rhs_expr) # then pass it to lhs
+    return function_binding
 
 @desugar.register(FunctionLHS)
 def function_lhs_desugar(node, rhs_expr):
     lam = rhs_expr
     for p in node.parameters:
         lam = CoreLambda(desugar(p), lam)
-    return lam
+    return CoreBind(node.identifier, lam)
 
 @desugar.register(FunctionRHS)
 def function_rhs_desugar(node):
@@ -79,7 +79,7 @@ def function_rhs_desugar(node):
         on_false = CoreAlt(CoreLiteral(False), match)
         match = CoreMatch(scrutinee, [on_true, on_false])
 
-    return CoreLet(decls, match) if decls else expr
+    return CoreLet(decls, match) if decls else match
 
 @desugar.register(GuardedExpression)
 def guarded_expression_desugar(node):
@@ -103,11 +103,11 @@ def pattern_desugar(node):
 
 @desugar.register(PatternTuple)
 def pattern_tuple_desugar(node):
-    return TupleType(node.items)
+    pass
 
 @desugar.register(PatternList)
 def pattern_list_desugar(node):
-    return ListType(node.items)
+    pass
 
 @desugar.register(Alternative)
 def alternative_desugar(node):
@@ -189,7 +189,6 @@ def do_desugar(source_tree):
     'intermediate code generation'.
     """
     assert source_tree.parsed and source_tree.fixities_resolved
-    print(source_tree)
     desugared = desugar(source_tree)
-    print(desugared)
+    print(str(desugared[0]))
     return desugar(source_tree)

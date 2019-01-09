@@ -60,12 +60,28 @@ class FunkyParser:
 
     def p_TOP_DECLARATION(self, p):
         """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPE
+                           | NEWCONS TYPENAME EQUALS CONSTRUCTORS
                            | DECLARATION
         """
-        if len(p) == 5:
+        if p[1] == "newtype":
             p[0] = NewTypeStatement(p[2], p[4])
+        elif p[1] == "newcons":
+            p[0] = NewConsStatement(p[2], p[4])
         else:
             p[0] = p[1]
+
+    def p_CONSTRUCTORS(self, p):
+        """CONSTRUCTORS : CONSTRUCTORS PIPE CONSTRUCTOR
+                        | CONSTRUCTOR
+        """
+        if len(p) == 4:
+            p[0] = p[1] + [p[3]]
+        else:
+            p[0] = [p[1]]
+
+    def p_CONSTRUCTOR(self, p):
+        """CONSTRUCTOR : TYPENAME ATYPES"""
+        p[0] = ConstructorDefinition(p[1], p[2])
 
     def p_DECLARATIONS(self, p):
         """DECLARATIONS : OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
@@ -122,6 +138,15 @@ class FunkyParser:
             p[0] = p[1]
         else:
             p[0] = FunctionType(p[1], p[3])
+
+    def p_ATYPES(self, p):
+        """ATYPES : ATYPES ATYPE
+                  |
+        """
+        if len(p) == 3:
+            p[0] = p[1] + [p[2]]
+        else:
+            p[0] = []
 
     def p_ATYPE(self, p):
         """ATYPE : TYPENAME
@@ -286,7 +311,7 @@ class FunkyParser:
         p[0] = [Alternative(p[1], p[3])] if len(p) == 4 else []
 
     def p_PAT(self, p):
-        """PAT : LPAT CONSTRUCTOR PAT
+        """PAT : LPAT LIST_CONSTRUCTOR PAT
                | LPAT
         """
         if len(p) == 4:
@@ -298,9 +323,12 @@ class FunkyParser:
         """LPAT : APAT
                 | MINUS OPEN_PAREN INTEGER CLOSE_PAREN
                 | MINUS OPEN_PAREN FLOAT CLOSE_PAREN
+                | GCON APAT APATS
         """
         if len(p) == 2:
             p[0] = p[1]
+        elif len(p) == 4:
+            p[0] = ConstructorPattern(p[1], [p[2]] + p[3])
         else:
             p[0] = Pattern(Literal(-p[3]))
 
@@ -327,11 +355,14 @@ class FunkyParser:
     def p_GCON(self, p):
         """GCON : OPEN_PAREN CLOSE_PAREN
                 | OPEN_SQUARE CLOSE_SQUARE
+                | TYPENAME
         """
         if p[1] == "(":
             p[0] = ()
-        else:
+        elif p[1] == "[":
             p[0] = []
+        else:
+            p[0] = p[1]
 
     def p_VAROP(self, p):
         """VAROP : VARSYM
@@ -393,10 +424,6 @@ class FunkyParser:
         """
         p[0] = p[1]
 
-    def p_CONOP(self, p):
-        """CONOP : CONSTRUCTOR"""
-        p[0] = p[1]
-
     def p_TYPES_LIST(self, p):
         """TYPES_LIST : TYPES_LIST COMMA TYPE
                       | TYPE
@@ -442,4 +469,5 @@ class FunkyParser:
         ast.parsed = True
         ast.fixities_resolved = True
         log.info("Done parsing source, AST created.")
+        print(ast)
         return ast

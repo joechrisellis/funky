@@ -68,6 +68,24 @@ class NewTypeStatement(ASTNode):
         self.identifier  =  identifier
         self.typ         =  typ
 
+class NewConsStatement(ASTNode):
+    
+    def __init__(self, identifier, constructors):
+        self.identifier    =  identifier
+        self.constructors  =  constructors
+
+class ConstructorDefinition(ASTNode):
+
+    def __init__(self, identifier, types):
+        self.identifier  =  identifier
+        self.types       =  types
+
+class ConstructorPattern(ASTNode):
+
+    def __init__(self, typ, parameters):
+        self.typ         =  typ
+        self.parameters  =  parameters
+
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.
         'f :: Integer -> Integer' becomes TypeDeclaration('f', ...)

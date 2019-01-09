@@ -33,18 +33,18 @@ fixities = {
     # Remove backslashes from the lexer regexes for operators. This gets the
     # 'raw' operator string. If the operator lexemes are changed in the lexer,
     # the change is automatically propagated to here.
-    _rmb(FunkyLexer.t_EQUALITY)     :  ("nonassoc",  4),
-    _rmb(FunkyLexer.t_GEQ)          :  ("nonassoc",  4),
-    _rmb(FunkyLexer.t_GREATER)      :  ("nonassoc",  4),
-    _rmb(FunkyLexer.t_INEQUALITY)   :  ("nonassoc",  4),
-    _rmb(FunkyLexer.t_LEQ)          :  ("nonassoc",  4),
-    _rmb(FunkyLexer.t_LESS)         :  ("nonassoc",  4),
-    _rmb(FunkyLexer.t_CONSTRUCTOR)  :  ("right",     5),
-    _rmb(FunkyLexer.t_MINUS)        :  ("left",      6),
-    _rmb(FunkyLexer.t_PLUS)         :  ("left",      6),
-    _rmb(FunkyLexer.t_DIVIDE)       :  ("left",      7),
-    _rmb(FunkyLexer.t_TIMES)        :  ("left",      7),
-    _rmb(FunkyLexer.t_POW)          :  ("right",     8),
+    _rmb(FunkyLexer.t_EQUALITY)          :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_GEQ)               :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_GREATER)           :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_INEQUALITY)        :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_LEQ)               :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_LESS)              :  ("nonassoc",  4),
+    _rmb(FunkyLexer.t_LIST_CONSTRUCTOR)  :  ("right",     5),
+    _rmb(FunkyLexer.t_MINUS)             :  ("left",      6),
+    _rmb(FunkyLexer.t_PLUS)              :  ("left",      6),
+    _rmb(FunkyLexer.t_DIVIDE)            :  ("left",      7),
+    _rmb(FunkyLexer.t_TIMES)             :  ("left",      7),
+    _rmb(FunkyLexer.t_POW)               :  ("right",     8),
 }
 
 def set_fixity(operator, associativity, precedence):

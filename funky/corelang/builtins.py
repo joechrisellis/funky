@@ -33,18 +33,18 @@ python_to_funky = {
 # need to be defined anywhere.
 
 class Functions(Enum):
-    EQUALITY      =  auto()
-    INEQUALITY    =  auto()
-    LESS          =  auto()
-    LEQ           =  auto()
-    GREATER       =  auto()
-    GEQ           =  auto()
-    POW           =  auto()
-    PLUS          =  auto()
-    MINUS         =  auto()
-    TIMES         =  auto()
-    DIVIDE        =  auto()
-    CONSTRUCTOR   =  auto()
+    EQUALITY          =  auto()
+    INEQUALITY        =  auto()
+    LESS              =  auto()
+    LEQ               =  auto()
+    GREATER           =  auto()
+    GEQ               =  auto()
+    POW               =  auto()
+    PLUS              =  auto()
+    MINUS             =  auto()
+    TIMES             =  auto()
+    DIVIDE            =  auto()
+    LIST_CONSTRUCTOR  =  auto()
 
 BUILTIN_FUNCTIONS = {
     "=="  :  Functions.EQUALITY,
@@ -58,5 +58,5 @@ BUILTIN_FUNCTIONS = {
     "-"   :  Functions.MINUS,
     "*"   :  Functions.TIMES,
     "/"   :  Functions.DIVIDE,
-    ":"   :  Functions.CONSTRUCTOR,
+    ":"   :  Functions.LIST_CONSTRUCTOR,
 }

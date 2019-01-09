@@ -27,6 +27,7 @@ class FunkyLexer:
         "import"    :  "IMPORT",
         "as"        :  "AS",
         "newtype"   :  "NEWTYPE",
+        "newcons"   :  "NEWCONS",
         "let"       :  "LET",
         "in"        :  "IN",
         "if"        :  "IF",
@@ -56,7 +57,7 @@ class FunkyLexer:
 
         # math-related operators
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
-        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "CONSTRUCTOR",
+        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "LIST_CONSTRUCTOR",
 
         # brackets
         "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",
@@ -126,19 +127,19 @@ class FunkyLexer:
         return t
 
     # Math operators.
-    t_EQUALITY      =  r"=="
-    t_INEQUALITY    =  r"!="
-    t_LESS          =  r"<"
-    t_LEQ           =  r"<="
-    t_GREATER       =  r">"
-    t_GEQ           =  r">="
-    t_EQUALS        =  r"="
-    t_POW           =  r"\*\*"
-    t_PLUS          =  r"\+"
-    t_MINUS         =  r"-"
-    t_TIMES         =  r"\*"
-    t_DIVIDE        =  r"/"
-    t_CONSTRUCTOR   =  r":"
+    t_EQUALITY          =  r"=="
+    t_INEQUALITY        =  r"!="
+    t_LESS              =  r"<"
+    t_LEQ               =  r"<="
+    t_GREATER           =  r">"
+    t_GEQ               =  r">="
+    t_EQUALS            =  r"="
+    t_POW               =  r"\*\*"
+    t_PLUS              =  r"\+"
+    t_MINUS             =  r"-"
+    t_TIMES             =  r"\*"
+    t_DIVIDE            =  r"/"
+    t_LIST_CONSTRUCTOR  =  r":"
 
     # Brackets.
     t_OPEN_PAREN    =  r"\("

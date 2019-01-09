@@ -1,3 +1,6 @@
 module test where
     
-    f 0 = 0
+    newcons Tree = Branch Integer Tree Tree | Leaf Integer
+
+    is_leaf (Leaf n) = True
+    is_leaf _ = False

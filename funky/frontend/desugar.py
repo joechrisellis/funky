@@ -25,7 +25,8 @@ def program_body_desugar(node):
     # TODO: imports should already be in the parse tree by now, so no need to
     #       do anything with imports.
 
-    # we will end up with a list of binds.
+    # we will end up with a list of binds, type/cons definitions, and type
+    # declarations.
     return [desugar(t) for t in node.toplevel_declarations]
 
 @desugar.register(ImportStatement)
@@ -37,16 +38,26 @@ def new_type_statement_desugar(node):
     typ = desugar(node.typ)
     return CoreBind(node.identifier, typ)
 
+@desugar.register(NewConsStatement)
+def new_cons_statement_desugar(node):
+    constructors = [desugar(d) for d in node.constructors]
+    the_adt = AlgebraicDataType(None, constructors)
+    return CoreBind(node.identifier, the_adt)
+
+@desugar.register(ConstructorType)
+def constructor_definition_desugar(node):
+    parameters = [desugar(t) for t in node.parameters]
+    return CoreCons(node.identifier, parameters)
+
+@desugar.register(ConstructorPattern)
+def constructor_pattern_desugar(node):
+    parameters = [desugar(p) for p in node.parameters]
+    return CoreCons(node.typ, parameters)
+
 @desugar.register(TypeDeclaration)
 def type_declaration_desugar(node):
     typ = desugar(node.typ)
     return CoreTypeDeclaration(node.identifier, typ)
-
-@desugar.register(Type)
-def type_desugar(node):
-    # 'Type' is fine as it is. We don't need to desugar it; it is already a
-    # minimal representation of a type. See types.py.
-    return node
 
 @desugar.register(FunctionDefinition)
 def function_definition_desugar(node):
@@ -89,8 +100,8 @@ def guarded_expression_desugar(node):
 
 @desugar.register(PatternDefinition)
 def pattern_definition_desugar(node):
-    # TODO
-    pass
+    # TODO: e.g. (x, y) = 1, 2
+    return CoreBind
 
 @desugar.register(ConstructorChain)
 def constructor_chain_desugar(node):
@@ -99,7 +110,7 @@ def constructor_chain_desugar(node):
 
 @desugar.register(Pattern)
 def pattern_desugar(node):
-    return desugar(node.pat)
+    return CorePattern(desugar(node.pat))
 
 @desugar.register(PatternTuple)
 def pattern_tuple_desugar(node):
@@ -144,7 +155,9 @@ def if_desugar(node):
 def match_desugar(node):
     # TODO: apparently this is quite involved when it comes to pattern matching
     # -- job for tomorrow!
-    pass
+    scrutinee = desugar(node.expression)
+    alternatives = [desugar(a) for a in node.alternatives]
+    return CoreMatch(scrutinee, alternatives)
 
 @desugar.register(FunctionApplication)
 def function_application_desugar(node):
@@ -183,6 +196,22 @@ def infix_expression_desugar(node):
     raise RuntimeError("Infix expression nodes exist in the tree -- fixity " \
                        "resolution has not been performed.")
 
+@desugar.register(Type)
+def type_desugar(node):
+    return node
+
+@desugar.register(TupleType)
+def tuple_type_desugar(node):
+    return node
+
+@desugar.register(ListType)
+def list_type_desugar(node):
+    return node
+
+@desugar.register(FunctionType)
+def function_type_desugar(node):
+    return node
+
 def do_desugar(source_tree):
     """Desugars the AST, reducing complex syntactic structures down into a
     simple core language for easier translation later. This constitutes
@@ -190,5 +219,5 @@ def do_desugar(source_tree):
     """
     assert source_tree.parsed and source_tree.fixities_resolved
     desugared = desugar(source_tree)
-    print(str(desugared[0]))
-    return desugar(source_tree)
+    print("\n".join(repr(d) for d in desugared))
+    return desugared

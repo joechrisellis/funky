@@ -26,6 +26,7 @@ class TupleType(Type):
 
 class ListType(Type):
     """A list-type --  e.g. [Integer]."""
+    # TODO: refactor this out to an instance of algebraic data type.
 
     def __init__(self, typ):
         self.typ  =  typ
@@ -36,3 +37,19 @@ class FunctionType(Type):
     def __init__(self, input_type, output_type):
         self.input_type   =  input_type
         self.output_type  =  output_type
+
+class AlgebraicDataType(Type):
+    """An algebraic data type defined with the 'newcons' keyword. These are
+    used in pattern matching.
+    """
+    
+    def __init__(self, context, constructors):
+        self.context       =  context
+        self.constructors  =  constructors
+
+class ConstructorType(Type):
+    """A constructor type under an algebraic data type."""
+
+    def __init__(self, identifier, parameters):
+        self.identifier  =  identifier
+        self.parameters  =  parameters

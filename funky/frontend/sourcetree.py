@@ -74,18 +74,15 @@ class NewConsStatement(ASTNode):
         self.identifier    =  identifier
         self.constructors  =  constructors
 
-class ConstructorDefinition(ASTNode):
-
-    def __init__(self, identifier, types):
-        self.identifier  =  identifier
-        self.types       =  types
-
 class ConstructorPattern(ASTNode):
 
     def __init__(self, typ, parameters):
         self.typ         =  typ
         self.parameters  =  parameters
         self.arity       =  len(parameters)
+
+    def get_pattern_signature(self):
+        return [self.typ, *[p.get_pattern_signature() for p in self.parameters]]
 
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.
@@ -190,7 +187,7 @@ class PatternList(ASTNode):
         self.patterns  =  patterns
 
     def get_pattern_signature(self):
-        return [[p.get_pattern_signature() for p in self.patterns]]
+        return [p.get_pattern_signature() for p in self.patterns]
 
 class Alternative(ASTNode):
     """In a match statement, an alternative is one possible pattern match."""
@@ -259,7 +256,7 @@ class Literal(ASTNode):
         self.value = value
     
     def get_pattern_signature(self):
-        return [self.value]
+        return self.value
 
 class UsedVar(ASTNode):
     """An object used in some context -- it should exist by the time that it is

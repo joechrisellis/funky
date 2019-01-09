@@ -6,7 +6,8 @@ from funky.frontend import FunkySyntaxError
 import funky.frontend.fixity as fixity
 
 from funky.frontend.sourcetree import *
-from funky.corelang.types import Type, TupleType, ListType, FunctionType
+from funky.corelang.types import Type, TupleType, ListType, FunctionType, \
+                                 ConstructorType
 from funky.corelang.coretree import CoreTuple, CoreList
 
 log = logging.getLogger(__name__)
@@ -81,7 +82,7 @@ class FunkyParser:
 
     def p_CONSTRUCTOR(self, p):
         """CONSTRUCTOR : TYPENAME ATYPES"""
-        p[0] = ConstructorDefinition(p[1], p[2])
+        p[0] = ConstructorType(p[1], p[2])
 
     def p_DECLARATIONS(self, p):
         """DECLARATIONS : OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE

@@ -10,6 +10,18 @@ class CoreNode:
 
     __repr__ = output_attributes
 
+class CoreTypeDeclaration(CoreNode):
+
+    def __init__(self, identifier, typ):
+        self.identifier  =  identifier
+        self.typ         =  typ
+
+class CoreCons(CoreNode):
+
+    def __init__(self, constructor, parameters):
+        self.constructor  =  constructor
+        self.parameters   =  parameters
+
 class CoreVariable(CoreNode):
 
     def __init__(self, identifier):
@@ -42,14 +54,8 @@ class CoreLet(CoreNode):
 class CoreMatch(CoreNode):
     
     def __init__(self, scrutinee, alts):
-        self.scrutinee     =  scrutinee
-        self.alts          =  alts
-
-class CoreTypeDeclaration(CoreNode):
-
-    def __init__(self, identifier, typ):
-        self.identifier  =  identifier
-        self.typ         =  typ
+        self.scrutinee  =  scrutinee
+        self.alts       =  alts
 
 class CoreAlt(CoreNode):
     
@@ -76,9 +82,15 @@ class LiteralAlt(CoreAltCon):
 
 class CoreBind(CoreNode):
 
-    def __init__(self, identifier, expr):
+    def __init__(self, identifier, bindee):
         self.identifier  =  identifier
-        self.expr        =  expr
+        self.bindee      =  bindee
+
+class CorePattern(CoreNode):
+
+    def __init__(self, constructor, parameters):
+        self.constructor  =  constructor
+        self.parameters   =  parameters
 
 class CoreTuple(CoreNode):
     

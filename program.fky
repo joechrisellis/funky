@@ -1,5 +1,6 @@
 module test where
 
-    newtype Vector = (Integer, Integer)
-    newtype Scalar = Integer
-    newcons Quantity = V Vector | S Scalar
+    newcons BinTree = Node (BinTree, Integer, BinTree) | Leaf Integer
+
+    sum (Leaf x) = x
+    sum (Node (l, v, r)) = v + sum l + sum r

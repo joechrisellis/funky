@@ -129,9 +129,7 @@ def new_type_statement_rename(node, scope):
         raise FunkyRenamingError("Duplicate type '{}'.".format(node.identifier))
     rename(node.typ, scope)
 
-    newid = scope.get_unique_id()
-    scope[node.identifier] = newid
-    node.identifier = newid
+    scope[node.identifier] = node.identifier
 
 @rename.register(NewConsStatement)
 def new_cons_statement_rename(node, scope):
@@ -148,16 +146,16 @@ def new_cons_statement_rename(node, scope):
     for cons in node.constructors:
         rename(cons, scope)
 
-@rename.register(ConstructorDefinition)
-def constructor_definition_rename(node, scope):
+@rename.register(ConstructorType)
+def constructor_type_rename(node, scope):
     # anything goes for the node's identifier itself -- however, the types
     # beneath it must be valid.
     if node.identifier in scope:
         raise FunkyRenamingError("Duplicate usage of constructor " \
                                  "'{}'.".format(node.identifier))
     scope[node.identifier] = node.identifier
-    for typ in node.types:
-        rename(typ, scope)
+    for param in node.parameters:
+        rename(param, scope)
 
 @rename.register(ConstructorPattern)
 def constructor_pattern_rename(node, scope):
@@ -166,7 +164,7 @@ def constructor_pattern_rename(node, scope):
                                  "defined.".format(node.typ))
     
     for param in node.parameters:
-        rename(param, scopes)
+        rename(param, scope)
 
 @rename.register(TypeDeclaration)
 def type_declaration_rename(node, scope):
@@ -202,6 +200,7 @@ def function_definition_rename(node, scope):
 
     if node.lhs.identifier in scope.local:
         scope[node.lhs.identifier][1].append(node.lhs.get_parameter_signature())
+        print("!!!!!!", node.lhs.get_parameter_signature())
     else:
         newid = scope.get_unique_id()
         scope[node.lhs.identifier] = [newid, [node.lhs.get_parameter_signature()]]

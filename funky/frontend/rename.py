@@ -133,6 +133,41 @@ def new_type_statement_rename(node, scope):
     scope[node.identifier] = newid
     node.identifier = newid
 
+@rename.register(NewConsStatement)
+def new_cons_statement_rename(node, scope):
+    if node.identifier in scope:
+        raise FunkyRenamingError("Duplicate definition of constructor type " \
+                                 "'{}'.".format(node.identifier))
+    elif node.identifier in BUILTIN_PRIMITIVES:
+        raise FunkyRenamingError("Cannot define type with builtin name " \
+                                 "'{}'.".format(node.identifier))
+
+    # we don't rename the type, only the variables
+    scope[node.identifier] = node.identifier
+    
+    for cons in node.constructors:
+        rename(cons, scope)
+
+@rename.register(ConstructorDefinition)
+def constructor_definition_rename(node, scope):
+    # anything goes for the node's identifier itself -- however, the types
+    # beneath it must be valid.
+    if node.identifier in scope:
+        raise FunkyRenamingError("Duplicate usage of constructor " \
+                                 "'{}'.".format(node.identifier))
+    scope[node.identifier] = node.identifier
+    for typ in node.types:
+        rename(typ, scope)
+
+@rename.register(ConstructorPattern)
+def constructor_pattern_rename(node, scope):
+    if node.typ not in scope:
+        raise FunkyRenamingError("Constructor '{}' not " \
+                                 "defined.".format(node.typ))
+    
+    for param in node.parameters:
+        rename(param, scopes)
+
 @rename.register(TypeDeclaration)
 def type_declaration_rename(node, scope):
     # We do not add the identifier to the scope -- simply defining the type

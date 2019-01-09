@@ -345,6 +345,8 @@ class FunkyParser:
                 p[0] = PatternTuple(p[1])
             elif p[1] == []:
                 p[0] = PatternList(p[1])
+            elif type(p[1]) == str:
+                p[0] = ConstructorPattern(p[1], [])
             else:
                 p[0] = p[1]
         elif len(p) == 4:

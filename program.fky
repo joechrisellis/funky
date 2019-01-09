@@ -1,6 +1,5 @@
 module test where
-    
-    newcons Tree = Branch Integer Tree Tree | Leaf Integer
 
-    is_leaf (Leaf n) = True
-    is_leaf _ = False
+    newtype Vector = (Integer, Integer)
+    newtype Scalar = Integer
+    newcons Quantity = V Vector | S Scalar

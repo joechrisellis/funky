@@ -85,6 +85,7 @@ class ConstructorPattern(ASTNode):
     def __init__(self, typ, parameters):
         self.typ         =  typ
         self.parameters  =  parameters
+        self.arity       =  len(parameters)
 
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.

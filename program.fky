@@ -1,6 +1,4 @@
 module test where
 
-    newcons BinTree = Node (BinTree, Integer, BinTree) | Leaf Integer
-
-    sum (Leaf x) = x
-    sum (Node (l, v, r)) = v + sum l + sum r
+    newcons Tree = Branch Integer
+    f = lambda (Branch n) -> n

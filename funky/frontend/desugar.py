@@ -68,7 +68,7 @@ def function_definition_desugar(node):
 @desugar.register(FunctionLHS)
 def function_lhs_desugar(node, rhs_expr):
     lam = rhs_expr
-    for p in node.parameters:
+    for p in reversed(node.parameters):
         lam = CoreLambda(desugar(p), lam)
     return CoreBind(node.identifier, lam)
 
@@ -101,7 +101,9 @@ def guarded_expression_desugar(node):
 @desugar.register(PatternDefinition)
 def pattern_definition_desugar(node):
     # TODO: e.g. (x, y) = 1, 2
-    return CoreBind
+    pat = desugar(node.pattern)
+    expr = desugar(node.expression)
+    return CoreBind(pat, expr)
 
 @desugar.register(ConstructorChain)
 def constructor_chain_desugar(node):
@@ -110,7 +112,7 @@ def constructor_chain_desugar(node):
 
 @desugar.register(Pattern)
 def pattern_desugar(node):
-    return CorePattern(desugar(node.pat))
+    return CoreCons(desugar(node.pat))
 
 @desugar.register(PatternTuple)
 def pattern_tuple_desugar(node):
@@ -165,28 +167,23 @@ def function_application_desugar(node):
     expr = desugar(node.expression)
     return CoreApplication(func, expr)
 
-@desugar.register(CoreTuple)
-def tuple_desugar(node):
-    return node # tuples are already 'core' from the parser
-
-@desugar.register(CoreList)
-def list_desugar(node):
-    return node # lists are already 'core' from the parser
-
 @desugar.register(Parameter)
-def parameter_desugar(node):
-    return CoreVariable(node.name)
-
 @desugar.register(UsedVar)
-def used_var_desugar(node):
+def variable_desugar(node):
     return CoreVariable(node.name)
 
 @desugar.register(Literal)
 def literal_desugar(node):
     return CoreLiteral(node.value)
 
+@desugar.register(CoreTuple)
+@desugar.register(CoreList)
 @desugar.register(Functions)
-def builtin_function_desugar(node):
+@desugar.register(Type)
+@desugar.register(TupleType)
+@desugar.register(ListType)
+@desugar.register(FunctionType)
+def noop_desugar(node):
     # default functions -- we must acknowledge these when we translate to C. No
     # further work here.
     return node
@@ -195,22 +192,6 @@ def builtin_function_desugar(node):
 def infix_expression_desugar(node):
     raise RuntimeError("Infix expression nodes exist in the tree -- fixity " \
                        "resolution has not been performed.")
-
-@desugar.register(Type)
-def type_desugar(node):
-    return node
-
-@desugar.register(TupleType)
-def tuple_type_desugar(node):
-    return node
-
-@desugar.register(ListType)
-def list_type_desugar(node):
-    return node
-
-@desugar.register(FunctionType)
-def function_type_desugar(node):
-    return node
 
 def do_desugar(source_tree):
     """Desugars the AST, reducing complex syntactic structures down into a

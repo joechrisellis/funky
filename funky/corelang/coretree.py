@@ -86,12 +86,6 @@ class CoreBind(CoreNode):
         self.identifier  =  identifier
         self.bindee      =  bindee
 
-class CorePattern(CoreNode):
-
-    def __init__(self, constructor, parameters):
-        self.constructor  =  constructor
-        self.parameters   =  parameters
-
 class CoreTuple(CoreNode):
     
     def __init__(self, items):

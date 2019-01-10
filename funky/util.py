@@ -31,14 +31,15 @@ def output_attributes(self):
 # This might look ugly, but the logic of it is simple and it allows us to use a
 # trivial interface for tree-walking, so it's well worth using your brain power
 # to understand it!
-def get_registry_function():
+def get_registry_function(throw_err=True):
     """Gets a registry function. Read docstring for 'register' below."""
     def f(obj, *args, **kwargs):
         try:
             return f.register.registry[type(obj)](obj, *args, **kwargs)
         except KeyError:
-            raise RuntimeError("No function registered for " \
-                               "'{}'.".format(type(obj)))
+            if throw_err:
+                raise RuntimeError("No function registered for " \
+                                   "'{}'.".format(type(obj)))
 
     def register(typ):
         """Nifty decorator that allows us to map a particular type to a

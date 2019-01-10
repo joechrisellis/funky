@@ -297,6 +297,7 @@ def match_rename(node, scope):
 
 @rename.register(FunctionApplication)
 def function_application_rename(node, scope):
+    print(node)
     rename(node.func, scope)
     rename(node.expression, scope)
 

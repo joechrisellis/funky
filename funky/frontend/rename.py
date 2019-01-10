@@ -10,23 +10,12 @@ import logging
 
 from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
 
-from funky.util import get_registry_function
+from funky.util import get_registry_function, get_unique_varname
 from funky.frontend.sourcetree import *
 from funky.corelang.types import *
 from funky.corelang.coretree import CoreTuple, CoreList
 
-from itertools import count, product
-from string import ascii_lowercase
-
 log = logging.getLogger(__name__)
-
-def string_generator():
-    """Generator that yields as many strings as you need. Returns (a, b, ...,
-    aa, ab, ...).
-    """
-    for i in count():
-        for t in product(ascii_lowercase, repeat=i+1):
-            yield "".join(t)
 
 class Scope:
     """A scope maps identifiers to arbitrary items."""
@@ -34,7 +23,6 @@ class Scope:
     def __init__(self, parent=None):
         self.local = {}
         self.parent = parent
-        self.varname_gen = parent.varname_gen if parent else string_generator()
 
     def search(self, item):
         """Searches the local scope for the item.
@@ -64,9 +52,6 @@ class Scope:
             return self.parent.rsearch(item)
         else:
             return None
-
-    def get_unique_id(self):
-        return "{}".format(next(self.varname_gen))
 
     def __getitem__(self, key):
         """Recursively searches the scope for a given key and returns it.
@@ -202,7 +187,7 @@ def function_definition_rename(node, scope):
         scope[node.lhs.identifier][1].append(node.lhs.get_parameter_signature())
         print("!!!!!!", node.lhs.get_parameter_signature())
     else:
-        newid = scope.get_unique_id()
+        newid = get_unique_varname()
         scope[node.lhs.identifier] = [newid, [node.lhs.get_parameter_signature()]]
 
     node.lhs.identifier = scope[node.lhs.identifier][0]
@@ -317,7 +302,7 @@ def parameter_rename(node, scope):
        node.name != "_": # _ is the special wildcard variable
         raise FunkyRenamingError("Duplicate definition of parameter " \
                                  "'{}'.".format(node.name))
-    newid = scope.get_unique_id()
+    newid = get_unique_varname()
     scope[node.name] = newid
     node.name = newid
 

@@ -1,4 +1,5 @@
 module test where
 
-    newcons Tree = Branch Integer
-    f = lambda (Branch n) -> n
+    newcons Wrapper = W Integer
+
+    add = lambda (W x) (W y) -> x + y

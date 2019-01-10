@@ -12,7 +12,7 @@ from funky.corelang.coretree import *
 from funky.corelang.types import *
 from funky.frontend.sourcetree import *
 
-from funky.util import get_registry_function
+from funky.util import get_registry_function, get_unique_varname
 
 desugar = get_registry_function()
 
@@ -133,7 +133,16 @@ def alternative_desugar(node):
 def lambda_desugar(node):
     lam = desugar(node.expression)
     for p in reversed(node.parameters):
-        lam = CoreLambda(desugar(p), lam)
+        p = desugar(p)
+        if isinstance(p, CoreCons):
+            # the parameter is a pattern -- desugar it to a match structure.
+            on_match = CoreAlt(p, lam)
+            no_match = CoreAlt(CoreVariable("_"), None)
+            scrutinee = CoreVariable(get_unique_varname())
+            match_structure = CoreMatch(scrutinee, [on_match, no_match])
+            lam = CoreLambda(scrutinee, match_structure)
+        else:
+            lam = CoreLambda(p, lam)
     return lam
 
 @desugar.register(Let)

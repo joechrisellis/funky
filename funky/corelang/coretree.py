@@ -63,23 +63,6 @@ class CoreAlt(CoreNode):
         self.altcon   =  altcon
         self.expr     =  expr
 
-class CoreAltCon(CoreAlt):
-    pass
-
-class DataAlt(CoreAltCon):
-    
-    def __init__(self, data_con):
-        self.data_con = data_con
-
-class LiteralAlt(CoreAltCon):
-    """An alternative which eventually boils down to a single literal. I.e. 1
-    or 'c'. This kind of alternative is not 'pattern matching' in the
-    traditional sense.
-    """
-
-    def __init__(self, literal):
-        self.literal = literal
-
 class CoreBind(CoreNode):
 
     def __init__(self, identifier, bindee):

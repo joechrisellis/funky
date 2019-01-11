@@ -8,7 +8,7 @@ import funky.frontend.fixity as fixity
 from funky.frontend.sourcetree import *
 from funky.corelang.types import Type, TupleType, ListType, FunctionType, \
                                  ConstructorType
-from funky.corelang.coretree import CoreTuple, CoreList
+from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
 
 log = logging.getLogger(__name__)
 
@@ -170,14 +170,14 @@ class FunkyParser:
                         | PAT VAROP PAT
                         | OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
         """
-        if type(p[1]) in [Pattern, ConstructorChain]:
-            p[0] = FunctionLHS(p[2], [p[1], p[3]])
+        if type(p[1]) == str:
+            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
         elif p[1] == "(":
             p[0] = p[2]
             p[0].parameters.append(p[4])
             p[0].parameters.extend(p[5])
         else:
-            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
+            p[0] = FunctionLHS(p[2], [p[1], p[3]])
 
     def p_RHS(self, p):
         """RHS : EQUALS EXP
@@ -280,9 +280,11 @@ class FunkyParser:
         """
         if len(p) == 2:
             if p[1] == ():
-                p[0] = PatternTuple(p[1])
+                p[0] = CoreTuple(p[1])
             elif p[1] == []:
-                p[0] = PatternTuple(p[1])
+                p[0] = CoreList(p[1])
+            elif type(p[1]) == str:
+                p[0] = UsedVar(p[1])
             else:
                 p[0] = p[1]
         elif p[1] == "(":
@@ -329,9 +331,9 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 4:
-            p[0] = ConstructorPattern(p[1], [p[2]] + p[3])
+            p[0] = CoreCons(p[1], [p[2]] + p[3])
         else:
-            p[0] = Pattern(Literal(-p[3]))
+            p[0] = Literal(-p[3])
 
     def p_APAT(self, p):
         """APAT : PARAM
@@ -343,17 +345,17 @@ class FunkyParser:
         """
         if len(p) == 2:
             if p[1] == ():
-                p[0] = PatternTuple(p[1])
+                p[0] = CoreTuple(p[1])
             elif p[1] == []:
-                p[0] = PatternList(p[1])
+                p[0] = CoreList(p[1])
             elif type(p[1]) == str:
-                p[0] = ConstructorPattern(p[1], [])
+                p[0] = UsedVar(p[1])
             else:
                 p[0] = p[1]
         elif len(p) == 4:
             p[0] = p[2]
         else:
-            p[0] = PatternTuple((p[2], *p[4].patterns))
+            p[0] = CoreTuple((p[2], *p[4].patterns))
 
     def p_GCON(self, p):
         """GCON : OPEN_PAREN CLOSE_PAREN
@@ -409,7 +411,7 @@ class FunkyParser:
             p[0] = p[1]
             p[0].patterns.append(p[3])
         else:
-            p[0] = PatternList([p[1]])
+            p[0] = CoreList([p[1]])
 
     def p_VARSYM(self, p):
         """VARSYM : PLUS
@@ -472,5 +474,4 @@ class FunkyParser:
         ast.parsed = True
         ast.fixities_resolved = True
         log.info("Done parsing source, AST created.")
-        print(ast)
         return ast

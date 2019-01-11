@@ -73,16 +73,7 @@ class NewConsStatement(ASTNode):
     def __init__(self, identifier, constructors):
         self.identifier    =  identifier
         self.constructors  =  constructors
-
-class ConstructorPattern(ASTNode):
-
-    def __init__(self, typ, parameters):
-        self.typ         =  typ
-        self.parameters  =  parameters
-        self.arity       =  len(parameters)
-
-    def get_pattern_signature(self):
-        return [self.typ, *[p.get_pattern_signature() for p in self.parameters]]
+        print(self)
 
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.
@@ -161,33 +152,6 @@ class ConstructorChain(ASTNode):
     def get_pattern_signature(self):
         return [self.head.get_pattern_signature(), ":"] + \
                 [self.tail.get_pattern_signature()]
-
-class Pattern(ASTNode):
-    """A pattern."""
-
-    def __init__(self, pat):
-        self.pat  =  pat
-
-    def get_pattern_signature(self):
-        return self.pat.get_pattern_signature()
-
-class PatternTuple(ASTNode):
-    """A tuple-pattern -- i.e. (a, b) or (_, _)."""
-
-    def __init__(self, patterns):
-        self.patterns = patterns
-
-    def get_pattern_signature(self):
-        return tuple([p.get_pattern_signature() for p in self.patterns])
-
-class PatternList(ASTNode):
-    """A list pattern -- i.e. [a, b]."""
-
-    def __init__(self, patterns):
-        self.patterns  =  patterns
-
-    def get_pattern_signature(self):
-        return [p.get_pattern_signature() for p in self.patterns]
 
 class Alternative(ASTNode):
     """In a match statement, an alternative is one possible pattern match."""

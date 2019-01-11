@@ -7,77 +7,77 @@ our intermediate language. This translation involves, for instance:
 This module is responsible for doing just that.
 """
 
+from collections import OrderedDict
+
+from funky.util import get_registry_function, get_unique_varname
+from funky.misc.scope import Scope
+
 from funky.corelang.builtins import Functions
 from funky.corelang.coretree import *
 from funky.corelang.types import *
 from funky.frontend.sourcetree import *
 
-from funky.util import get_registry_function, get_unique_varname
+from funky.frontend import FunkyDesugarError
 
 desugar = get_registry_function()
 
 @desugar.register(Module)
-def module_desugar(node):
-    return desugar(node.body)
+def module_desugar(node, scope=Scope()):
+    return desugar(node.body, scope)
 
 @desugar.register(ProgramBody)
-def program_body_desugar(node):
+def program_body_desugar(node, scope):
     # TODO: imports should already be in the parse tree by now, so no need to
     #       do anything with imports.
 
     # we will end up with a list of binds, type/cons definitions, and type
     # declarations.
-    return [desugar(t) for t in node.toplevel_declarations]
+    return [desugar(t, scope) for t in node.toplevel_declarations]
 
 @desugar.register(ImportStatement)
-def import_statement_desugar(node):
+def import_statement_desugar(node, scope):
     raise NotImplementedError
 
 @desugar.register(NewTypeStatement)
-def new_type_statement_desugar(node):
-    typ = desugar(node.typ)
+def new_type_statement_desugar(node, scope):
+    typ = desugar(node.typ, scope)
     return CoreBind(node.identifier, typ)
 
 @desugar.register(NewConsStatement)
-def new_cons_statement_desugar(node):
-    constructors = [desugar(d) for d in node.constructors]
+def new_cons_statement_desugar(node, scope):
+    constructors = [desugar(d, scope) for d in node.constructors]
     the_adt = AlgebraicDataType(None, constructors)
     return CoreBind(node.identifier, the_adt)
 
 @desugar.register(ConstructorType)
-def constructor_definition_desugar(node):
-    parameters = [desugar(t) for t in node.parameters]
+def constructor_definition_desugar(node, scope):
+    parameters = [desugar(t, scope) for t in node.parameters]
     return CoreCons(node.identifier, parameters)
 
-@desugar.register(ConstructorPattern)
-def constructor_pattern_desugar(node):
-    parameters = [desugar(p) for p in node.parameters]
-    return CoreCons(node.typ, parameters)
-
 @desugar.register(TypeDeclaration)
-def type_declaration_desugar(node):
-    typ = desugar(node.typ)
+def type_declaration_desugar(node, scope):
+    typ = desugar(node.typ, scope)
     return CoreTypeDeclaration(node.identifier, typ)
 
 @desugar.register(FunctionDefinition)
-def function_definition_desugar(node):
-    rhs_expr = desugar(node.rhs) # first, get the expression.
-    function_binding = desugar(node.lhs, rhs_expr) # then pass it to lhs
+def function_definition_desugar(node, scope):
+    rhs_expr = desugar(node.rhs, scope) # first, get the expression.
+    function_binding = desugar(node.lhs, rhs_expr, scope) # then pass it to lhs
     return function_binding
 
 @desugar.register(FunctionLHS)
-def function_lhs_desugar(node, rhs_expr):
+def function_lhs_desugar(node, rhs_expr, scope):
     lam = rhs_expr
     for p in reversed(node.parameters):
-        lam = CoreLambda(desugar(p), lam)
+        lam = CoreLambda(desugar(p, scope), lam)
     return CoreBind(node.identifier, lam)
 
 @desugar.register(FunctionRHS)
-def function_rhs_desugar(node):
-    decls = [desugar(d) for d in node.declarations]
+def function_rhs_desugar(node, scope):
+    decls = [desugar(d, scope) for d in node.declarations]
 
     if len(node.expressions) == 1:
-        expr = desugar(node.expressions[0])
+        expr = desugar(node.expressions[0], scope)
         return CoreLet(decls, expr) if decls else expr
 
     # convert the guarded expressions into a match statement. To do this,
@@ -85,7 +85,7 @@ def function_rhs_desugar(node):
     # reverse order.
     match = None
     for guarded_expr in reversed(node.expressions):
-        scrutinee, expr = desugar(guarded_expr)
+        scrutinee, expr = desugar(guarded_expr, scope)
         on_true = CoreAlt(CoreLiteral(True), expr)
         on_false = CoreAlt(CoreLiteral(False), match)
         match = CoreMatch(scrutinee, [on_true, on_false])
@@ -93,47 +93,34 @@ def function_rhs_desugar(node):
     return CoreLet(decls, match) if decls else match
 
 @desugar.register(GuardedExpression)
-def guarded_expression_desugar(node):
-    cond = desugar(node.guard_condition)
-    expr = desugar(node.expression)
-    return cond, LiteralAlt(expr)
+def guarded_expression_desugar(node, scope):
+    cond = desugar(node.guard_condition, scope)
+    expr = desugar(node.expression, scope)
+    return cond, expr
 
 @desugar.register(PatternDefinition)
-def pattern_definition_desugar(node):
+def pattern_definition_desugar(node, scope):
     # TODO: e.g. (x, y) = 1, 2
-    pat = desugar(node.pattern)
-    expr = desugar(node.expression)
+    pat = desugar(node.pattern, scope)
+    expr = desugar(node.expression, scope)
     return CoreBind(pat, expr)
 
 @desugar.register(ConstructorChain)
-def constructor_chain_desugar(node):
+def constructor_chain_desugar(node, scope):
     # TODO: create a primitive list type.
     pass
 
-@desugar.register(Pattern)
-def pattern_desugar(node):
-    return CoreCons(desugar(node.pat))
-
-@desugar.register(PatternTuple)
-def pattern_tuple_desugar(node):
-    pass
-
-@desugar.register(PatternList)
-def pattern_list_desugar(node):
-    pass
-
 @desugar.register(Alternative)
-def alternative_desugar(node):
-    pat = desugar(node.pattern)
-    expression = desugar(node.expression)
-    alt_con = DataAlt(pat)
-    return CoreAlt(alt_con, expr)
+def alternative_desugar(node, scope):
+    pat = desugar(node.pattern, scope)
+    expression = desugar(node.expression, scope)
+    return CoreAlt(pat, expr)
 
 @desugar.register(Lambda)
-def lambda_desugar(node):
-    lam = desugar(node.expression)
+def lambda_desugar(node, scope):
+    lam = desugar(node.expression, scope)
     for p in reversed(node.parameters):
-        p = desugar(p)
+        p = desugar(p, scope)
         if isinstance(p, CoreCons):
             # the parameter is a pattern -- desugar it to a match structure.
             on_match = CoreAlt(p, lam)
@@ -146,45 +133,46 @@ def lambda_desugar(node):
     return lam
 
 @desugar.register(Let)
-def let_desugar(node):
-    decls = [desugar(d) for d in node.declarations]
-    expr = desugar(node.expression)
+def let_desugar(node, scope):
+    decls = [desugar(d, scope) for d in node.declarations]
+    expr = desugar(node.expression, scope)
     return CoreLet(decls, expr)
 
 @desugar.register(If)
-def if_desugar(node):
+def if_desugar(node, scope):
     # we convert all ifs down to match statements.
-    scrutinee = desugar(node.expression)
-    then = desugar(node.then)
-    otherwise = desugar(node.otherwise)
+    scrutinee = desugar(node.expression, scope)
+    then = desugar(node.then, scope)
+    otherwise = desugar(node.otherwise, scope)
 
     on_true = CoreAlt(CoreLiteral(True), then)
     on_false = CoreAlt(CoreLiteral(False), otherwise)
     return CoreMatch(scrutinee, [on_true, on_false])
 
 @desugar.register(Match)
-def match_desugar(node):
+def match_desugar(node, scope):
     # TODO: apparently this is quite involved when it comes to pattern matching
     # -- job for tomorrow!
-    scrutinee = desugar(node.expression)
-    alternatives = [desugar(a) for a in node.alternatives]
+    scrutinee = desugar(node.expression, scope)
+    alternatives = [desugar(a, scope) for a in node.alternatives]
     return CoreMatch(scrutinee, alternatives)
 
 @desugar.register(FunctionApplication)
-def function_application_desugar(node):
-    func = desugar(node.func)
-    expr = desugar(node.expression)
+def function_application_desugar(node, scope):
+    func = desugar(node.func, scope)
+    expr = desugar(node.expression, scope)
     return CoreApplication(func, expr)
 
 @desugar.register(Parameter)
 @desugar.register(UsedVar)
-def variable_desugar(node):
+def variable_desugar(node, scope):
     return CoreVariable(node.name)
 
 @desugar.register(Literal)
-def literal_desugar(node):
+def literal_desugar(node, scope):
     return CoreLiteral(node.value)
 
+@desugar.register(CoreCons)
 @desugar.register(CoreTuple)
 @desugar.register(CoreList)
 @desugar.register(Functions)
@@ -192,15 +180,44 @@ def literal_desugar(node):
 @desugar.register(TupleType)
 @desugar.register(ListType)
 @desugar.register(FunctionType)
-def noop_desugar(node):
+def noop_desugar(node, scope):
     # default functions -- we must acknowledge these when we translate to C. No
     # further work here.
     return node
 
 @desugar.register(InfixExpression)
-def infix_expression_desugar(node):
+def infix_expression_desugar(node, scope):
     raise RuntimeError("Infix expression nodes exist in the tree -- fixity " \
                        "resolution has not been performed.")
+
+# ---
+
+def condense_function_binds(binds):
+    """The renamer has already ensured that the parse tree does not have any
+    duplicate definitions. However, implicit pattern matching, such as
+
+        f 0 = True
+        f n = False
+
+    does not constitue a duplicate definition and is not flagged by the
+    renamer.  This means that there may exist lambda CoreBinds in the desugared
+    statements with the same identifier. These are guaranteed to correspond to
+    these implicit pattern matches. This function is responsible for finding
+    these binds, and condensing the pattern matching down to core match
+    statements.
+    """
+    seen = set()
+
+    bind_dict = OrderedDict()
+    for bind in binds:
+        try:
+            bind_dict[bind.identifier].append(bind.bindee)
+        except KeyError:
+            bind_dict[bind.identifier] = [bind.bindee]
+
+    new_desugared_statements = []
+    for identifier, bindee in bind_dict.items():
+        pass
 
 def do_desugar(source_tree):
     """Desugars the AST, reducing complex syntactic structures down into a
@@ -209,5 +226,11 @@ def do_desugar(source_tree):
     """
     assert source_tree.parsed and source_tree.fixities_resolved
     desugared = desugar(source_tree)
-    print("\n".join(repr(d) for d in desugared))
+    desugared = condense_function_binds(desugared)
+
+    from funky.frontend.maranget import get_match_tree
+    print(get_match_tree([[CoreLiteral(0)],
+                          [CoreVariable("n")]],
+                          [CoreVariable("a")],
+                          [1,2]))
     return desugared

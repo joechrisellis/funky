@@ -10,6 +10,12 @@ class CoreNode:
 
     __repr__ = output_attributes
 
+class CoreBind(CoreNode):
+
+    def __init__(self, identifier, bindee):
+        self.identifier  =  identifier
+        self.bindee      =  bindee
+
 class CoreTypeDeclaration(CoreNode):
 
     def __init__(self, identifier, typ):
@@ -21,6 +27,9 @@ class CoreCons(CoreNode):
     def __init__(self, constructor, parameters):
         self.constructor  =  constructor
         self.parameters   =  parameters
+    
+    def get_pattern_signature(self):
+        return [self.constructor, *[p.get_pattern_signature() for p in self.parameters]]
 
 class CoreVariable(CoreNode):
 
@@ -63,16 +72,10 @@ class CoreAlt(CoreNode):
         self.altcon   =  altcon
         self.expr     =  expr
 
-class CoreBind(CoreNode):
-
-    def __init__(self, identifier, bindee):
-        self.identifier  =  identifier
-        self.bindee      =  bindee
-
 class CoreTuple(CoreNode):
     
     def __init__(self, items):
-        self.items  =  items
+        self.items  =  tuple(items)
         self.arity  =  len(items)
 
 class CoreList(CoreNode):

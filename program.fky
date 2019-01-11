@@ -1,5 +1,5 @@
 module test where
 
-    newcons Wrapper = W Integer
+    newcons Coin = Heads | Tails
 
-    add = lambda (W x) (W y) -> x + y
+    flip x = Heads

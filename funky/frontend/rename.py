@@ -11,83 +11,14 @@ import logging
 from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
 
 from funky.util import get_registry_function, get_unique_varname
+from funky.misc.scope import Scope
 from funky.frontend.sourcetree import *
 from funky.corelang.types import *
-from funky.corelang.coretree import CoreTuple, CoreList
+from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
+
+from funky.frontend import FunkyRenamingError
 
 log = logging.getLogger(__name__)
-
-class Scope:
-    """A scope maps identifiers to arbitrary items."""
-
-    def __init__(self, parent=None):
-        self.local = {}
-        self.parent = parent
-
-    def search(self, item):
-        """Searches the local scope for the item.
-
-        Input:
-            item -- the item in question
-
-        Returns:
-            the corresponding dict item if found, None otherwise
-        """
-        return self.local.get(item)
-
-    def rsearch(self, item):
-        """Recursively searches the scope for an item. First checks if the item
-        is in this scope, then recursively searches the parent scope to see if
-        it is defined at a higher level.
-
-        Input:
-            item -- the item in question
-
-        Output:
-            the corresponding dict item if found, None otherwise
-        """
-        if item in self.local:
-            return self.local[item]
-        elif self.parent:
-            return self.parent.rsearch(item)
-        else:
-            return None
-
-    def __getitem__(self, key):
-        """Recursively searches the scope for a given key and returns it.
-
-        Input:
-            key -- the key of the item to search for.
-
-        Returns:
-            the corresponding data in the scope.
-        """
-        return self.rsearch(key)
-
-    def __setitem__(self, key, value):
-        """Sets an item in the local scope dict.
-
-        Input:
-            key   -- the key of the item
-            value -- any auxiliary data you want to add
-        """
-        self.local[key] = value
-
-    def __contains__(self, item):
-        """A scope 'contains' an item (in other words, that item is defined)
-        if it can be found with a recursive search.
-
-        Input:
-            item -- the item in question
-
-        Returns:
-            True if the item is defined in the scope, False otherwise
-        """
-        return self.rsearch(item) is not None
-
-    def __repr__(self):
-        return "({}, parent={})".format(self.local, self.parent) if self.parent \
-          else "({})".format(self.local)
 
 rename = get_registry_function()
 
@@ -142,11 +73,11 @@ def constructor_type_rename(node, scope):
     for param in node.parameters:
         rename(param, scope)
 
-@rename.register(ConstructorPattern)
+@rename.register(CoreCons)
 def constructor_pattern_rename(node, scope):
-    if node.typ not in scope:
+    if node.constructor not in scope:
         raise FunkyRenamingError("Constructor '{}' not " \
-                                 "defined.".format(node.typ))
+                                 "defined.".format(node.constructor))
     
     for param in node.parameters:
         rename(param, scope)
@@ -185,7 +116,6 @@ def function_definition_rename(node, scope):
 
     if node.lhs.identifier in scope.local:
         scope[node.lhs.identifier][1].append(node.lhs.get_parameter_signature())
-        print("!!!!!!", node.lhs.get_parameter_signature())
     else:
         newid = get_unique_varname()
         scope[node.lhs.identifier] = [newid, [node.lhs.get_parameter_signature()]]
@@ -233,20 +163,6 @@ def pattern_definition_rename(node, scope):
 def constructor_chain_rename(node, scope):
     rename(node.head, scope)
     rename(node.tail, scope)
-
-@rename.register(Pattern)
-def pattern_rename(node, scope):
-    rename(node.pat, scope)
-
-@rename.register(PatternTuple)
-def pattern_tuple_rename(node, scope):
-    for pat in node.patterns:
-        rename(pat, scope)
-
-@rename.register(PatternList)
-def pattern_list_rename(node, scope):
-    for pat in node.patterns:
-        rename(pat, scope)
 
 @rename.register(Alternative)
 def alternative_rename(node, scope):
@@ -316,14 +232,10 @@ def used_var_rename(node, scope):
     if type(node.name) == list: # edge case for functions
         node.name = node.name[0]
 
+# literals and functions are always sane. Nothing to do here.
 @rename.register(Literal)
-def literal_rename(node, scope):
-     # literals are always 'sane'. Nothing to do here.
-     pass
-
 @rename.register(Functions)
-def builtin_function_rename(node, scope):
-     # builtin functions are always 'sane'. Nothing to do here.
+def noop_rename(node, scope):
     pass
 
 @rename.register(InfixExpression)

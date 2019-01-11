@@ -23,3 +23,4 @@ class FunkyRenamingError(FunkyFrontendError):
 
 class FunkyDesugarError(FunkyFrontendError):
     """Raised when the compiler is unable to desugar your code."""
+    pass

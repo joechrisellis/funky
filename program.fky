@@ -1,5 +1,4 @@
 module test where
 
-    newcons List = Cons Integer List | Nil
-
-    zero_start (Cons n l) (Cons a b) = False
+    sum x y z = x + y + z
+    sum 0 0 0 = 0

@@ -19,7 +19,7 @@ The algorithm expects a matrix:
 
 A set of binding variables, and a set of possible outcomes.
 
-Where the fields are of type CoreVariable, CoreLiteral, or CorePattern.
+Where the fields are of type CoreVariable, CoreLiteral, or CoreCons.
 """
 
 from funky.frontend import FunkyDesugarError
@@ -109,7 +109,6 @@ def get_match_tree(pattern_matrix, variables, outcomes):
         else:
             specialised.append(row[1:])
             specialised_outcomes.append(outcome)
-            print("DOES THIS EVER RUN?", row[0])
 
     alts = [
         CoreAlt(pattern_matrix[0][0], get_match_tree(specialised, variables[1:],

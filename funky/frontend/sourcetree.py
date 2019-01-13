@@ -80,9 +80,6 @@ class Construction(ASTNode):
         self.constructor  =  constructor
         self.parameters   =  parameters
 
-    def get_pattern_signature(self):
-        return [self.constructor, self.parameters]
-
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.
         'f :: Integer -> Integer' becomes TypeDeclaration('f', ...)
@@ -111,17 +108,6 @@ class FunctionLHS(ASTNode):
         self.identifier  =  identifier
         self.parameters  =  parameters
         self.arity       =  len(parameters)
-
-    def get_parameter_signature(self):
-        """Multiple definitions for the LHS can exist for implicit pattern
-        matching. To distinguish these and make sure that duplicates are
-        caught, we generate a parameter signature for each function LHS.
-        """
-        sig = [self.arity]
-        for param in self.parameters:
-            sig.append(param.get_pattern_signature())
-
-        return sig
 
 class FunctionRHS(ASTNode):
     """Function right-hand-sides consists of a list of possible expressions
@@ -208,16 +194,10 @@ class Parameter(ASTNode):
     def __init__(self, name):
         self.name  =  name
 
-    def get_pattern_signature(self):
-        return "PARAM"
-
 class Literal(ASTNode):
 
     def __init__(self, value):
         self.value = value
-
-    def get_pattern_signature(self):
-        return self.value
 
 class UsedVar(ASTNode):
     """An object used in some context -- it should exist by the time that it is

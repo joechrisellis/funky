@@ -62,7 +62,7 @@ def constructor_definition_desugar(node):
 @desugar.register(TypeDeclaration)
 def type_declaration_desugar(node):
     typ = desugar(node.typ)
-    return CoreTypeDeclaration(node.identifier, typ)
+    return CoreBind(node.identifier, typ)
 
 @desugar.register(FunctionDefinition)
 def function_definition_desugar(node):
@@ -75,7 +75,7 @@ def function_lhs_desugar(node, rhs_expr):
     lam = rhs_expr
     for p in reversed(node.parameters):
         lam = CoreLambda(desugar(p), lam)
-    setattr(lam, "original_arity", len(node.parameters))
+    lam.original_arity = len(node.parameters)
     binding = CoreBind(node.identifier, lam)
     return binding
 
@@ -133,6 +133,8 @@ def lambda_desugar(node):
             lam = CoreLambda(scrutinee, match_structure)
         else:
             lam = CoreLambda(p, lam)
+
+    lam.original_arity = len(node.parameters)
     return lam
 
 @desugar.register(Let)

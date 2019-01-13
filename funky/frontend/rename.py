@@ -79,7 +79,7 @@ def construction_rename(node, scope):
     for i, param in enumerate(node.parameters):
         if isinstance(param, Parameter):
             rename(param, scope, fname=node.constructor, index=i,
-                    localizer=get_unique_varname())
+                    localizer=localizer)
         else:
             rename(param, scope)
 
@@ -127,11 +127,9 @@ def function_type_rename(node, scope):
 
 @rename.register(FunctionDefinition)
 def function_definition_rename(node, scope):
-    if node.lhs.identifier in scope.local:
-        scope[node.lhs.identifier][1].append(node.lhs.get_parameter_signature())
-    else:
+    if node.lhs.identifier not in scope.local:
         newid = get_unique_varname()
-        scope[node.lhs.identifier] = [newid, [node.lhs.get_parameter_signature()]]
+        scope[node.lhs.identifier] = [newid, len(node.lhs.parameters)]
 
     tmp_scope = Scope(parent=scope)
     rename(node.lhs, tmp_scope)
@@ -143,12 +141,10 @@ def function_definition_rename(node, scope):
 
 @rename.register(FunctionLHS)
 def function_lhs_rename(node, scope):
-    sigs = scope[node.identifier][1]
-    for sig in sigs:
-        if sig[0] != node.arity:
-            raise FunkyRenamingError("Definition of '{}' has different " \
-                                     "number of parameters than previous " \
-                                     "definition.".format(node.identifier))
+    if scope[node.identifier][1] != len(node.parameters):
+        raise FunkyRenamingError("Definition of '{}' has different " \
+                                 "number of parameters than previous " \
+                                 "definition.".format(node.identifier))
 
     for i, param in enumerate(node.parameters):
         if isinstance(param, Parameter):

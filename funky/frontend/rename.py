@@ -129,26 +129,29 @@ def function_type_rename(node, scope):
 def function_definition_rename(node, scope):
     if node.lhs.identifier not in scope.local:
         newid = get_unique_varname()
-        scope[node.lhs.identifier] = [newid, len(node.lhs.parameters)]
+        scope[node.lhs.identifier] = {
+            "id"     :  newid,
+            "arity"  :  len(node.lhs.parameters)
+        }
 
     tmp_scope = Scope(parent=scope)
     rename(node.lhs, tmp_scope)
 
-    node.lhs.identifier = scope[node.lhs.identifier][0]
+    node.lhs.identifier = scope[node.lhs.identifier]["id"]
 
     tmp_scope2 = Scope(parent=tmp_scope)
     rename(node.rhs, tmp_scope2)
 
 @rename.register(FunctionLHS)
 def function_lhs_rename(node, scope):
-    if scope[node.identifier][1] != len(node.parameters):
+    if scope[node.identifier]["arity"] != len(node.parameters):
         raise FunkyRenamingError("Definition of '{}' has different " \
                                  "number of parameters than previous " \
                                  "definition.".format(node.identifier))
 
     for i, param in enumerate(node.parameters):
         if isinstance(param, Parameter):
-            rename(param, scope, fname=scope[node.identifier][0], index=i)
+            rename(param, scope, fname=scope[node.identifier]["id"], index=i)
         else:
             rename(param, scope)
 
@@ -238,8 +241,8 @@ def used_var_rename(node, scope):
                                  "exist.".format(node.name))
 
     node.name = scope[node.name]
-    if type(node.name) == list: # edge case for functions
-        node.name = node.name[0]
+    if type(node.name) == dict: # edge case for functions
+        node.name = node.name["id"]
 
 # literals and functions are always sane. Nothing to do here.
 @rename.register(Literal)

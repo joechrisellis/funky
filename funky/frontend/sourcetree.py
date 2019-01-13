@@ -73,7 +73,6 @@ class NewConsStatement(ASTNode):
     def __init__(self, identifier, constructors):
         self.identifier    =  identifier
         self.constructors  =  constructors
-        print(self)
 
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.

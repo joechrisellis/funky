@@ -102,9 +102,6 @@ def get_match_tree(pattern_matrix, variables, outcomes):
             specialised.append(row[1:])
             specialised_outcomes.append(outcome)
 
-    print("S", specialised)
-    print("D", default)
-
     alts = [
         CoreAlt(pattern_matrix[0][0], get_match_tree(specialised, variables[1:],
                                                      specialised_outcomes)),

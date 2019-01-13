@@ -27,9 +27,6 @@ class CoreCons(CoreNode):
     def __init__(self, constructor, parameters):
         self.constructor  =  constructor
         self.parameters   =  parameters
-    
-    def get_pattern_signature(self):
-        return [self.constructor, *[p.get_pattern_signature() for p in self.parameters]]
 
 class CoreVariable(CoreNode):
 

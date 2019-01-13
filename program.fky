@@ -1,5 +1,5 @@
 module test where
 
-    newcons Coin = Heads | Tails
-
-    flip x = Heads
+    is_zero n = f n
+                where f 0 = True
+                      f n = False

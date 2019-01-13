@@ -28,7 +28,18 @@ from funky.corelang.coretree import CoreCons, CoreVariable, CoreLiteral, \
                                     CoreMatch, CoreAlt
 
 def match(x, y):
-    """Does x match y?"""
+    """Can x bind to y? Examples:
+
+        match(CoreVariable("_"), CoreLiteral(10)) = True
+            (_ as a variable can readily bind to 10)
+        match(CoreVariable("x"), CoreVariable("y")) = True
+            (x as a variable can readily bind to y)
+        match(CoreLiteral(20), CoreVariable("y")) = False
+            ('20' as a literal cannot bind to a variable 'y')
+        match(CoreLiteral(20), CoreVariable(20)) = True
+            ('20' as a literal can bind to itself)
+    
+    """
     if isinstance(x, CoreCons):
         # constructors only bind if they are of the same type and their
         # parameters recursively match.
@@ -98,6 +109,7 @@ def get_match_tree(pattern_matrix, variables, outcomes):
         else:
             specialised.append(row[1:])
             specialised_outcomes.append(outcome)
+            print("DOES THIS EVER RUN?", row[0])
 
     alts = [
         CoreAlt(pattern_matrix[0][0], get_match_tree(specialised, variables[1:],

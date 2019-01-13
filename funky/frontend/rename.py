@@ -20,8 +20,8 @@ from funky.frontend import FunkyRenamingError
 
 log = logging.getLogger(__name__)
 
-def get_parameter_name(fname, index):
-    return "{}_{}".format(fname, index)
+def get_parameter_name(*args):
+    return "_".join(str(a) for a in args if a is not None)
 
 rename = get_registry_function()
 
@@ -75,8 +75,13 @@ def construction_rename(node, scope):
                                  "'{}'.".format(scope[node.constructor],
                                                 node.constructor))
     
+    localizer = get_unique_varname()
     for i, param in enumerate(node.parameters):
-        rename(param, scope, fname=node.constructor, index=i)
+        if isinstance(param, Parameter):
+            rename(param, scope, fname=node.constructor, index=i,
+                    localizer=get_unique_varname())
+        else:
+            rename(param, scope)
 
 @rename.register(ConstructorType)
 def constructor_type_rename(node, scope):
@@ -217,13 +222,14 @@ def list_rename(node, scope):
         rename(item, scope)
 
 @rename.register(Parameter)
-def parameter_rename(node, scope, fname=None, index=None):
+def parameter_rename(node, scope, fname=None, index=None, localizer=None):
     if node.name in scope.local and \
        node.name != "_": # _ is the special wildcard variable
         raise FunkyRenamingError("Duplicate definition of parameter " \
                                  "'{}'.".format(node.name))
 
-    newid = get_parameter_name(fname, index) if None not in [fname, index] \
+    newid = get_parameter_name(fname, localizer, index) if fname or index or \
+                                                        localizer \
             else get_unique_varname()
 
     scope[node.name] = newid
@@ -258,7 +264,6 @@ def do_rename(source_tree):
     don't exist, etc.
     """
     assert source_tree.parsed and source_tree.fixities_resolved
-    print(source_tree)
     logging.info("Renaming and sanity checking parse tree...")
     scope = Scope()
     rename(source_tree, scope)

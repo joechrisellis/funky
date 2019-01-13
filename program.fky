@@ -1,9 +1,6 @@
 module test where
 
-    is_zero n = let f 0 = True
-                    f n = False
-                in f n
-
-    is_zero_2 n = f n
-                  where f 0 = True
-                        f n = False
+    not_boring 0 x = x
+    not_boring x 0 = x
+    not_boring 0 0 = 0
+    not_boring _ _ = 3.14

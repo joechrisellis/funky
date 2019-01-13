@@ -15,6 +15,7 @@ from funky.corelang.builtins import Functions
 from funky.corelang.coretree import *
 from funky.corelang.types import *
 from funky.frontend.sourcetree import *
+from funky.frontend.rename import get_parameter_name
 from funky.frontend.maranget import get_match_tree
 
 from funky.frontend import FunkyDesugarError
@@ -230,7 +231,8 @@ def condense_function_binds(binds):
         # into a match statement.
         pattern_matrix = []
         outcomes = []
-        variables = [CoreVariable(get_unique_varname()) for _ in range(bindees[0].original_arity)]
+        variables = [CoreVariable(get_parameter_name(identifier, i))
+                     for i in range(bindees[0].original_arity)]
 
         for bindee in bindees:
             pattern_matrix.append([])

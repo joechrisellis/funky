@@ -20,6 +20,9 @@ from funky.frontend import FunkyRenamingError
 
 log = logging.getLogger(__name__)
 
+def get_parameter_name(fname, index):
+    return "{}_{}".format(fname, index)
+
 rename = get_registry_function()
 
 @rename.register(Module)
@@ -70,8 +73,8 @@ def constructor_type_rename(node, scope):
         raise FunkyRenamingError("Duplicate usage of constructor " \
                                  "'{}'.".format(node.identifier))
     scope[node.identifier] = node.identifier
-    for param in node.parameters:
-        rename(param, scope)
+    for i, param in enumerate(node.parameters):
+        rename(param, scope, fname=node.identifier, index=i)
 
 @rename.register(CoreCons)
 def constructor_pattern_rename(node, scope):
@@ -79,8 +82,8 @@ def constructor_pattern_rename(node, scope):
         raise FunkyRenamingError("Constructor '{}' not " \
                                  "defined.".format(node.constructor))
     
-    for param in node.parameters:
-        rename(param, scope)
+    for i, param in enumerate(node.parameters):
+        rename(param, scope, fname=node.constructor, index=i)
 
 @rename.register(TypeDeclaration)
 def type_declaration_rename(node, scope):
@@ -111,14 +114,14 @@ def function_type_rename(node, scope):
 
 @rename.register(FunctionDefinition)
 def function_definition_rename(node, scope):
-    tmp_scope = Scope(parent=scope)
-    rename(node.lhs, tmp_scope)
-
     if node.lhs.identifier in scope.local:
         scope[node.lhs.identifier][1].append(node.lhs.get_parameter_signature())
     else:
         newid = get_unique_varname()
         scope[node.lhs.identifier] = [newid, [node.lhs.get_parameter_signature()]]
+
+    tmp_scope = Scope(parent=scope)
+    rename(node.lhs, tmp_scope)
 
     node.lhs.identifier = scope[node.lhs.identifier][0]
 
@@ -127,19 +130,18 @@ def function_definition_rename(node, scope):
 
 @rename.register(FunctionLHS)
 def function_lhs_rename(node, scope):
-    if node.identifier in scope.parent.local:
-        sigs = scope[node.identifier][1]
-        for sig in sigs:
-            if sig == node.get_parameter_signature():
-                raise FunkyRenamingError("Duplicate definition of " \
-                                         "'{}'.".format(node.identifier))
-            elif sig[0] != node.arity:
-                raise FunkyRenamingError("Definition of '{}' has different " \
-                                         "number of parameters than previous " \
-                                         "definition.".format(node.identifier))
+    sigs = scope[node.identifier][1]
+    for sig in sigs:
+        if sig[0] != node.arity:
+            raise FunkyRenamingError("Definition of '{}' has different " \
+                                     "number of parameters than previous " \
+                                     "definition.".format(node.identifier))
 
-    for param in node.parameters:
-        rename(param, scope)
+    for i, param in enumerate(node.parameters):
+        if isinstance(param, Parameter):
+            rename(param, scope, fname=scope[node.identifier][0], index=i)
+        else:
+            rename(param, scope)
 
 @rename.register(FunctionRHS)
 def function_rhs_rename(node, scope):
@@ -213,12 +215,15 @@ def list_rename(node, scope):
         rename(item, scope)
 
 @rename.register(Parameter)
-def parameter_rename(node, scope):
+def parameter_rename(node, scope, fname=None, index=None):
     if node.name in scope.local and \
        node.name != "_": # _ is the special wildcard variable
         raise FunkyRenamingError("Duplicate definition of parameter " \
                                  "'{}'.".format(node.name))
-    newid = get_unique_varname()
+
+    newid = get_parameter_name(fname, index) if None not in [fname, index] \
+            else get_unique_varname()
+
     scope[node.name] = newid
     node.name = newid
 

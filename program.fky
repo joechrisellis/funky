@@ -1,6 +1,6 @@
 module test where
 
-    not_boring 0 x = x
-    not_boring x 0 = x
-    not_boring 0 0 = 0
-    not_boring _ _ = 3.14
+    newcons List = Cons Integer List | Nil
+
+    head (Cons n l) = n
+    head Nil = n

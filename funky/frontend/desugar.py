@@ -49,6 +49,11 @@ def new_cons_statement_desugar(node):
     the_adt = AlgebraicDataType(None, constructors)
     return CoreBind(node.identifier, the_adt)
 
+@desugar.register(Construction)
+def construction_desugar(node):
+    parameters = [desugar(param) for param in node.parameters]
+    return CoreCons(node.constructor, parameters)
+
 @desugar.register(ConstructorType)
 def constructor_definition_desugar(node):
     parameters = [desugar(t) for t in node.parameters]
@@ -107,11 +112,6 @@ def pattern_definition_desugar(node):
     pat = desugar(node.pattern)
     expr = desugar(node.expression)
     return CoreBind(pat, expr)
-
-@desugar.register(ConstructorChain)
-def constructor_chain_desugar(node):
-    # TODO: create a primitive list type.
-    pass
 
 @desugar.register(Alternative)
 def alternative_desugar(node):

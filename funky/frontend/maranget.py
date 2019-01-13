@@ -22,13 +22,10 @@ A set of binding variables, and a set of possible outcomes.
 Where the fields are of type CoreVariable, CoreLiteral, or CorePattern.
 """
 
+from funky.frontend import FunkyDesugarError
+
 from funky.corelang.coretree import CoreCons, CoreVariable, CoreLiteral, \
                                     CoreMatch, CoreAlt
-
-# [[_, F, T],
-#  [F, T, _],
-#  [_, _, F],
-#  [_, _, T]]
 
 def match(x, y):
     """Does x match y?"""

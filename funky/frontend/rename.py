@@ -64,6 +64,19 @@ def new_cons_statement_rename(node, scope):
     
     for cons in node.constructors:
         rename(cons, scope)
+    
+@rename.register(Construction)
+def construction_rename(node, scope):
+    if node.constructor not in scope:
+        raise FunkyRenamingError("Constructor '{}' not " \
+                                 "defined.".format(node.constructor))
+    elif scope[node.constructor] != len(node.parameters):
+        raise FunkyRenamingError("Expected {} parameters for constructor " \
+                                 "'{}'.".format(scope[node.constructor],
+                                                node.constructor))
+    
+    for i, param in enumerate(node.parameters):
+        rename(param, scope, fname=node.constructor, index=i)
 
 @rename.register(ConstructorType)
 def constructor_type_rename(node, scope):
@@ -72,18 +85,13 @@ def constructor_type_rename(node, scope):
     if node.identifier in scope:
         raise FunkyRenamingError("Duplicate usage of constructor " \
                                  "'{}'.".format(node.identifier))
-    scope[node.identifier] = node.identifier
-    for i, param in enumerate(node.parameters):
-        rename(param, scope, fname=node.identifier, index=i)
 
-@rename.register(CoreCons)
-def constructor_pattern_rename(node, scope):
-    if node.constructor not in scope:
-        raise FunkyRenamingError("Constructor '{}' not " \
-                                 "defined.".format(node.constructor))
-    
+    scope[node.identifier] = len(node.parameters)
     for i, param in enumerate(node.parameters):
-        rename(param, scope, fname=node.constructor, index=i)
+        if isinstance(node, Parameter):
+            rename(param, scope, fname=node.identifier, index=i)
+        else:
+            rename(param, scope)
 
 @rename.register(TypeDeclaration)
 def type_declaration_rename(node, scope):
@@ -161,11 +169,6 @@ def pattern_definition_rename(node, scope):
     rename(node.pattern, scope)
     rename(node.expression, scope)
 
-@rename.register(ConstructorChain)
-def constructor_chain_rename(node, scope):
-    rename(node.head, scope)
-    rename(node.tail, scope)
-
 @rename.register(Alternative)
 def alternative_rename(node, scope):
     rename(node.pattern, scope)
@@ -200,7 +203,6 @@ def match_rename(node, scope):
 
 @rename.register(FunctionApplication)
 def function_application_rename(node, scope):
-    print(node)
     rename(node.func, scope)
     rename(node.expression, scope)
 
@@ -256,8 +258,10 @@ def do_rename(source_tree):
     don't exist, etc.
     """
     assert source_tree.parsed and source_tree.fixities_resolved
+    print(source_tree)
     logging.info("Renaming and sanity checking parse tree...")
     scope = Scope()
     rename(source_tree, scope)
     source_tree.renamed = True
     logging.info("Renaming and sanity checking parse tree completed.")
+

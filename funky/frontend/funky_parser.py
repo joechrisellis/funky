@@ -8,7 +8,7 @@ import funky.frontend.fixity as fixity
 from funky.frontend.sourcetree import *
 from funky.corelang.types import Type, TupleType, ListType, FunctionType, \
                                  ConstructorType
-from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
+from funky.corelang.coretree import CoreTuple, CoreList
 
 log = logging.getLogger(__name__)
 
@@ -318,7 +318,7 @@ class FunkyParser:
                | LPAT
         """
         if len(p) == 4:
-            p[0] = ConstructorChain(p[1], p[3])
+            p[0] = True
         else:
             p[0] = p[1]
 
@@ -331,7 +331,7 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 4:
-            p[0] = CoreCons(p[1], [p[2]] + p[3])
+            p[0] = Construction(p[1], [p[2]] + p[3])
         else:
             p[0] = Literal(-p[3])
 
@@ -425,7 +425,7 @@ class FunkyParser:
                   | LEQ
                   | GREATER
                   | GEQ
-                  | CONSTRUCTOR
+                  | LIST_CONSTRUCTOR
         """
         p[0] = p[1]
 

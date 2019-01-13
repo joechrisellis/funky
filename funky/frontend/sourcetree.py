@@ -29,7 +29,7 @@ class ASTNode:
         self.fixities_resolved  =  False
         self.renamed            =  False
         self.desugared          =  False
-    
+
     __repr__ = output_attributes
 
 class Module(ASTNode):
@@ -69,10 +69,19 @@ class NewTypeStatement(ASTNode):
         self.typ         =  typ
 
 class NewConsStatement(ASTNode):
-    
+
     def __init__(self, identifier, constructors):
         self.identifier    =  identifier
         self.constructors  =  constructors
+
+class Construction(ASTNode):
+
+    def __init__(self, constructor, parameters):
+        self.constructor  =  constructor
+        self.parameters   =  parameters
+
+    def get_pattern_signature(self):
+        return [self.constructor, self.parameters]
 
 class TypeDeclaration(ASTNode):
     """Node representing a type declaration of some object. e.g.
@@ -141,17 +150,6 @@ class PatternDefinition(ASTNode):
         self.pattern     =  pattern
         self.expression  =  expression
 
-class ConstructorChain(ASTNode):
-    """A chain of list constructor calls. I.e. x : xs : []."""
-
-    def __init__(self, head, tail):
-        self.head = head
-        self.tail = tail
-
-    def get_pattern_signature(self):
-        return [self.head.get_pattern_signature(), ":"] + \
-                [self.tail.get_pattern_signature()]
-
 class Alternative(ASTNode):
     """In a match statement, an alternative is one possible pattern match."""
 
@@ -209,7 +207,7 @@ class Parameter(ASTNode):
 
     def __init__(self, name):
         self.name  =  name
-    
+
     def get_pattern_signature(self):
         return "PARAM"
 
@@ -217,7 +215,7 @@ class Literal(ASTNode):
 
     def __init__(self, value):
         self.value = value
-    
+
     def get_pattern_signature(self):
         return self.value
 
@@ -228,7 +226,7 @@ class UsedVar(ASTNode):
 
     def __init__(self, name):
         self.name  =  name
-    
+
 class InfixExpression(ASTNode):
     """An infix expression, e.g. 10 * 10. During parsing, we keep these FLAT --
     we perform fixity resolution later, whereby infix expressions become

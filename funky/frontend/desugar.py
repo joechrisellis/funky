@@ -66,9 +66,6 @@ def function_definition_desugar(node):
 
 @desugar.register(FunctionLHS)
 def function_lhs_desugar(node, rhs_expr):
-    if isinstance(rhs_expr, CoreLet):
-        rhs_expr.binds = condense_function_binds(rhs_expr.binds)
-
     lam = rhs_expr
     for p in reversed(node.parameters):
         lam = CoreLambda(desugar(p), lam)
@@ -79,6 +76,7 @@ def function_lhs_desugar(node, rhs_expr):
 @desugar.register(FunctionRHS)
 def function_rhs_desugar(node):
     decls = [desugar(d) for d in node.declarations]
+    decls = condense_function_binds(decls)
 
     if len(node.expressions) == 1:
         expr = desugar(node.expressions[0])

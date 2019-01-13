@@ -1,5 +1,9 @@
 module test where
 
-    is_zero n = f n
-                where f 0 = True
-                      f n = False
+    is_zero n = let f 0 = True
+                    f n = False
+                in f n
+
+    is_zero_2 n = f n
+                  where f 0 = True
+                        f n = False

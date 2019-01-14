@@ -7,6 +7,8 @@ our intermediate language. This translation involves, for instance:
 This module is responsible for doing just that.
 """
 
+import logging
+
 from collections import OrderedDict
 
 from funky.util import get_registry_function, get_unique_varname
@@ -19,6 +21,8 @@ from funky.frontend.rename import get_parameter_name
 from funky.frontend.maranget import get_match_tree
 
 from funky.frontend import FunkyDesugarError
+
+log = logging.getLogger(__name__)
 
 desugar = get_registry_function()
 
@@ -258,6 +262,8 @@ def do_desugar(source_tree):
     'intermediate code generation'.
     """
     assert source_tree.parsed and source_tree.fixities_resolved
+    log.info("Desugaring parse tree...")
     desugared = desugar(source_tree)
+    log.info("Completed desugaring parse tree.")
     print(desugared)
     return desugared

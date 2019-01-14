@@ -355,7 +355,7 @@ class FunkyParser:
         elif len(p) == 4:
             p[0] = p[2]
         else:
-            p[0] = CoreTuple((p[2], *p[4].patterns))
+            p[0] = CoreTuple((p[2], *p[4].items))
 
     def p_GCON(self, p):
         """GCON : OPEN_PAREN CLOSE_PAREN
@@ -409,7 +409,7 @@ class FunkyParser:
         """
         if len(p) == 4:
             p[0] = p[1]
-            p[0].patterns.append(p[3])
+            p[0].items.append(p[3])
         else:
             p[0] = CoreList([p[1]])
 

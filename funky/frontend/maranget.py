@@ -116,15 +116,24 @@ def get_match_tree(pattern_matrix, variables, outcomes):
     # if our scrutinee is a construction, we must 'expand' it, placing its
     # parameters into the specialised matrix explicitly.
     if isinstance(scrutinee, CoreCons):
-        for param in reversed(scrutinee.parameters):
-            # use the given name if it exists -- otherwise, generate one
-            var = param if isinstance(param, CoreVariable) \
-                        else CoreVariable(get_unique_varname())
-            specialised_variables.insert(0, var)
         for row in specialised:
             x = row.pop(0)
-            for param in reversed(x.parameters):
-                row.insert(0, param)
+            if isinstance(x, CoreCons):
+                for param in reversed(x.parameters):
+                    row.insert(0, param)
+            else:
+                for _ in scrutinee.parameters:
+                    row.insert(0, CoreVariable(get_unique_varname()))
+        
+        cols = list(zip(*[row[:len(scrutinee.parameters)] for row in specialised]))
+        for col in reversed(cols):
+            for item in col:
+                if isinstance(item, CoreVariable):
+                    specialised_variables.insert(0, item)
+                    break
+            else:
+                specialised_variables.insert(0, CoreVariable(get_unique_varname()))
+
         altcon = CoreCons(scrutinee.constructor,
                           specialised_variables[:len(scrutinee.parameters)])
     else:

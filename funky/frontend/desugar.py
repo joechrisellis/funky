@@ -184,7 +184,7 @@ def literal_desugar(node):
 @desugar.register(CoreTuple)
 @desugar.register(CoreList)
 @desugar.register(Functions)
-@desugar.register(Type)
+@desugar.register(BasicType)
 @desugar.register(TupleType)
 @desugar.register(ListType)
 @desugar.register(FunctionType)
@@ -247,7 +247,7 @@ def condense_function_binds(binds):
                 bindee = bindee.expr
             outcomes.append(bindee)
 
-        tree = get_match_tree(pattern_matrix, variables, outcomes)
+        tree = get_match_tree(pattern_matrix[:], variables[:], outcomes[:])
         new_lambda = tree
         for v in reversed(variables):
             new_lambda = CoreLambda(v, new_lambda)
@@ -265,5 +265,4 @@ def do_desugar(source_tree):
     log.info("Desugaring parse tree...")
     desugared = desugar(source_tree)
     log.info("Completed desugaring parse tree.")
-    print(desugared)
     return desugared

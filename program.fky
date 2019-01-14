@@ -1,5 +1,6 @@
 module test where
-
-    newcons Tree = Branch Tree Integer Tree | Leaf Integer
-
-    swap (Branch l v r) = Branch r v l
+    
+    g  _      False  True   =  1
+    g  False  True   _      =  2
+    g  _      _      False  =  3
+    g  _      _      True   =  4

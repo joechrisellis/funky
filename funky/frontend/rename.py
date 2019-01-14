@@ -11,7 +11,6 @@ import logging
 from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
 
 from funky.util import get_registry_function, get_unique_varname
-from funky.misc.scope import Scope
 from funky.frontend.sourcetree import *
 from funky.corelang.types import *
 from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
@@ -22,6 +21,70 @@ log = logging.getLogger(__name__)
 
 def get_parameter_name(*args):
     return "_".join(str(a) for a in args if a is not None)
+
+class Scope:
+    """A scope maps identifiers to arbitrary items."""
+
+    def __init__(self, parent=None, localizer=None):
+        self.local = {}
+        self.parent = parent
+        self.localizer = localizer
+
+    def search(self, item):
+        """Searches the local scope for the item.
+        Input:
+            item -- the item in question
+        Returns:
+            the corresponding dict item if found, None otherwise
+        """
+        return self.local.get(item)
+
+    def rsearch(self, item):
+        """Recursively searches the scope for an item. First checks if the item
+        is in this scope, then recursively searches the parent scope to see if
+        it is defined at a higher level.
+        Input:
+            item -- the item in question
+        Output:
+            the corresponding dict item if found, None otherwise
+        """
+        if item in self.local:
+            return self.local[item]
+        elif self.parent:
+            return self.parent.rsearch(item)
+        else:
+            return None
+
+    def __getitem__(self, key):
+        """Recursively searches the scope for a given key and returns it.
+        Input:
+            key -- the key of the item to search for.
+        Returns:
+            the corresponding data in the scope.
+        """
+        return self.rsearch(key)
+
+    def __setitem__(self, key, value):
+        """Sets an item in the local scope dict.
+        Input:
+            key   -- the key of the item
+            value -- any auxiliary data you want to add
+        """
+        self.local[key] = value
+
+    def __contains__(self, item):
+        """A scope 'contains' an item (in other words, that item is defined)
+        if it can be found with a recursive search.
+        Input:
+            item -- the item in question
+        Returns:
+            True if the item is defined in the scope, False otherwise
+        """
+        return self.rsearch(item) is not None
+
+    def __repr__(self):
+        return "({}, parent={})".format(self.local, self.parent) if self.parent \
+          else "({})".format(self.local)
 
 rename = get_registry_function()
 
@@ -66,7 +129,7 @@ def new_cons_statement_rename(node, scope):
         rename(cons, scope)
     
 @rename.register(Construction)
-def construction_rename(node, scope):
+def construction_rename(node, scope, fname=None, index=None):
     if node.constructor not in scope:
         raise FunkyRenamingError("Constructor '{}' not " \
                                  "defined.".format(node.constructor))
@@ -75,11 +138,13 @@ def construction_rename(node, scope):
                                  "'{}'.".format(scope[node.constructor],
                                                 node.constructor))
     
-    localizer = get_unique_varname()
+    localizer = get_parameter_name(fname, index)
     for i, param in enumerate(node.parameters):
         if isinstance(param, Parameter):
             rename(param, scope, fname=node.constructor, index=i,
                     localizer=localizer)
+        elif isinstance(param, Construction):
+            rename(param, scope, fname=node.constructor, index=i)
         else:
             rename(param, scope)
 
@@ -106,7 +171,7 @@ def type_declaration_rename(node, scope):
     # here.
     rename(node.typ, scope)
 
-@rename.register(Type)
+@rename.register(BasicType)
 def type_rename(node, scope):
     if node.type_name not in scope and node.type_name not in BUILTIN_PRIMITIVES:
         raise FunkyRenamingError("Undefined type '{}'.".format(node.type_name))
@@ -150,7 +215,7 @@ def function_lhs_rename(node, scope):
                                  "definition.".format(node.identifier))
 
     for i, param in enumerate(node.parameters):
-        if isinstance(param, Parameter):
+        if isinstance(param, Parameter) or isinstance(param, Construction):
             rename(param, scope, fname=scope[node.identifier]["id"], index=i)
         else:
             rename(param, scope)
@@ -268,4 +333,3 @@ def do_rename(source_tree):
     rename(source_tree, scope)
     source_tree.renamed = True
     logging.info("Renaming and sanity checking parse tree completed.")
-

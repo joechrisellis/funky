@@ -14,8 +14,8 @@ def string_generator():
 
 unique_varname = string_generator()
 
-def get_unique_varname():
-    return next(unique_varname)
+def get_unique_varname(generator=unique_varname):
+    return next(generator)
 
 def get_user_attributes(cls):
     """Returns the user attributes of a class. These are attributes which are

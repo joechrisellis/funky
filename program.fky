@@ -1,6 +1,5 @@
 module test where
-    
-    g  _      False  True   =  1
-    g  False  True   _      =  2
-    g  _      _      False  =  3
-    g  _      _      True   =  4
+
+    newcons Tree = Branch Tree Tree | Leaf Integer
+
+    test (Branch a b) (Branch x y) = x

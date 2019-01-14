@@ -28,7 +28,7 @@ fixities = {
     # imaginary operator -- has a lower precedence than everything else, and is
     # used *exclusively* to kick off the fixity resolution recursive algorithm,
     # This is not a legal operator in Funky code.
-    "!!!"                           :  ("nonassoc",  0),
+    "!!!" : ("nonassoc",  0),
 
     # Remove backslashes from the lexer regexes for operators. This gets the
     # 'raw' operator string. If the operator lexemes are changed in the lexer,

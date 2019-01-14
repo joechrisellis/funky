@@ -5,7 +5,7 @@ from funky.util import output_attributes
 
 class Type:
     """Superclass."""
-    pass
+    __repr__ = output_attributes
 
 class BasicType(Type):
     """A basic named type -- e.g. Integer."""

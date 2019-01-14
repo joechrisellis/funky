@@ -69,12 +69,14 @@ class NewTypeStatement(ASTNode):
         self.typ         =  typ
 
 class NewConsStatement(ASTNode):
+    """Definition of a new constructor."""
 
     def __init__(self, identifier, constructors):
         self.identifier    =  identifier
         self.constructors  =  constructors
 
 class Construction(ASTNode):
+    """Instance of a constructor -- i.e. (Leaf x)."""
 
     def __init__(self, constructor, parameters):
         self.constructor  =  constructor

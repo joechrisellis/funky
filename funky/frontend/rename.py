@@ -333,3 +333,5 @@ def do_rename(source_tree):
     rename(source_tree, scope)
     source_tree.renamed = True
     logging.info("Renaming and sanity checking parse tree completed.")
+
+    print(source_tree)

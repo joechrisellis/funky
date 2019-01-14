@@ -22,48 +22,27 @@ class FunkyLexer:
     """
 
     # Reserved keywords -- variables are not permitted to have these names.
-    reserved = {
-        "module"    :  "MODULE",
-        "import"    :  "IMPORT",
-        "as"        :  "AS",
-        "newtype"   :  "NEWTYPE",
-        "newcons"   :  "NEWCONS",
-        "let"       :  "LET",
-        "in"        :  "IN",
-        "if"        :  "IF",
-        "then"      :  "THEN",
-        "else"      :  "ELSE",
-        "where"     :  "WHERE",
-        "match"     :  "MATCH",
-        "of"        :  "OF",
-        "lambda"    :  "LAMBDA",
-        "left"      :  "LEFTASSOC",
-        "right"     :  "RIGHTASSOC",
-        "nonassoc"  :  "NONASSOC",
-        "setfix"    :  "SETFIX",
-    }
+    reserved = [
+        "as", "else", "if", "import", "in", "lambda", "leftassoc", "let",
+        "match", "module", "newcons", "newtype", "nonassoc", "of",
+        "rightassoc", "setfix", "then", "where"
+    ]
+    reserved = {k : k.upper() for k in reserved}
 
     # All the tokens known to the lexer.
     tokens = [
-
-        # structural
         "WHITESPACE",
 
-        # 'control' characters
         "BACKTICK", "COMMA", "TYPESIG", "PIPE", "ARROW", "ENDSTATEMENT",
 
-        # literals
         "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
 
-        # math-related operators
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
         "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "LIST_CONSTRUCTOR",
 
-        # brackets
         "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",
         "OPEN_BRACE", "CLOSE_BRACE",
 
-        # identifiers and labels
         "IDENTIFIER", "TYPENAME",
     ] + list(reserved.values())
 
@@ -217,7 +196,8 @@ class IndentationLexer:
         """Inserts explicit braces into a token stream containing omitted
         braces.
         """
-        log.debug("Using the layout rule to convert indentation to explicit braces.")
+        log.debug("Using the layout rule to convert indentation to explicit "
+                  "braces.")
         new_tokens, ind_stack = [], []
 
         i = 0
@@ -253,18 +233,36 @@ class IndentationLexer:
         logging.debug("Finished adding explicit braces.")
         return new_tokens
 
-    def _make_token(self, type, value=None, lineno=None, lexpos=None):
+    def _make_token(self, typ, value=None, lineno=None, lexpos=None):
+        """Creates a token with the given arguments.
+
+        Input:
+            type   -- token type.
+            value  -- token value
+            lineno -- line number.
+            lexpos -- lexing position.
+        
+        Returns:
+            a token with the given arguments.
+        """
         tok         =  lex.LexToken()
-        tok.type    =  type
+        tok.type    =  typ
         tok.value   =  value
         tok.lineno  =  0
         tok.lexpos  =  0
         return tok
 
     def _find_column(self, token):
-        """Given the source string and a token from it (found by the lexer), gets
-        the column in the line that the token appeared in. This is required for
-        layout ruling.
+        """Given the source string and a token from it (found by the lexer),
+        gets the column in the line that the token appeared in. This is
+        required for layout ruling.
+
+        Input:
+            token -- a token.
+        
+        Returns:
+            an integer representing the column in the line where the token
+            appeared.
         """
         line_start = self.source.rfind("\n", 0, token.lexpos) + 1
         return (token.lexpos - line_start)

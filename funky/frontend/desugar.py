@@ -181,13 +181,13 @@ def literal_desugar(node):
     return CoreLiteral(node.value)
 
 @desugar.register(CoreCons)
-@desugar.register(CoreTuple)
 @desugar.register(CoreList)
+@desugar.register(CoreTuple)
 @desugar.register(Functions)
 @desugar.register(BasicType)
-@desugar.register(TupleType)
-@desugar.register(ListType)
 @desugar.register(FunctionType)
+@desugar.register(ListType)
+@desugar.register(TupleType)
 def noop_desugar(node):
     # default functions -- we must acknowledge these when we translate to C. No
     # further work here.
@@ -265,4 +265,5 @@ def do_desugar(source_tree):
     log.info("Desugaring parse tree...")
     desugared = desugar(source_tree)
     log.info("Completed desugaring parse tree.")
+    print(desugared)
     return desugared

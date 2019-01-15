@@ -115,3 +115,6 @@ dmypy.json
 
 # vim swap files
 *.swp
+
+# funky source files
+*.fky

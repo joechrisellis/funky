@@ -7,6 +7,15 @@ class Type:
     """Superclass."""
     __repr__ = output_attributes
 
+class LiteralType(Type):
+    """A literal built-in type."""
+
+    def __init__(self, type_name):
+        self.type_name  =  type_name
+
+    def __str__(self):
+        return str(self.type_name)
+
 class BasicType(Type):
     """A basic named type -- e.g. Integer."""
 

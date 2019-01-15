@@ -1,31 +1,18 @@
 """Built-in types available for use in Funky."""
 
+from funky.corelang.types import LiteralType
 from enum import Enum, auto
 
 # BUILTIN TYPES
-# These types are recognised by the compiler as 'builtin' -- they do not need
-# to be defined anywhere.
 
-class Primitives(Enum):
-    """Primitive types -- the most 'basic' types available."""
-    FLOAT    =  auto()
-    INTEGER  =  auto()
-    BOOL     =  auto()
-    CHAR     =  auto()
-
-BUILTIN_PRIMITIVES = {
-    "Float"    :  Primitives.FLOAT,
-    "Integer"  :  Primitives.INTEGER,
-    "Bool"     :  Primitives.BOOL,
-    "Char"     :  Primitives.CHAR,
-}
+BUILTIN_PRIMITIVES = ["Float", "Integer", "Bool", "Char"]
 
 # Mapping of Python types to Funky types.
 python_to_funky = {
-    float  :  Primitives.FLOAT,
-    int    :  Primitives.INTEGER,
-    bool   :  Primitives.BOOL,
-    str    :  Primitives.CHAR,
+    float  :  LiteralType("Float"),
+    int    :  LiteralType("Integer"),
+    bool   :  LiteralType("Bool"),
+    str    :  LiteralType("Char"),
 }
 
 # BUILTIN FUNCTIONS

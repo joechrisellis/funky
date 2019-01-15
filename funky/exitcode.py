@@ -10,6 +10,7 @@ SYNTAX_ERROR            =  3
 RENAMING_ERROR          =  4
 DESUGAR_ERROR           =  5
 GENERIC_PARSING_ERROR   =  6
+TYPE_ERROR              =  7
 
 def err_and_exit(msg, exception, exit_code):
     log.error(msg)

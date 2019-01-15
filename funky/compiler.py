@@ -10,6 +10,10 @@ from funky.frontend import FunkyLexingError, FunkySyntaxError,    \
 from funky.frontend.funky_parser import FunkyParser
 from funky.frontend.rename import do_rename
 from funky.frontend.desugar import do_desugar
+
+from funky.intermediate import FunkyTypeError
+from funky.intermediate.infer import do_type_inference
+
 from funky.util import get_user_attributes
 import funky
 
@@ -52,19 +56,13 @@ def compile_to_c(source):
     except FunkyFrontendError:
         err_and_exit("Generic frontend error.", e, GENERIC_PARSING_ERROR)
 
-    print("Parsing completed successfully.")
+    log.info("Parsing completed successfully.")
 
-    # TODO: semantic analysis
-    pass
-
-    # TODO: intermediate code generation
-    pass
-
-    # TODO: optimisation
-    pass
-
-    # TODO: code generation
-    pass
-
-    # TODO: return finished product!
-    pass
+    try:
+        try:
+            do_type_inference(core_tree)
+        except FunkyTypeError as e:
+            err_and_exit("Your program failed type checks, will not compile.",
+                         e, TYPE_ERROR)
+    except Exception as e:
+        raise e

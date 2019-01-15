@@ -1,6 +1,6 @@
 """Built-in types available for use in Funky."""
 
-from funky.corelang.types import LiteralType
+from funky.corelang.types import LiteralType, FunctionType
 from enum import Enum, auto
 
 # BUILTIN TYPES

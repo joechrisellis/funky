@@ -1,6 +1,3 @@
 module test where
     
-    newcons Tree = Branch Tree Integer Tree | Leaf Integer
-
-    invert (Branch l v r) = (Branch r v l)
-    invert x = x
+    x = 1 + 1 + 1 + 1.2

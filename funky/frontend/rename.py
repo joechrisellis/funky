@@ -134,6 +134,7 @@ def construction_rename(node, scope, fname=None, index=None):
         raise FunkyRenamingError("Constructor '{}' not " \
                                  "defined.".format(node.constructor))
     elif scope[node.constructor] != len(node.parameters):
+        print(scope[node.constructor], node)
         raise FunkyRenamingError("Expected {} parameters for constructor " \
                                  "'{}'.".format(scope[node.constructor],
                                                 node.constructor))

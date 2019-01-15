@@ -133,8 +133,7 @@ def construction_rename(node, scope, fname=None, index=None):
     if node.constructor not in scope:
         raise FunkyRenamingError("Constructor '{}' not " \
                                  "defined.".format(node.constructor))
-    elif scope[node.constructor] != len(node.parameters):
-        print(scope[node.constructor], node)
+    elif scope[node.constructor]["arity"] != len(node.parameters):
         raise FunkyRenamingError("Expected {} parameters for constructor " \
                                  "'{}'.".format(scope[node.constructor],
                                                 node.constructor))
@@ -157,7 +156,10 @@ def constructor_type_rename(node, scope):
         raise FunkyRenamingError("Duplicate usage of constructor " \
                                  "'{}'.".format(node.identifier))
 
-    scope[node.identifier] = len(node.parameters)
+    scope[node.identifier] = {
+        "id"     :  node.identifier,
+        "arity"  :  len(node.parameters),
+    }
     for i, param in enumerate(node.parameters):
         if isinstance(node, Parameter):
             rename(param, scope, fname=node.identifier, index=i)

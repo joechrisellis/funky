@@ -215,15 +215,6 @@ class FunkyParser:
         p[0] = p[1]
         p[0] = fixity.resolve_fixity(p[0])
 
-    def p_EXPS(self, p):
-        """EXPS : EXPS EXP
-                | EXP
-        """
-        if len(p) == 3:
-            p[0] = p[1] + [p[2]]
-        else:
-            p[0] = [[p[1]]]
-
     def p_EXP(self, p):
         """EXP : INFIX_EXP
         """
@@ -286,7 +277,6 @@ class FunkyParser:
                 | OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN
                 | OPEN_SQUARE EXP CLOSE_SQUARE
                 | OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE
-                | GCON EXPS
         """
         if len(p) == 2:
             if p[1] == ():
@@ -302,9 +292,6 @@ class FunkyParser:
                 p[0] = p[2]
             else:
                 p[0] = CoreTuple((p[2], *p[4]))
-        elif len(p) == 3:
-            p[0] = p[1]
-            p[0].parameters.extend(*p[2])
         else:
             if len(p) == 4:
                 p[0] = CoreList([p[2]])
@@ -344,8 +331,7 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 4:
-            p[0] = p[1]
-            p[0].parameters.extend([p[2]] + p[3])
+            p[0] = Construction(p[1], [p[2]] + p[3])
         else:
             p[0] = Literal(-p[3])
 
@@ -377,11 +363,11 @@ class FunkyParser:
                 | TYPENAME
         """
         if p[1] == "(":
-            p[0] = () # TODO
+            p[0] = ()
         elif p[1] == "[":
-            p[0] = [] # TODO
+            p[0] = []
         else:
-            p[0] = Construction(p[1], [])
+            p[0] = p[1]
 
     def p_VAROP(self, p):
         """VAROP : VARSYM

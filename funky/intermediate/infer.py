@@ -9,12 +9,27 @@ from funky.corelang.types import *
 
 log = logging.getLogger(__name__)
 
-testenv = {
-    "+" : FunctionType(BasicType("Integer"), BasicType("Integer"))
-}
-
 def get_new_type_variable():
     return BasicType(get_unique_varname())
+
+class ForAll:
+    """Universal quantifier for parametric polymorphism."""
+
+    def __init__(self, quantifiers, typ):
+        self.quantifiers  =  quantifiers
+        self.typ          =  typ
+
+def instantiate_for_all(for_all):
+    subst = {name : get_new_type_variable() for name in for_all.quantifiers}
+    return apply_subst(for_all.typ, subst)
+
+def generalize(env, typ):
+    free_env, free_typ = free_typevars_in(env), free_typevars_in(typ)
+    quantifiers = free_typ - free_env
+    if len(quantifiers) > 0:
+        return ForAll(quantifiers, typ)
+    else:
+        return typ
 
 def unify(t1, t2):
     if isinstance(t1, LiteralType) and isinstance(t2, LiteralType) and \
@@ -27,8 +42,8 @@ def unify(t1, t2):
     elif isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
         subst1 = unify(t1.input_type, t2.input_type)
         subst2 = unify(
-            apply_subst_to_type(t1.output_type, subst1),
-            apply_subst_to_type(t2.output_type, subst1)
+            apply_subst(t1.output_type, subst1),
+            apply_subst(t2.output_type, subst1)
         );
         return compose_substitutions(subst1, subst2)
     else:
@@ -38,7 +53,7 @@ def unify(t1, t2):
 def compose_substitutions(subst1, subst2):
     result = {}
     for k, t in subst2.items():
-        result[k] = apply_subst_to_type(t, subst1)
+        result[k] = apply_subst(t, subst1)
     return {**result, **subst1}
 
 def bind(name, typ):
@@ -48,12 +63,6 @@ def bind(name, typ):
         raise FunkyTypeError("Type {} refers to itself.".format(typ))
     else:
         return {name : typ}
-
-def apply_subst_to_env(subst, env):
-    new_env = env.copy()
-    for name, typ in new_env.items():
-        new_env[name] = apply_subst_to_type(typ, subst)
-    return new_env
 
 contains = get_registry_function()
 
@@ -69,23 +78,61 @@ def contains_basic(typ, name):
 def contains_function(typ, name):
     return contains(typ.input_type, name) or contains(typ.output_type, name)
 
-apply_subst_to_type = get_registry_function()
+free_typevars_in = get_registry_function()
 
-@apply_subst_to_type.register(LiteralType)
+@free_typevars_in.register(dict)
+def free_typevars_in_env(env):
+    return set.union(*(free_typevars_in(t) for t in env.values()))
+
+@free_typevars_in.register(LiteralType)
+def free_typevars_in_literal(typ):
+    return {}
+
+@free_typevars_in.register(BasicType)
+def free_typevars_in_literal(typ):
+    return set([typ.type_name])
+
+@free_typevars_in.register(FunctionType)
+def free_typevars_in_literal(typ):
+    return free_typevars_in(typ.input_type) | free_typevars_in(typ.output_type)
+
+@free_typevars_in.register(ForAll)
+def free_typevars_in_for_all(for_all):
+    quantifiers = set(for_all.quantifiers)
+    free_in_type = free_typevars_in(for_all.typ)
+    return free_in_type - quantifiers
+
+apply_subst = get_registry_function()
+
+@apply_subst.register(dict)
+def apply_subst_to_env(env, subst):
+    new_env = env.copy()
+    for name, typ in new_env.items():
+        new_env[name] = apply_subst(typ, subst)
+    return new_env
+
+@apply_subst.register(ForAll)
+def apply_subst_to_for_all(for_all, subst):
+    tmp_subst = subst.copy()
+    for name in for_all.quantifiers:
+        del tmp_subst[name]
+    return ForAll(for_all.quantifiers, apply_subst(subst.typ, tmp_subst))
+
+@apply_subst.register(LiteralType)
 def apply_subst_to_type_literal(typ, subst):
     return typ
 
-@apply_subst_to_type.register(BasicType)
+@apply_subst.register(BasicType)
 def apply_subst_to_type_basic(typ, subst):
     try:
         return subst[typ.type_name]
     except KeyError:
         return typ
 
-@apply_subst_to_type.register(FunctionType)
+@apply_subst.register(FunctionType)
 def apply_subst_to_type_function(typ, subst):
-    return FunctionType(apply_subst_to_type(typ.input_type, subst),
-                        apply_subst_to_type(typ.output_type, subst))
+    return FunctionType(apply_subst(typ.input_type, subst),
+                        apply_subst(typ.output_type, subst))
 
 infer = get_registry_function()
 
@@ -97,10 +144,13 @@ def infer_literal(node, env):
 @infer.register(CoreVariable)
 def infer_variable(node, env):
     try:
-        return env[node.identifier], {}
+        env_type = env[node.identifier]
+        if isinstance(env_type, ForAll):
+            return instantiate_for_all(env_type), {}
+        else:
+            return env_type, {}
     except KeyError:
-        raise FunkyTypeError("Variable '{}' not in "
-                             "scope.".format(node.identifier))
+        raise FunkyTypeError("Unbound variable '{}'.".format(node.identifier))
 
 @infer.register(CoreLambda)
 def infer_lambda(node, env):
@@ -108,8 +158,8 @@ def infer_lambda(node, env):
     new_type_variable = get_new_type_variable()
     tmp_environment[node.param] = new_type_variable
 
-    body_type, subst = infer(tmp_environment, node.expr)
-    inferred_type = FunctionType(apply_subst_to_type(subst, new_type_variable),
+    body_type, subst = infer(node.expr, tmp_environment)
+    inferred_type = FunctionType(apply_subst(new_type_variable, subst),
                                  body_type)
 
     return inferred_type, subst
@@ -118,21 +168,25 @@ def infer_lambda(node, env):
 def infer_application(node, env):
     print(node.expr)
     function_type, subst1 = infer(node.expr, env)
-    arg_type, subst2 = infer(node.arg, apply_subst_to_env(subst1, env))
+    arg_type, subst2 = infer(node.arg, apply_subst(env, subst1))
 
     new_var = get_new_type_variable()
     subst3 = compose_substitutions(subst1, subst2)
     subst4 = unify(FunctionType(arg_type, new_var), function_type)
 
-    function_type_1 = apply_subst_to_type(function_type, subst4)
+    function_type_1 = apply_subst(function_type, subst4)
 
     subst5 = compose_substitutions(subst3, subst4)
-    subst6 = unify(apply_subst_to_type(function_type_1.input_type, subst5),
+    subst6 = unify(apply_subst(function_type_1.input_type, subst5),
                    arg_type)
 
     result_subst = compose_substitutions(subst5, subst6)
-    return (apply_subst_to_type(function_type_1.output_type, result_subst),
+    return (apply_subst(function_type_1.output_type, result_subst),
             result_subst)
+
+@infer.register(CoreLet)
+def infer_let(node, env):
+    pass
 
 @infer.register(CoreMatch)
 def infer_match(node, env):
@@ -145,5 +199,5 @@ def infer_builtin_function(node, env):
 def do_type_inference(core_tree):
     # TODO: sort this out!
     log.info("Performing type inference...")
-    print(infer(core_tree.binds[0].bindee, testenv))
+    print(infer(core_tree.binds[0].bindee, {}))
     log.info("Completed type inference.")

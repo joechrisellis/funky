@@ -25,6 +25,16 @@ class BasicType(Type):
     def __str__(self):
         return str(self.type_name)
 
+class FunctionType(Type):
+    """A function type -- e.g. [Integer] -> (Integer -> Integer) -> [Integer]"""
+
+    def __init__(self, input_type, output_type):
+        self.input_type   =  input_type
+        self.output_type  =  output_type
+
+    def __str__(self):
+        return "{} -> {}".format(str(self.input_type), str(self.output_type))
+
 class TupleType(Type):
     """A tuple-type -- e.g. (Integer, Integer)."""
 
@@ -41,16 +51,6 @@ class ListType(Type):
 
     def __init__(self, typ):
         self.typ  =  typ
-
-class FunctionType(Type):
-    """A function type -- e.g. [Integer] -> (Integer -> Integer) -> [Integer]"""
-
-    def __init__(self, input_type, output_type):
-        self.input_type   =  input_type
-        self.output_type  =  output_type
-
-    def __str__(self):
-        return "{} -> {}".format(str(self.input_type), str(self.output_type))
 
 class AlgebraicDataType(Type):
     """An algebraic data type defined with the 'newcons' keyword. These are

@@ -34,7 +34,17 @@ def module_desugar(node):
 def program_body_desugar(node):
     # TODO: imports should already be in the parse tree by now, so no need to
     #       do anything with imports.
-    toplevel_let = CoreLet([desugar(t) for t in node.toplevel_declarations], None)
+    toplevel_declarations = [desugar(t) for t in node.toplevel_declarations]
+    main_expr = None
+    for i, bind in enumerate(toplevel_declarations):
+        if bind.identifier == "main":
+            main_expr = bind.bindee
+            toplevel_declarations.pop(i)
+            break
+    else:
+        raise FunkyDesugarError("No main method, cannot compile.")
+
+    toplevel_let = CoreLet(toplevel_declarations, main_expr)
     toplevel_let.binds = condense_function_binds(toplevel_let.binds)
     return toplevel_let
 
@@ -115,7 +125,7 @@ def pattern_definition_desugar(node):
     # TODO: e.g. (x, y) = 1, 2
     pat = desugar(node.pattern)
     expr = desugar(node.expression)
-    return CoreBind(pat, expr)
+    return CoreBind(pat.identifier, expr)
 
 @desugar.register(Alternative)
 def alternative_desugar(node):
@@ -264,6 +274,7 @@ def do_desugar(source_tree):
     assert source_tree.parsed and source_tree.fixities_resolved
     log.info("Desugaring parse tree...")
     desugared = desugar(source_tree)
-    log.info("Completed desugaring parse tree.")
+    print(repr(desugared))
     print(desugared)
+    log.info("Completed desugaring parse tree.")
     return desugared

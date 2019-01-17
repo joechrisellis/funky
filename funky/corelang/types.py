@@ -3,6 +3,13 @@ contains a consistent representation for them.
 """
 from funky.util import output_attributes
 
+class ForAll:
+    """Universal quantifier for parametric polymorphism."""
+
+    def __init__(self, quantifiers, typ):
+        self.quantifiers  =  quantifiers
+        self.typ          =  typ
+
 class Type:
     """Superclass."""
     __repr__ = output_attributes

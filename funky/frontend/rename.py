@@ -238,7 +238,7 @@ def guarded_expression_rename(node, scope):
 
 @rename.register(PatternDefinition)
 def pattern_definition_rename(node, scope):
-    rename(node.pattern, scope)
+    rename(node.pattern, scope, is_main=isinstance(node.pattern, Parameter) and node.pattern.name == "main")
     rename(node.expression, scope)
 
 @rename.register(Alternative)
@@ -289,15 +289,19 @@ def list_rename(node, scope):
         rename(item, scope)
 
 @rename.register(Parameter)
-def parameter_rename(node, scope, fname=None, index=None, localizer=None):
+def parameter_rename(node, scope, fname=None, index=None, localizer=None,
+                     is_main=False):
     if node.name in scope.local and \
        node.name != "_": # _ is the special wildcard variable
         raise FunkyRenamingError("Duplicate definition of parameter " \
                                  "'{}'.".format(node.name))
 
-    newid = get_parameter_name(fname, localizer, index) if fname or index or \
-                                                        localizer \
-            else get_unique_varname()
+    if is_main:
+        newid = "main"
+    else:
+        newid = get_parameter_name(fname, localizer, index) if fname or index or \
+                                                            localizer \
+                else get_unique_varname()
 
     scope[node.name] = newid
     node.name = newid
@@ -336,5 +340,3 @@ def do_rename(source_tree):
     rename(source_tree, scope)
     source_tree.renamed = True
     logging.info("Renaming and sanity checking parse tree completed.")
-
-    print(source_tree)

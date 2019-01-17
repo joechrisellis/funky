@@ -12,13 +12,6 @@ log = logging.getLogger(__name__)
 def get_new_type_variable():
     return BasicType(get_unique_varname())
 
-class ForAll:
-    """Universal quantifier for parametric polymorphism."""
-
-    def __init__(self, quantifiers, typ):
-        self.quantifiers  =  quantifiers
-        self.typ          =  typ
-
 def instantiate_for_all(for_all):
     subst = {name : get_new_type_variable() for name in for_all.quantifiers}
     return apply_subst(for_all.typ, subst)
@@ -82,7 +75,10 @@ free_typevars_in = get_registry_function()
 
 @free_typevars_in.register(dict)
 def free_typevars_in_env(env):
-    return set.union(*(free_typevars_in(t) for t in env.values()))
+    s = set()
+    for t in env.values():
+        s |= free_typevars_in(t)
+    return s
 
 @free_typevars_in.register(LiteralType)
 def free_typevars_in_literal(typ):
@@ -115,8 +111,11 @@ def apply_subst_to_env(env, subst):
 def apply_subst_to_for_all(for_all, subst):
     tmp_subst = subst.copy()
     for name in for_all.quantifiers:
-        del tmp_subst[name]
-    return ForAll(for_all.quantifiers, apply_subst(subst.typ, tmp_subst))
+        try:
+            del tmp_subst[name]
+        except KeyError:
+            pass
+    return ForAll(for_all.quantifiers, apply_subst(for_all.typ, tmp_subst))
 
 @apply_subst.register(LiteralType)
 def apply_subst_to_type_literal(typ, subst):
@@ -156,7 +155,7 @@ def infer_variable(node, env):
 def infer_lambda(node, env):
     tmp_environment = env.copy()
     new_type_variable = get_new_type_variable()
-    tmp_environment[node.param] = new_type_variable
+    tmp_environment[node.param.identifier] = new_type_variable
 
     body_type, subst = infer(node.expr, tmp_environment)
     inferred_type = FunctionType(apply_subst(new_type_variable, subst),
@@ -166,7 +165,6 @@ def infer_lambda(node, env):
 
 @infer.register(CoreApplication)
 def infer_application(node, env):
-    print(node.expr)
     function_type, subst1 = infer(node.expr, env)
     arg_type, subst2 = infer(node.arg, apply_subst(env, subst1))
 
@@ -186,7 +184,20 @@ def infer_application(node, env):
 
 @infer.register(CoreLet)
 def infer_let(node, env):
-    pass
+    subst_sum = {}
+    env2 = {}
+    for bind in node.binds:
+        bindee_type, subst1 = infer(bind.bindee, env)
+        env1 = apply_subst(subst1, env)
+        bindee_polytype = generalize(env1, bindee_type)
+        env2.update(env1)
+        env2[bind.identifier] = bindee_polytype
+        subst_sum = compose_substitutions(subst_sum, subst1)
+
+    expr_type, subst2 = infer(node.expr, env2)
+    subst3 = compose_substitutions(subst_sum, subst2)
+
+    return expr_type, subst3
 
 @infer.register(CoreMatch)
 def infer_match(node, env):
@@ -199,5 +210,5 @@ def infer_builtin_function(node, env):
 def do_type_inference(core_tree):
     # TODO: sort this out!
     log.info("Performing type inference...")
-    print(infer(core_tree.binds[0].bindee, {}))
+    print(infer(core_tree, {}))
     log.info("Completed type inference.")

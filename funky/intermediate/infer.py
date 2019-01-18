@@ -7,6 +7,9 @@ from funky.corelang.coretree import *
 from funky.corelang.builtins import Functions
 from funky.corelang.types import *
 
+from funky.intermediate.tarjan import create_dependency_graph, \
+                                      find_strongly_connected_components
+
 log = logging.getLogger(__name__)
 
 def is_wildcard(x):
@@ -232,10 +235,12 @@ def infer_match(node, env):
 
 @infer.register(Functions)
 def infer_builtin_function(node, env):
-    return FunctionType(BasicType("Integer"), FunctionType(BasicType("Integer"), BasicType("Integer"))), {}
+    return FunctionType(LiteralType("Integer"), FunctionType(LiteralType("Integer"), LiteralType("Integer"))), {}
 
 def do_type_inference(core_tree):
     # TODO: sort this out!
     log.info("Performing type inference...")
-    print(infer(core_tree, {}))
+    graph = create_dependency_graph(core_tree.binds)
+    find_strongly_connected_components(graph)
+    # print(infer(core_tree, {}))
     log.info("Completed type inference.")

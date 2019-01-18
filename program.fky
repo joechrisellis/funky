@@ -1,7 +1,7 @@
 module test where
 
-    factorial 0 = 1
-    factorial n = n * factorial (n - 1)
+    even 0 = True
+    even n = odd  (n - 1)
+    odd  n = even (n - 1)
 
-    fix f x = f x
-    main = fix factorial 1
+    main = 0

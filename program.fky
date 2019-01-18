@@ -1,5 +1,7 @@
 module test where
 
-    main = f x
+    factorial 0 = 1
+    factorial n = n * factorial (n - 1)
 
-    f x = x
+    fix f x = f x
+    main = fix factorial 1

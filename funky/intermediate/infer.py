@@ -9,6 +9,9 @@ from funky.corelang.types import *
 
 log = logging.getLogger(__name__)
 
+def is_wildcard(x):
+    return isinstance(x, CoreVariable) and x.identifier == "_"
+
 def get_new_type_variable():
     return BasicType(get_unique_varname())
 
@@ -82,7 +85,7 @@ def free_typevars_in_env(env):
 
 @free_typevars_in.register(LiteralType)
 def free_typevars_in_literal(typ):
-    return {}
+    return set()
 
 @free_typevars_in.register(BasicType)
 def free_typevars_in_literal(typ):
@@ -201,7 +204,31 @@ def infer_let(node, env):
 
 @infer.register(CoreMatch)
 def infer_match(node, env):
-    pass # TODO
+    # the scrutinee and the altcons must all have the same type.
+    # each alternative in a match statement must have the same type.
+    scrutinee_type, subst1 = infer(node.scrutinee, env)
+    expr_type = None
+    
+    # check that all of the altcons have consistent types
+    for alt in node.alts:
+        if isinstance(alt.altcon, CoreVariable):
+            altcon_type, subst2 = scrutinee_type, {}
+            env[alt.altcon.identifier] = scrutinee_type
+        else:
+            altcon_type, subst2 = infer(alt.altcon, env)
+        subst3 = unify(scrutinee_type, altcon_type)
+        subst1 = compose_substitutions(subst1, compose_substitutions(subst2, subst3))
+        apply_subst(env, subst1)
+
+        scrutinee_type = altcon_type
+
+        this_expr_type, subst4 = infer(alt.expr, env)
+        if expr_type:
+            subst4 = unify(expr_type, this_expr_type)
+        expr_type = this_expr_type
+        subst1 = compose_substitutions(subst1, subst4)
+
+    return apply_subst(expr_type, subst1), subst1
 
 @infer.register(Functions)
 def infer_builtin_function(node, env):

@@ -291,8 +291,8 @@ def list_rename(node, scope):
 @rename.register(Parameter)
 def parameter_rename(node, scope, fname=None, index=None, localizer=None,
                      is_main=False):
-    if node.name in scope.local and \
-       node.name != "_": # _ is the special wildcard variable
+    if node.name == "_": return
+    if node.name in scope.local:
         raise FunkyRenamingError("Duplicate definition of parameter " \
                                  "'{}'.".format(node.name))
 

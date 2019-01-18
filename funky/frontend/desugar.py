@@ -130,7 +130,7 @@ def pattern_definition_desugar(node):
 @desugar.register(Alternative)
 def alternative_desugar(node):
     pat = desugar(node.pattern)
-    expression = desugar(node.expression)
+    expr = desugar(node.expression)
     return CoreAlt(pat, expr)
 
 @desugar.register(Lambda)

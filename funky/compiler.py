@@ -19,7 +19,9 @@ import funky
 
 log = logging.getLogger(__name__)
 
-def compile_to_c(source):
+def compile_to_c(source, dump_parsed=False,
+                         dump_renamed=False,
+                         dump_desugared=False):
     """Compiles funky source code.
     
     Input:
@@ -35,6 +37,9 @@ def compile_to_c(source):
             parser = FunkyParser()
             parser.build()
             parsed = parser.do_parse(source)
+            if dump_parsed:
+                print("## DUMPED PARSE TREE")
+                print(parsed)
         except FunkyLexingError as e:
             err_and_exit("Failed to lex source code.", e, LEXING_ERROR)
         except FunkySyntaxError as e:
@@ -46,11 +51,17 @@ def compile_to_c(source):
         # rename variables
         try:
             do_rename(parsed)
+            if dump_renamed:
+                print("## DUMPED RENAMED PARSE TREE")
+                print(parsed)
         except FunkyRenamingError as e:
             err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
         
         try:
             core_tree = do_desugar(parsed)
+            if dump_desugared:
+                print("## CORE (DESUGARED) CODE")
+                print(core_tree)
         except FunkyDesugarError as e:
             err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
     except FunkyFrontendError:

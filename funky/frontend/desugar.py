@@ -274,7 +274,5 @@ def do_desugar(source_tree):
     assert source_tree.parsed and source_tree.fixities_resolved
     log.info("Desugaring parse tree...")
     desugared = desugar(source_tree)
-    print(repr(desugared))
-    print(desugared)
     log.info("Completed desugaring parse tree.")
     return desugared

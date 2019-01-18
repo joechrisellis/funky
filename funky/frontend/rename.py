@@ -246,8 +246,11 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 @rename.register(UsedVar)
 def used_var_rename(node, scope):
     if node.name not in scope:
-        raise FunkyRenamingError("Referenced item '{}' does not " \
-                                 "exist.".format(node.name))
+        new_name = get_unique_varname()
+        scope[node.name] = new_name
+        scope.pending_discovery.add(node.name)
+        node.name = new_name
+        return
 
     node.name = scope[node.name]
     if type(node.name) == dict: # edge case for functions
@@ -275,5 +278,11 @@ def do_rename(source_tree):
     logging.info("Renaming and sanity checking parse tree...")
     scope = Scope()
     rename(source_tree, scope)
+    
+    err_msg = "\n".join("Referenced item '{}' was never defined.".format(ident)
+                        for ident in scope.pending_discovery)
+    if err_msg:
+        raise FunkyRenamingError(err_msg)
+
     source_tree.renamed = True
     logging.info("Renaming and sanity checking parse tree completed.")

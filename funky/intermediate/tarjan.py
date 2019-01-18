@@ -32,6 +32,12 @@ def create_dependency_graph(bindings):
     return graph
 
 def find_strongly_connected_components(graph):
+    """Applies Tarjan's algorithm to split a graph down into its strongly
+    connected components. We use this in the compiler to 'sort' bindings
+    in a core let statement.
+    """
+    # TODO: document this better
+
     i = scc_count = 0
     ids, low = defaultdict(lambda: UNVISITED), defaultdict(lambda: 0)
     on_stack = defaultdict(lambda: False)
@@ -65,12 +71,15 @@ def find_strongly_connected_components(graph):
     for node in graph.graph:
         if ids[node] != UNVISITED: continue
         dfs(node)
+    
+    return low # TODO: convert to classes
 
 add_edges = get_registry_function()
 
 @add_edges.register(CoreVariable)
 def add_edges_variable(bindee, graph, current, ids):
-    # We are only concerned about dependencies in our isolated set of bindings.
+    # We are only concerned about dependencies in our isolated set of bindings
+    # -- ignore anything that we're not looking for.
     if bindee.identifier in ids:
         graph.add(current, bindee.identifier)
 
@@ -94,10 +103,13 @@ def add_edges_lambda(bindee, graph, current, ids):
 
 @add_edges.register(CoreLet)
 def add_edges_let(bindee, graph, current, ids):
+    for local_let_bind in bindee.binds:
+        add_edges(local_let_bind, graph, current, ids)
     add_edges(bindee.expr, graph, current, ids)
 
 @add_edges.register(CoreMatch)
 def add_edges_match(bindee, graph, current, ids):
+    # TODO: there might be an issue here with scrutinees and binding?
     for alt in bindee.alts:
         add_edges(alt, graph, current, ids)
 

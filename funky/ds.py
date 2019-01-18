@@ -6,9 +6,10 @@ class Scope:
     """A scope maps identifiers to arbitrary items."""
 
     def __init__(self, parent=None, localizer=None):
-        self.local = {}
-        self.parent = parent
-        self.localizer = localizer
+        self.local              =  {}
+        self.parent             =  parent
+        self.localizer          =  localizer
+        self.pending_discovery  =  set() if parent is None else parent.pending_discovery
 
     def search(self, item):
         """Searches the local scope for the item.
@@ -51,6 +52,8 @@ class Scope:
             value -- any auxiliary data you want to add
         """
         self.local[key] = value
+        if key in self.pending_discovery:
+            self.pending_discovery.remove(key)
 
     def __contains__(self, item):
         """A scope 'contains' an item (in other words, that item is defined)

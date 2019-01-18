@@ -1,7 +1,10 @@
 module test where
 
-    even 0 = True
-    even n = odd  (n - 1)
-    odd  n = even (n - 1)
+    f x = 2
+    j = 5
 
-    main = 0
+    g x z = h x
+          where h = f
+                p = j + l + z
+
+    main = f 1

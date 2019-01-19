@@ -71,8 +71,13 @@ def find_strongly_connected_components(graph):
     for node in graph.graph:
         if ids[node] != UNVISITED: continue
         dfs(node)
-    
-    return low # TODO: convert to classes
+
+    reversed_dict = defaultdict(list)
+    for k, v in low.items():
+        reversed_dict[v].append(k)
+
+    strongly_connected_components = [l for l in reversed_dict.values()]
+    return strongly_connected_components
 
 add_edges = get_registry_function()
 

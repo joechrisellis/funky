@@ -36,6 +36,18 @@ class Scope:
         else:
             return None
 
+    def get_pending_name(self, key):
+        try:
+            return self.pending_definition[key]
+        except KeyError:
+            if self.parent:
+                return self.parent.get_pending_name(key)
+            else:
+                return None
+
+    def is_pending_definition(self, key):
+        return key in self.pending_definition or (self.parent.is_pending_definition(key) if self.parent else False)
+
     def __getitem__(self, key):
         """Recursively searches the scope for a given key and returns it.
         Input:
@@ -65,7 +77,7 @@ class Scope:
 
     def __repr__(self):
         return "({}, pending={}, parent={})".format(self.local, self.pending_definition, self.parent) if self.parent \
-                                          else "({}, {})".format(self.local, self.pending_definition)
+                                          else "({}, pending={})".format(self.local, self.pending_definition)
 
 class Graph:
     """Graph data structure, heavily inspired by mVChr's answer on

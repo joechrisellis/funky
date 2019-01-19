@@ -245,9 +245,10 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 
     if is_main:
         newid = "main"
-    elif node.name in scope.pending_definition:
-        newid = scope.pending_definition[node.name]
-        del scope.pending_definition[node.name]
+    elif scope.is_pending_definition(node.name):
+        newid = scope.get_pending_name(node.name)
+        if node.name in scope.pending_definition:
+            del scope.pending_definition[node.name]
     else:
         newid = get_parameter_name(fname, localizer, index) if fname or index or \
                                                             localizer \
@@ -260,8 +261,11 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 def used_var_rename(node, scope):
     print("USED",scope)
     if node.name not in scope:
-        new_name = get_unique_varname()
-        scope.pending_definition[node.name] = new_name
+        if scope.is_pending_definition(node.name):
+            new_name = scope.get_pending_name(node.name)
+        else:
+            new_name = get_unique_varname()
+            scope.pending_definition[node.name] = new_name
         node.name = new_name
         return
 

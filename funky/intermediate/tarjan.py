@@ -20,12 +20,15 @@ def reorder_bindings(bindings):
     def dfs(at):
         visited.add(at)
 
-        for node in at:
-            scc = next(x for x in sccs if node in x)
+        neighbours = [dependency_graph.graph[x] for x in at]
+        neighbours = [item for sublist in neighbours for item in sublist]
+
+        for to in neighbours:
+            scc = next(x for x in sccs if to in x)
             if scc not in visited:
                 dfs(scc)
         
-        reordered.append(scc)
+        reordered.append(at)
 
     for scc in sccs:
         if scc in visited:

@@ -1,7 +1,8 @@
 module test where
 
-    k = lambda n -> n + j
-
-    j = 19
+    k = a + 2
+    f x = k + z
+    z = 2 + a
+    a = 4 + k + z
 
     main = k

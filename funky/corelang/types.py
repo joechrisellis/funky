@@ -45,7 +45,7 @@ class FunctionType(Type):
         self.output_type  =  output_type
 
     def __str__(self):
-        return "{} -> {}".format(str(self.input_type), str(self.output_type))
+        return "({} -> {})".format(str(self.input_type), str(self.output_type))
 
 class TupleType(Type):
     """A tuple-type -- e.g. (Integer, Integer)."""

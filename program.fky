@@ -1,8 +1,7 @@
 module test where
 
-    a x = b x + 10
-    b x = 56 + a x
-    c = 45
-    d = a c
+    g  1.0  _  _   =  5
+    g  3.0  4  _   =  10
+    g  _  _  1.2 =  20
 
-    main = d
+    main = g

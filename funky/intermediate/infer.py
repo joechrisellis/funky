@@ -188,16 +188,6 @@ def infer_application(node, env):
 
 @infer.register(CoreLet)
 def infer_let(node, env):
-    subst_sum = {}
-    env2 = {}
-    # for bind in node.binds:
-        # bindee_type, subst1 = infer(bind.bindee, env)
-        # env1 = apply_subst(subst1, env)
-        # bindee_polytype = generalize(env1, bindee_type)
-        # env2.update(env1)
-        # env2[bind.identifier] = bindee_polytype
-        # subst_sum = compose_substitutions(subst_sum, subst1)
-
     # We reorder the bindings and collect them by strongly connected components.
     # For each SCC, we run variable instantiate individually.
     for group in reorder_bindings(node.binds):
@@ -207,14 +197,13 @@ def infer_let(node, env):
 
         for bind in group:
             bindee_type, subst1 = infer(bind.bindee, group_env)
-            env1 = apply_subst(env, subst1)
+            group_env = apply_subst(group_env, subst1)
             bindee_polytype = generalize(env, bindee_type)
             group_env[bind.identifier] = bindee_polytype
 
         env.update(group_env)
 
     expr_type, subst2 = infer(node.expr, env)
-
     return expr_type, subst2
 
 @infer.register(CoreMatch)
@@ -222,26 +211,31 @@ def infer_match(node, env):
     # the scrutinee and the altcons must all have the same type.
     # each alternative in a match statement must have the same type.
     scrutinee_type, subst1 = infer(node.scrutinee, env)
+
     expr_type = None
-    
-    # check that all of the altcons have consistent types
     for alt in node.alts:
         if isinstance(alt.altcon, CoreVariable):
             altcon_type, subst2 = scrutinee_type, {}
             env[alt.altcon.identifier] = scrutinee_type
         else:
             altcon_type, subst2 = infer(alt.altcon, env)
+
         subst3 = unify(scrutinee_type, altcon_type)
-        subst1 = compose_substitutions(subst1, compose_substitutions(subst2, subst3))
-        apply_subst(env, subst1)
+        subst1 = compose_substitutions(subst2, subst1)
+        subst1 = compose_substitutions(subst3, subst1)
 
-        scrutinee_type = altcon_type
+        env1 = apply_subst(env, subst1)
 
-        this_expr_type, subst4 = infer(alt.expr, env)
+        if alt.expr is None:
+            continue
+
+        alt_expr_type, subst4 = infer(alt.expr, env1)
         if expr_type:
-            subst4 = unify(expr_type, this_expr_type)
-        expr_type = this_expr_type
-        subst1 = compose_substitutions(subst1, subst4)
+            subst5 = unify(expr_type, alt_expr_type)
+            subst1 = compose_substitutions(subst5, subst1)
+        expr_type = alt_expr_type
+
+        subst1 = compose_substitutions(subst4, subst1)
 
     return apply_subst(expr_type, subst1), subst1
 
@@ -254,9 +248,10 @@ def do_type_inference(core_tree):
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
     print(find_strongly_connected_components(graph))
-    print("\n".join(str(x) for x in reorder_bindings(core_tree.binds)))
     env = {}
-    print(infer(core_tree, env))
+    t, subst = infer(core_tree, env)
+    apply_subst(env, subst)
 
+    print(t, subst)
     print("\n".join("{} :: {}".format(name, typ) for name, typ in env.items()))
     log.info("Completed type inference.")

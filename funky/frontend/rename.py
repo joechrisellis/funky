@@ -264,7 +264,6 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 
 @rename.register(UsedVar)
 def used_var_rename(node, scope):
-    print("USED",scope)
     if node.name not in scope:
         if scope.is_pending_definition(node.name):
             new_name = scope.get_pending_name(node.name)

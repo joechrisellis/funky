@@ -1,14 +1,8 @@
 module test where
 
-    odd   0  =  False
-    even  0  =  True
-    odd   n  =  even   (n-1) + factorial 0
-    even  n  =  odd    (n-1)
+    a x = b x + 10
+    b x = 56 + a x
+    c = 45
+    d = a c
 
-    even_factorial n | even n = factorial n
-                     | odd  n = 0
-    
-    factorial 0 = 1 + even 0
-    factorial n = n * factorial (n - 1)
-
-    main = even 10
+    main = d

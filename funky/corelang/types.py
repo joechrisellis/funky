@@ -6,9 +6,14 @@ from funky.util import output_attributes
 class ForAll:
     """Universal quantifier for parametric polymorphism."""
 
+    __repr__ = output_attributes
+
     def __init__(self, quantifiers, typ):
         self.quantifiers  =  quantifiers
         self.typ          =  typ
+    
+    def __str__(self):
+        return "forall {} . {}".format(", ".join(self.quantifiers), self.typ)
 
 class Type:
     """Superclass."""

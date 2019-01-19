@@ -35,6 +35,9 @@ def reorder_bindings(bindings):
             continue
         dfs(scc)
 
+    d = {bind.identifier : bind for bind in bindings}
+    reordered = [[d[b] for b in g] for g in reordered]
+
     return reordered
 
 def create_dependency_graph(bindings):

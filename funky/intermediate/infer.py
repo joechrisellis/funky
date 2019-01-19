@@ -26,10 +26,7 @@ def instantiate_for_all(for_all):
 def generalize(env, typ):
     free_env, free_typ = free_typevars_in(env), free_typevars_in(typ)
     quantifiers = free_typ - free_env
-    if len(quantifiers) > 0:
-        return ForAll(quantifiers, typ)
-    else:
-        return typ
+    return ForAll(quantifiers, typ) if len(quantifiers) > 0 else typ
 
 def unify(t1, t2):
     if isinstance(t1, LiteralType) and isinstance(t2, LiteralType) and \
@@ -193,18 +190,32 @@ def infer_application(node, env):
 def infer_let(node, env):
     subst_sum = {}
     env2 = {}
-    for bind in node.binds:
-        bindee_type, subst1 = infer(bind.bindee, env)
-        env1 = apply_subst(subst1, env)
-        bindee_polytype = generalize(env1, bindee_type)
-        env2.update(env1)
-        env2[bind.identifier] = bindee_polytype
-        subst_sum = compose_substitutions(subst_sum, subst1)
+    # for bind in node.binds:
+        # bindee_type, subst1 = infer(bind.bindee, env)
+        # env1 = apply_subst(subst1, env)
+        # bindee_polytype = generalize(env1, bindee_type)
+        # env2.update(env1)
+        # env2[bind.identifier] = bindee_polytype
+        # subst_sum = compose_substitutions(subst_sum, subst1)
 
-    expr_type, subst2 = infer(node.expr, env2)
-    subst3 = compose_substitutions(subst_sum, subst2)
+    # We reorder the bindings and collect them by strongly connected components.
+    # For each SCC, we run variable instantiate individually.
+    for group in reorder_bindings(node.binds):
+        group_env = env.copy()
+        for bind in group:
+            group_env[bind.identifier] = get_new_type_variable()
 
-    return expr_type, subst3
+        for bind in group:
+            bindee_type, subst1 = infer(bind.bindee, group_env)
+            env1 = apply_subst(env, subst1)
+            bindee_polytype = generalize(env, bindee_type)
+            group_env[bind.identifier] = bindee_polytype
+
+        env.update(group_env)
+
+    expr_type, subst2 = infer(node.expr, env)
+
+    return expr_type, subst2
 
 @infer.register(CoreMatch)
 def infer_match(node, env):
@@ -243,6 +254,9 @@ def do_type_inference(core_tree):
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
     print(find_strongly_connected_components(graph))
-    print(reorder_bindings(core_tree.binds))
-    # print(infer(core_tree, {}))
+    print("\n".join(str(x) for x in reorder_bindings(core_tree.binds)))
+    env = {}
+    print(infer(core_tree, env))
+
+    print("\n".join("{} :: {}".format(name, typ) for name, typ in env.items()))
     log.info("Completed type inference.")

@@ -146,6 +146,7 @@ def add_edges_match(bindee, graph, current, ids):
 
 @add_edges.register(CoreAlt)
 def add_edges_alt(bindee, graph, current, ids):
+    if bindee.expr is None: return
     add_edges(bindee.expr, graph, current, ids)
 
 @add_edges.register(Functions)

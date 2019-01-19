@@ -147,6 +147,9 @@ def function_definition_rename(node, scope):
     tmp_scope2 = Scope(parent=tmp_scope)
     rename(node.rhs, tmp_scope2)
 
+    scope.pending_definition.update(tmp_scope.pending_definition)
+    scope.pending_definition.update(tmp_scope2.pending_definition)
+
 @rename.register(FunctionLHS)
 def function_lhs_rename(node, scope):
     if scope[node.identifier]["arity"] != len(node.parameters):
@@ -175,8 +178,12 @@ def guarded_expression_rename(node, scope):
 
 @rename.register(PatternDefinition)
 def pattern_definition_rename(node, scope):
-    rename(node.pattern, scope, is_main=isinstance(node.pattern, Parameter) and node.pattern.name == "main")
-    rename(node.expression, scope)
+    rename(node.pattern, scope, is_main=isinstance(node.pattern, Parameter) and \
+           node.pattern.name == "main")
+
+    tmp_scope = Scope(parent=scope)
+    rename(node.expression, tmp_scope)
+    scope.pending_definition.update(tmp_scope.pending_definition)
 
 @rename.register(Alternative)
 def alternative_rename(node, scope):
@@ -189,6 +196,7 @@ def lambda_rename(node, scope):
     for p in node.parameters:
         rename(p, tmp_scope)
     rename(node.expression, tmp_scope)
+    scope.pending_definition.update(tmp_scope.pending_definition)
 
 @rename.register(Let)
 def let_rename(node, scope):
@@ -197,6 +205,7 @@ def let_rename(node, scope):
         rename(decl, tmp_scope)
 
     rename(node.expression, tmp_scope)
+    scope.pending_definition.update(tmp_scope.pending_definition)
 
 @rename.register(If)
 def if_rename(node, scope):
@@ -233,8 +242,12 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
         raise FunkyRenamingError("Duplicate definition of parameter " \
                                  "'{}'.".format(node.name))
 
+
     if is_main:
         newid = "main"
+    elif node.name in scope.pending_definition:
+        newid = scope.pending_definition[node.name]
+        del scope.pending_definition[node.name]
     else:
         newid = get_parameter_name(fname, localizer, index) if fname or index or \
                                                             localizer \
@@ -245,9 +258,10 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 
 @rename.register(UsedVar)
 def used_var_rename(node, scope):
+    print("USED",scope)
     if node.name not in scope:
         new_name = get_unique_varname()
-        scope[node.name] = new_name
+        scope.pending_definition[node.name] = new_name
         node.name = new_name
         return
 
@@ -279,7 +293,7 @@ def do_rename(source_tree):
     rename(source_tree, scope)
     
     err_msg = "\n".join("Referenced item '{}' was never defined.".format(ident)
-                        for ident in []) # TODO TODO TODO
+                        for ident in scope.pending_definition)
     if err_msg:
         raise FunkyRenamingError(err_msg)
 

@@ -8,7 +8,8 @@ from funky.corelang.builtins import Functions
 from funky.corelang.types import *
 
 from funky.intermediate.tarjan import create_dependency_graph, \
-                                      find_strongly_connected_components
+                                      find_strongly_connected_components, \
+                                      reorder_bindings
 
 log = logging.getLogger(__name__)
 
@@ -241,6 +242,7 @@ def do_type_inference(core_tree):
     # TODO: sort this out!
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
-    find_strongly_connected_components(graph)
+    print(find_strongly_connected_components(graph))
+    print(reorder_bindings(core_tree.binds))
     # print(infer(core_tree, {}))
     log.info("Completed type inference.")

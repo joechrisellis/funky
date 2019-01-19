@@ -11,6 +11,29 @@ from funky.corelang.builtins import Functions
 
 UNVISITED = -1
 
+def reorder_bindings(bindings):
+    dependency_graph = create_dependency_graph(bindings)
+    sccs = find_strongly_connected_components(dependency_graph)
+    visited = set()
+    reordered = []
+
+    def dfs(at):
+        visited.add(at)
+
+        for node in at:
+            scc = next(x for x in sccs if node in x)
+            if scc not in visited:
+                dfs(scc)
+        
+        reordered.append(scc)
+
+    for scc in sccs:
+        if scc in visited:
+            continue
+        dfs(scc)
+
+    return reordered
+
 def create_dependency_graph(bindings):
     """Given a collecion of CoreBinds, creates a graph representing how the
     bindings depend on one another. For instance, in:
@@ -76,7 +99,7 @@ def find_strongly_connected_components(graph):
     for k, v in low.items():
         reversed_dict[v].append(k)
 
-    strongly_connected_components = [l for l in reversed_dict.values()]
+    strongly_connected_components = [tuple(l) for l in reversed_dict.values()]
     return strongly_connected_components
 
 add_edges = get_registry_function()

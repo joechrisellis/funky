@@ -6,9 +6,10 @@ class Scope:
     """A scope maps identifiers to arbitrary items."""
 
     def __init__(self, parent=None, localizer=None):
-        self.local              =  {}
-        self.parent             =  parent
-        self.localizer          =  localizer
+        self.local               =  {}
+        self.parent              =  parent
+        self.localizer           =  localizer
+        self.pending_definition  =  {}
 
     def search(self, item):
         """Searches the local scope for the item.
@@ -63,8 +64,8 @@ class Scope:
         return self.rsearch(item) is not None
 
     def __repr__(self):
-        return "({}, parent={})".format(self.local, self.parent) if self.parent \
-          else "({})".format(self.local)
+        return "({}, pending={}, parent={})".format(self.local, self.pending_definition, self.parent) if self.parent \
+                                          else "({}, {})".format(self.local, self.pending_definition)
 
 class Graph:
     """Graph data structure, heavily inspired by mVChr's answer on

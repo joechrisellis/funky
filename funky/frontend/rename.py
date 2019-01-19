@@ -133,7 +133,12 @@ def function_type_rename(node, scope):
 @rename.register(FunctionDefinition)
 def function_definition_rename(node, scope):
     if node.lhs.identifier not in scope.local:
-        newid = get_unique_varname()
+        if scope.is_pending_definition(node.lhs.identifier):
+            newid = scope.get_pending_name(node.lhs.identifier)
+            if node.lhs.identifier in scope.pending_definition:
+                del scope.pending_definition[node.lhs.identifier]
+        else:
+            newid = get_unique_varname()
         scope[node.lhs.identifier] = {
             "id"     :  newid,
             "arity"  :  len(node.lhs.parameters)

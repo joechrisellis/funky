@@ -1,8 +1,11 @@
 module test where
 
-    k = a + 2
-    f x = k + z
-    z = 2 + a
-    a = 4 + k + z
+    double_factorial = factorial 1
+                       where factorial = lambda x -> x
 
-    main = k
+    orderings n = factorial n
+
+    factorial 0 = 1
+    factorial n = n * factorial (n - 1)
+
+    main = orderings 10

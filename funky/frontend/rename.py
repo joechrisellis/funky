@@ -248,7 +248,6 @@ def used_var_rename(node, scope):
     if node.name not in scope:
         new_name = get_unique_varname()
         scope[node.name] = new_name
-        scope.pending_discovery.add(node.name)
         node.name = new_name
         return
 
@@ -280,7 +279,7 @@ def do_rename(source_tree):
     rename(source_tree, scope)
     
     err_msg = "\n".join("Referenced item '{}' was never defined.".format(ident)
-                        for ident in scope.pending_discovery)
+                        for ident in []) # TODO TODO TODO
     if err_msg:
         raise FunkyRenamingError(err_msg)
 

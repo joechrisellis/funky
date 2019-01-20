@@ -1,7 +1,5 @@
 module test where
 
-    g  1.0  _  _   =  5
-    g  3.0  4  _   =  10
-    g  _  _  1.2 =  20
-
-    main = g
+    main = repeat (lambda n -> n * 2) 10 2
+           where repeat f 0 x = x
+                 repeat f n x = f (repeat f (n - 1) x)

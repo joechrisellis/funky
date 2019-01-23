@@ -1,53 +1,71 @@
 """Types are very much fundamental to functional programming. This module
 contains a consistent representation for them.
 """
+from itertools import count
 from funky.util import output_attributes
 
-class ForAll:
-    """Universal quantifier for parametric polymorphism."""
+def typename_generator():
+    for i in count():
+        yield "t" + str(i)
 
-    __repr__ = output_attributes
+get_typename = typename_generator()
 
-    def __init__(self, quantifiers, typ):
-        self.quantifiers  =  quantifiers
-        self.typ          =  typ
-    
-    def __str__(self):
-        return "forall {} . {}".format(", ".join(self.quantifiers), self.typ)
+class TypeVariable:
+    """A type variable. In type inference, this is used as a placeholder for a
+    to-be-discovered type, or for parametric polymorphism..
+    """
 
-class Type:
-    """Superclass."""
-    __repr__ = output_attributes
+    def __init__(self):
+        self._type_name  =  None
+        self.instance    =  None
 
-class LiteralType(Type):
-    """A literal built-in type."""
-
-    def __init__(self, type_name):
-        self.type_name  =  type_name
-
-    def __str__(self):
-        return str(self.type_name)
-
-class BasicType(Type):
-    """A basic named type -- e.g. Integer."""
-
-    def __init__(self, type_name):
-        self.type_name  =  type_name
+    @property
+    def type_name(self):
+        """We assign names lazily, just so that when the signature of a
+        function is printed, we get nice ascending numbers.
+        """
+        if self._type_name:
+            return self._type_name
+        self._type_name = next(get_typename)
+        return self._type_name
 
     def __str__(self):
         return str(self.type_name)
 
-class FunctionType(Type):
-    """A function type -- e.g. [Integer] -> (Integer -> Integer) -> [Integer]"""
+class TypeOperator:
+    """An n-ary type constructor."""
+
+    def __init__(self, name, types):
+        self.name   =  name
+        self.types  =  types
+
+    def __str__(self):
+        n = len(self.types)
+        if n == 0:
+            return self.name
+        elif n == 2:
+            return "({} {} {})".format(str(self.types[0]), self.name,
+                                       str(self.types[1]))
+        else:
+            return "{} {}".format(self.name, " ".join(self.types))
+
+class FunctionType(TypeOperator):
+    """A function type. Really, a function type is just a slightly extended
+    case of a type operator, hence the inheritance. This is a binary
+    constructor.
+    """
 
     def __init__(self, input_type, output_type):
-        self.input_type   =  input_type
-        self.output_type  =  output_type
+        super().__init__("->", [input_type, output_type])
+        self.input_type = input_type
+        self.output_type = output_type
 
     def __str__(self):
         return "({} -> {})".format(str(self.input_type), str(self.output_type))
 
-class TupleType(Type):
+### GET RID OF RUBBISH BELOW SOON
+
+class TupleType:
     """A tuple-type -- e.g. (Integer, Integer)."""
 
     def __init__(self, types):
@@ -57,14 +75,14 @@ class TupleType(Type):
     def __str__(self):
         return str(self.types)
 
-class ListType(Type):
+class ListType:
     """A list-type --  e.g. [Integer]."""
     # TODO: refactor this out to an instance of algebraic data type.
 
     def __init__(self, typ):
         self.typ  =  typ
 
-class AlgebraicDataType(Type):
+class AlgebraicDataType:
     """An algebraic data type defined with the 'newcons' keyword. These are
     used in pattern matching.
     """
@@ -77,7 +95,7 @@ class AlgebraicDataType(Type):
         constructors_str = " | ".join(str(constructor) for constructor in self.constructors)
         return "[context={}] {}".format(str(self.context), constructors_str)
 
-class ConstructorType(Type):
+class ConstructorType:
     """A constructor type under an algebraic data type."""
 
     def __init__(self, identifier, parameters):

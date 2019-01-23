@@ -4,7 +4,7 @@ import logging
 from funky.intermediate import FunkyTypeError
 from funky.util import get_registry_function, get_unique_varname
 from funky.corelang.coretree import *
-from funky.corelang.builtins import Functions
+from funky.corelang.builtins import *
 from funky.corelang.types import *
 
 from funky.intermediate.tarjan import create_dependency_graph, \
@@ -13,286 +13,162 @@ from funky.intermediate.tarjan import create_dependency_graph, \
 
 log = logging.getLogger(__name__)
 
-def get_new_type_variable():
-    """Returns a new BasicType with a unique variable name."""
-    return BasicType(get_unique_varname())
-
-def instantiate_for_all(for_all):
-    """Instantiates a ForAll. This involves generating new type variables for
-    each quantified variable and substituting them in the body of the ForAll.
-    """
-    subst = {name : get_new_type_variable() for name in for_all.quantifiers}
-    return apply_subst(for_all.typ, subst)
-
-def generalize(env, typ):
-    """Generalizes a type -- specifically, takes the free variables in a
-    specific type and creates a ForAll that accounts for them. We first check
-    if the type variable is not free in the environment, since then we can’t
-    generalize since they may be bound to specific types later.
-    """
-    free_env, free_typ = free_typevars_in(env), free_typevars_in(typ)
-    quantifiers = free_typ - free_env
-    return ForAll(quantifiers, typ) if len(quantifiers) > 0 else typ
-
-def unify(t1, t2):
-    """Unifies two types, effectively checking if they 'fit'. If they do, we
-    return a substitution that equates them. Otherwise, we raise an exception
-    -- this is a type error.
-    """
-    if isinstance(t1, LiteralType) and isinstance(t2, LiteralType) and \
-       t1.type_name == t2.type_name:
-        return {}
-    elif isinstance(t1, BasicType):
-        return bind(t1.type_name, t2)
-    elif isinstance(t2, BasicType):
-        return bind(t2.type_name, t1)
-    elif isinstance(t1, FunctionType) and isinstance(t2, FunctionType):
-        subst1 = unify(t1.input_type, t2.input_type)
-        subst2 = unify(
-            apply_subst(t1.output_type, subst1),
-            apply_subst(t2.output_type, subst1)
-        );
-        return compose_substitutions(subst1, subst2)
-    else:
-        raise FunkyTypeError("Type mismatch; I expected {} but found "
-                             "{}.".format(t1, t2))
-
-def compose_substitutions(subst1, subst2):
-    """Applies the first substitution to the types of the second one and then
-    combines the result with the first substitution.
-    """
-    result = {k : apply_subst(t, subst1) for k, t in subst2.items()}
-    return {**result, **subst1}
-
-def bind(name, typ):
-    """Returns a substitution that maps a variable name to a type. Raises an
-    error if the variable refers to itself.
-    """
-    if isinstance(typ, BasicType) and typ.type_name == name:
-        return {}
-    elif contains(typ, name):
-        raise FunkyTypeError("Type {} refers to itself.".format(typ))
-    else:
-        return {name : typ}
-
-contains = get_registry_function()
-
-@contains.register(LiteralType)
-def contains_literal(typ, name):
-    """Does this literal contain this name? The answer is always no."""
-    return False
-
-@contains.register(BasicType)
-def contains_basic(typ, name):
-    """Does this type contain this name? Only if the type's name is
-    identical.
-    """
-    return typ.type_name == name
-
-@contains.register(FunctionType)
-def contains_function(typ, name):
-    """Does this function contain this name? Only if either its input or output
-    types do.
-    """
-    return contains(typ.input_type, name) or contains(typ.output_type, name)
-
-free_typevars_in = get_registry_function()
-
-@free_typevars_in.register(dict)
-def free_typevars_in_env(env):
-    s = set()
-    for t in env.values():
-        s |= free_typevars_in(t)
-    return s
-
-@free_typevars_in.register(LiteralType)
-def free_typevars_in_literal(typ):
-    return set() # literal -- no type variables
-
-@free_typevars_in.register(BasicType)
-def free_typevars_in_literal(typ):
-    return set([typ.type_name]) # only itself
-
-@free_typevars_in.register(FunctionType)
-def free_typevars_in_literal(typ):
-    # union of the free type variables in the input type and the output type
-    return free_typevars_in(typ.input_type) | free_typevars_in(typ.output_type)
-
-@free_typevars_in.register(ForAll)
-def free_typevars_in_for_all(for_all):
-    quantifiers = set(for_all.quantifiers)
-    free_in_type = free_typevars_in(for_all.typ)
-    # everything that's free in the type, except quantifiers
-    return free_in_type - quantifiers
-
-apply_subst = get_registry_function()
-
-@apply_subst.register(dict)
-def apply_subst_to_env(env, subst):
-    new_env = {name : apply_subst(typ, subst) for name, typ in env.items()}
-    return new_env
-
-@apply_subst.register(ForAll)
-def apply_subst_to_for_all(for_all, subst):
-    tmp_subst = subst.copy()
-    for name in for_all.quantifiers:
-        try:
-            del tmp_subst[name]
-        except KeyError:
-            pass
-    return ForAll(for_all.quantifiers, apply_subst(for_all.typ, tmp_subst))
-
-@apply_subst.register(LiteralType)
-def apply_subst_to_type_literal(typ, subst):
-    return typ
-
-@apply_subst.register(BasicType)
-def apply_subst_to_type_basic(typ, subst):
-    try:
-        return subst[typ.type_name]
-    except KeyError:
-        return typ
-
-@apply_subst.register(FunctionType)
-def apply_subst_to_type_function(typ, subst):
-    return FunctionType(apply_subst(typ.input_type, subst),
-                        apply_subst(typ.output_type, subst))
-
 infer = get_registry_function()
 
-@infer.register(CoreLiteral)
-def infer_literal(node, env):
-    """The type of a literal is already known -- just return it."""
-    return node.typ, {}
-
 @infer.register(CoreVariable)
-def infer_variable(node, env):
-    """If the variable's type is registered in the environment, return it
-    (instantiating it first if it is a for-all). Otherwise, throw an error --
-    the variable is unbound.
+def infer_variable(node, ctx, non_generic=set()):
+    """Infer the type for a core variable. If there is no such variable in the
+    current context, we raise an exception. Otherwise, we produce a copy of the
+    type expression with get_fresh().
     """
     try:
-        env_type = env[node.identifier]
-        if isinstance(env_type, ForAll):
-            return instantiate_for_all(env_type), {}
-        else:
-            return env_type, {}
+        return get_fresh(ctx[node.identifier], non_generic)
     except KeyError:
-        raise FunkyTypeError("Unbound variable '{}'.".format(node.identifier))
+        raise FunkyTypeError("Unbound symbol '{}'.".format(node.identifier))
 
-@infer.register(CoreLambda)
-def infer_lambda(node, env):
-    """Add the parameter as a free variable to a temporary environment, then
-    infer the type of the body.
+@infer.register(CoreLiteral)
+def infer_variable(node, ctx, non_generic=set()):
+    """Infer the type for a core literal. Literals have their type pre-encoded
+    from parsing.
     """
-    tmp_environment = env.copy()
-    new_type_variable = get_new_type_variable()
-    tmp_environment[node.param.identifier] = new_type_variable
+    return node.typ
 
-    body_type, subst = infer(node.expr, tmp_environment)
-    inferred_type = FunctionType(apply_subst(new_type_variable, subst),
-                                 body_type)
-
-    return inferred_type, subst
+@infer.register(str)
+def infer_function(node, ctx, non_generic=set()):
+    """Infer the type of a built-in function. These should be pre-defined in
+    the environment -- if they are not, the programmer has made a mistake, and
+    a runtime error will be raised. This error is never user-caused and is only
+    to alert the programmer to a configuration error.
+    """
+    try:
+        return ctx[node]
+    except KeyError:
+        raise RuntimeError("Builtin function {} has undefined " \
+                           "type.".format(node))
 
 @infer.register(CoreApplication)
-def infer_application(node, env):
-    """Function application -- the input and the output must unify."""
-    function_type, subst1 = infer(node.expr, env)
-    arg_type, subst2 = infer(node.arg, apply_subst(env, subst1))
+def infer_application(node, ctx, non_generic=set()):
+    """Infer the type of a function application."""
+    function_type = infer(node.expr, ctx, non_generic)
+    arg_type = infer(node.arg, ctx, non_generic)
+    result_type = TypeVariable()
+    unify(FunctionType(arg_type, result_type), function_type)
+    return result_type
 
-    new_var = get_new_type_variable()
-    subst3 = compose_substitutions(subst1, subst2)
-    subst4 = unify(FunctionType(arg_type, new_var), function_type)
-
-    function_type_1 = apply_subst(function_type, subst4)
-
-    subst5 = compose_substitutions(subst3, subst4)
-    subst6 = unify(apply_subst(function_type_1.input_type, subst5),
-                   arg_type)
-
-    result_subst = compose_substitutions(subst5, subst6)
-    return (apply_subst(function_type_1.output_type, result_subst),
-            result_subst)
+@infer.register(CoreLambda)
+def infer_lambda(node, ctx, non_generic=set()):
+    """Infer the type of a lambda expression."""
+    arg_type = TypeVariable()
+    new_ctx = ctx.copy()
+    new_ctx[node.param.identifier] = arg_type
+    new_non_generic = non_generic.copy()
+    new_non_generic.add(arg_type)
+    result_type = infer(node.expr, new_ctx, new_non_generic)
+    return FunctionType(arg_type, result_type)
 
 @infer.register(CoreLet)
-def infer_let(node, env):
-    """Slightly more involved -- since this can be a recursive let, we must
-    first find the strongly-connected components in the dependency graph
-    (mutually recursive functions) and order by dependencies. Type inference
-    is performed separately for each strongly-connected component to determine
-    the most general type of each definition in that group.
+def infer_let(node, ctx, non_generic=set()):
+    """Infer the type of a recursive let expression. This is somewhat involved.
+    We must first find the strongly-connected components (mutually recursive)
+    definitions and group them. Then, we must rearrange the bindings into
+    reverse dependency order. Then, for each grouping, we generalise. This
+    ensures that all definitions have the most general type.
     """
-
-    # We reorder the bindings and collect them by strongly connected components.
-    # For each SCC, we run variable instantiate individually.
+    new_ctx = ctx.copy()
+    new_non_generic = non_generic.copy()
     for group in reorder_bindings(node.binds):
-        group_env = env.copy()
+        types = []
         for bind in group:
-            group_env[bind.identifier] = get_new_type_variable()
+            new_type = TypeVariable()
+            new_ctx[bind.identifier] = new_type
+            new_non_generic.add(new_type)
+            types.append(new_type)
 
-        for bind in group:
-            bindee_type, subst1 = infer(bind.bindee, group_env)
-            group_env = apply_subst(group_env, subst1)
-            bindee_polytype = generalize(group_env, bindee_type)
-            group_env[bind.identifier] = bindee_polytype
-
-        env.update(group_env)
-
-    expr_type, subst2 = infer(node.expr, env)
-    return apply_subst(expr_type, subst2), subst2
+        for new_type, bind in zip(types, group):
+            defn_type = infer(bind.bindee, new_ctx, new_non_generic)
+            unify(new_type, defn_type)
+    
+    return infer(node.expr, new_ctx, new_non_generic)
 
 @infer.register(CoreMatch)
-def infer_match(node, env):
-    """Infer the type of a match statement. Here, the scrutinee has to have the
-    same type as all of the altcons, and the alt expressions must all be of the
-    same type.
+def infer_match(node, ctx, non_generic=set()):
+    pass
+
+def get_fresh(typ, non_generic):
+    """Make a copy of a type expression. The type is copied, generic variables
+    are duplicated, and non-generic variables are shared.
     """
+    type_map = {}
 
-    # the scrutinee and the altcons must all have the same type.
-    # each alternative in a match statement must have the same type.
-    scrutinee_type, subst1 = infer(node.scrutinee, env)
+    def aux(tp):
+        p = prune(tp)
+        if isinstance(p, TypeVariable):
+            return type_map.get(p, TypeVariable()) if is_generic(p, non_generic) \
+              else p
+        elif isinstance(p, TypeOperator):
+            return TypeOperator(p.name, [aux(x) for x in p.types])
 
-    expr_type = None
-    for alt in node.alts:
-        if isinstance(alt.altcon, CoreVariable):
-            new_type_variable = get_new_type_variable()
-            altcon_type, subst2 = new_type_variable, {new_type_variable : scrutinee_type}
-        else:
-            altcon_type, subst2 = infer(alt.altcon, env)
+    return aux(typ)
 
-        subst3 = unify(scrutinee_type, altcon_type)
-        subst1 = compose_substitutions(subst1, subst2)
-        subst1 = compose_substitutions(subst1, subst3)
+def unify(type1, type2):
+    """Unifies two type variables, making them equivalent if they 'fit' and
+    raising an error otherwise.
+    """
+    a, b = prune(type1), prune(type2)
+    if isinstance(a, TypeVariable):
+        if a != b:
+            if occurs_in_type(a, b):
+                raise FunkyTypeError("Recursive unification detected, stopping.")
+            a.instance = b
+    elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
+        unify(b, a)
+    elif isinstance(a, TypeOperator) and isinstance(b, TypeOperator):
+        if a.name != b.name or len(a.types) != len(b.types):
+            raise FunkyTypeError("Type mismatch: found {} but expected "
+                                 "{}.".format(str(a), str(b)))
 
-        env = apply_subst(env, subst1)
+        for x, y in zip(a.types, b.types):
+            unify(x, y)
+    else:
+        raise RuntimeError("Python typing error encountered when unifying!")
 
-        if alt.expr is None:
-            continue
+def prune(t):
+    """Returns the defining instance of the given type. Also collapses the list
+    of type instances.
+    """
+    if isinstance(t, TypeVariable) and t.instance is not None:
+        t.instance = prune(t.instance)
+        return t.instance
+    return t
 
-        alt_expr_type, subst4 = infer(alt.expr, env)
-        alt_expr_type = apply_subst(alt_expr_type, subst4)
-        if expr_type:
-            subst5 = unify(expr_type, alt_expr_type)
-            subst1 = compose_substitutions(subst1, subst5)
-        expr_type = alt_expr_type
+def is_generic(v, non_generic):
+    """Returns true if the given variable appears in the list of non-generic
+    variables, false otherwise. In other words, returns true if the variable is
+    generic, false otherwise.
+    """
+    return not occurs_in(v, non_generic)
 
-        subst1 = compose_substitutions(subst1, subst4)
+def occurs_in_type(v, typ):
+    """Returns true if the given type variable v occurs in the type expression
+    typ, false otherwise. You must pre-call prune() on v before attempting to
+    run this function.
+    """
+    pruned_typ = prune(typ)
+    if isinstance(pruned_typ, TypeOperator):
+        return occurs_in(v, pruned_typ.types)
+    return pruned_typ == v
 
-    return apply_subst(expr_type, subst1), subst1
-
-@infer.register(Functions)
-def infer_builtin_function(node, env):
-    return FunctionType(LiteralType("Integer"),
-    FunctionType(LiteralType("Integer"), LiteralType("Integer"))), {}
+def occurs_in(t, types):
+    """Delegates to occurs_in_type for a list of types. Returns true if t
+    occurs in any of the types. False otherwise.
+    """
+    return any(occurs_in_type(t, t2) for t2 in types)
 
 def do_type_inference(core_tree):
-    # TODO: sort this out!
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
-    env = {}
-    t, subst = infer(core_tree, env)
+    ctx = BUILTIN_FUNCTIONS
+    t = infer(core_tree, ctx)
 
-    print(t, subst)
-    print("\n".join("{} :: {}".format(name, typ) for name, typ in env.items()))
     log.info("Completed type inference.")
+    log.info("The program has output type {}.".format(t))

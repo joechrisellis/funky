@@ -6,8 +6,8 @@ from funky.frontend import FunkySyntaxError
 import funky.frontend.fixity as fixity
 
 from funky.frontend.sourcetree import *
-from funky.corelang.types import BasicType, TupleType, ListType, FunctionType, \
-                                 ConstructorType
+from funky.corelang.types import TypeVariable, TupleType, ListType, \
+                                 FunctionType, ConstructorType
 from funky.corelang.coretree import CoreTuple, CoreList
 
 log = logging.getLogger(__name__)
@@ -156,7 +156,7 @@ class FunkyParser:
                  | OPEN_SQUARE TYPE CLOSE_SQUARE
         """
         if len(p) == 2:
-            p[0] = BasicType(p[1])
+            p[0] = TypeVariable(p[1])
         elif p[1] == "(":
             if type(p[2]) == list:
                 p[0] = TupleType(tuple(p[2]))

@@ -8,7 +8,7 @@ transformed without changing its meaning.
 
 import logging
 
-from funky.corelang.builtins import Functions, BUILTIN_PRIMITIVES
+from funky.corelang.builtins import BUILTIN_PRIMITIVES
 
 from funky.ds import Scope
 from funky.util import get_registry_function, get_unique_varname
@@ -111,7 +111,7 @@ def type_declaration_rename(node, scope):
     # here.
     rename(node.typ, scope)
 
-@rename.register(BasicType)
+@rename.register(TypeVariable)
 def type_rename(node, scope):
     if node.type_name not in scope and node.type_name not in BUILTIN_PRIMITIVES:
         raise FunkyRenamingError("Undefined type '{}'.".format(node.type_name))
@@ -277,9 +277,9 @@ def used_var_rename(node, scope):
     if type(node.name) == dict: # edge case for functions
         node.name = node.name["id"]
 
-# literals and functions are always sane. Nothing to do here.
+# literals are always sane. Nothing to do here.
 @rename.register(Literal)
-@rename.register(Functions)
+@rename.register(str) # <- builtin functions
 def noop_rename(node, scope):
     pass
 

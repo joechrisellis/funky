@@ -13,7 +13,6 @@ from collections import OrderedDict
 
 from funky.util import get_registry_function, get_unique_varname
 
-from funky.corelang.builtins import Functions
 from funky.corelang.coretree import *
 from funky.corelang.types import *
 from funky.frontend.sourcetree import *
@@ -193,11 +192,11 @@ def literal_desugar(node):
 @desugar.register(CoreCons)
 @desugar.register(CoreList)
 @desugar.register(CoreTuple)
-@desugar.register(Functions)
-@desugar.register(BasicType)
+@desugar.register(TypeVariable)
 @desugar.register(FunctionType)
 @desugar.register(ListType)
 @desugar.register(TupleType)
+@desugar.register(str)
 def noop_desugar(node):
     # default functions -- we must acknowledge these when we translate to C. No
     # further work here.

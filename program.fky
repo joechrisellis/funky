@@ -1,5 +1,5 @@
 module test where
 
-    main = repeat (lambda n -> n * 2) 10 2
-           where repeat f 0 x = x
-                 repeat f n x = f (repeat f (n - 1) x)
+    repeat f n x = f (repeat f (n - 1) x)
+
+    main = repeat

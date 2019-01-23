@@ -7,7 +7,6 @@ from collections import defaultdict
 from funky.ds import Graph
 from funky.util import get_registry_function
 from funky.corelang.coretree import *
-from funky.corelang.builtins import Functions
 
 UNVISITED = -1
 
@@ -152,7 +151,7 @@ def add_edges_alt(bindee, graph, current, ids):
     if bindee.expr is None: return
     add_edges(bindee.expr, graph, current, ids)
 
-@add_edges.register(Functions)
 @add_edges.register(CoreLiteral)
+@add_edges.register(str) # <- builtin functions
 def add_edges_noop(bindee, graph, current, ids):
     pass

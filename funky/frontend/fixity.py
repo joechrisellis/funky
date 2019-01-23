@@ -97,7 +97,7 @@ def parse_neg(operator, tokens):
         if prec1 >= minus_precedence:
             raise FunkySyntaxError("Invalid negation.")
         r, rest = parse_neg("-", tokens[1:])
-        return parse(operator, FunctionApplication(BUILTIN_FUNCTIONS["-"], r),
+        return parse(operator, FunctionApplication("-", r),
                      rest)
     else:
         return parse(operator, tokens[0], tokens[1:])
@@ -122,9 +122,7 @@ def parse(op1, exp, tokens):
     # Case 3: op1 and op2 are right associative.
     (r, rest) = parse_neg(op2, tokens[1:])
 
-    if op2 in BUILTIN_FUNCTIONS:
-        op2 = BUILTIN_FUNCTIONS[op2]
-    else:
+    if op2 not in BUILTIN_FUNCTIONS:
         op2 = UsedVar(op2)
 
     return parse(op1, FunctionApplication(FunctionApplication(op2, exp), r), rest)

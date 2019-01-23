@@ -5,11 +5,18 @@ from enum import Enum, auto
 
 # BUILTIN TYPES
 BUILTIN_PRIMITIVES = ["Float", "Integer", "Bool", "Char"]
+BUILTIN_PRIMITIVES = {
+    "Float"    :  TypeOperator("Float",    []),
+    "Integer"  :  TypeOperator("Integer",  []),
+    "Bool"     :  TypeOperator("Bool",     []),
+    "Char"     :  TypeOperator("Char",     []),
+}
 
-Float = TypeOperator("Float", [])
-Integer = TypeOperator("Integer", [])
-Bool = TypeOperator("Bool", [])
-Char = TypeOperator("Char", [])
+# purely for easy typing
+Float    =  BUILTIN_PRIMITIVES["Float"]
+Integer  =  BUILTIN_PRIMITIVES["Integer"]
+Bool     =  BUILTIN_PRIMITIVES["Bool"]
+Char     =  BUILTIN_PRIMITIVES["Char"]
 
 # Mapping of Python types to Funky types.
 python_to_funky = {
@@ -18,6 +25,11 @@ python_to_funky = {
     bool   :  Bool,
     str    :  Char,
 }
+
+t    = TypeVariable()
+op   = TypeOperator("Cons", (t,))
+Cons = TypeOperator("Cons", (op,))
+
 
 BUILTIN_FUNCTIONS = {
     "=="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
@@ -32,5 +44,7 @@ BUILTIN_FUNCTIONS = {
     "negate"  :  FunctionType(Integer, Integer),
     "*"       :  FunctionType(Integer, FunctionType(Integer, Integer)),
     "/"       :  FunctionType(Integer, FunctionType(Integer, Integer)),
-    ":"       :  None,
+    "&&"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
+    "||"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
+    ":"       :  FunctionType(t, FunctionType(Cons, Cons)),
 }

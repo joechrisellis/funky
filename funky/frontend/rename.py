@@ -6,12 +6,13 @@ transformation, we know that names cannot capture and the program can be
 transformed without changing its meaning.
 """
 
+from itertools import count
 import logging
 
 from funky.corelang.builtins import BUILTIN_PRIMITIVES
 
 from funky.ds import Scope
-from funky.util import get_registry_function, get_unique_varname
+from funky.util import get_registry_function, global_counter
 from funky.frontend.sourcetree import *
 from funky.corelang.types import *
 from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
@@ -19,6 +20,8 @@ from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
 from funky.frontend import FunkyRenamingError
 
 log = logging.getLogger(__name__)
+
+get_unique_varname = lambda: "v" + str(global_counter())
 
 def get_parameter_name(*args):
     return "_".join(str(a) for a in args if a is not None)

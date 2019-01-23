@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 
 class FunkyParser:
 
-    tokens      =  FunkyLexer.tokens
-    start       =  "MODULE_DEFINITION"
+    tokens  =  FunkyLexer.tokens
+    start   =  "MODULE_DEFINITION"
 
     def p_MODULE_DEFINITION(self, p):
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
@@ -156,7 +156,7 @@ class FunkyParser:
                  | OPEN_SQUARE TYPE CLOSE_SQUARE
         """
         if len(p) == 2:
-            p[0] = TypeVariable(p[1])
+            p[0] = p[1]
         elif p[1] == "(":
             if type(p[2]) == list:
                 p[0] = TupleType(tuple(p[2]))
@@ -425,6 +425,8 @@ class FunkyParser:
                   | LEQ
                   | GREATER
                   | GEQ
+                  | AND
+                  | OR
                   | LIST_CONSTRUCTOR
         """
         p[0] = p[1]

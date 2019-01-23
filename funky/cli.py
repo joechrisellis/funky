@@ -21,6 +21,10 @@ def main():
     parser.add_argument("--dump-desugared", default=False, required=False,
                         action="store_true",
                         help="Dump the core (desugared) funky code to stdout.")
+    parser.add_argument("--dump-types", default=False, required=False,
+                        action="store_true",
+                        help="Dump the types of all symbols in the core tree "
+                             "to stdout.")
     parser.add_argument("input", type=argparse.FileType("r"),
                         help="Input program (funky source).")
 
@@ -35,7 +39,8 @@ def main():
     log.info("Started compilation at UNIX timestamp {}.".format(start))
     output = compiler.compile_to_c(source, dump_parsed=args.dump_parsed,
                                            dump_renamed=args.dump_renamed,
-                                           dump_desugared=args.dump_desugared)
+                                           dump_desugared=args.dump_desugared,
+                                           dump_types=args.dump_types)
     finish = time.time()
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {} seconds.".format(finish - start))

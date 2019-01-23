@@ -2,7 +2,7 @@
 
 import logging
 from funky.intermediate import FunkyTypeError
-from funky.util import get_registry_function, get_unique_varname
+from funky.util import get_registry_function
 from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
@@ -196,6 +196,7 @@ def do_type_inference(core_tree):
     graph = create_dependency_graph(core_tree.binds)
     ctx, non_generic = BUILTIN_FUNCTIONS, set()
     t = infer(core_tree, ctx, non_generic)
+    print(t)
 
     log.info("Completed type inference.")
     log.info("The program has output type {}.".format(t))

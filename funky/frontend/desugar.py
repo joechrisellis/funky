@@ -11,7 +11,7 @@ import logging
 
 from collections import OrderedDict
 
-from funky.util import get_registry_function, get_unique_varname
+from funky.util import get_registry_function, global_counter
 
 from funky.corelang.coretree import *
 from funky.corelang.types import *
@@ -22,6 +22,8 @@ from funky.frontend.maranget import get_match_tree
 from funky.frontend import FunkyDesugarError
 
 log = logging.getLogger(__name__)
+
+get_unique_varname = lambda: "v" + str(global_counter())
 
 desugar = get_registry_function()
 

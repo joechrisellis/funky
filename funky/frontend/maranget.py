@@ -22,11 +22,13 @@ A set of binding variables, and a set of possible outcomes.
 Where the fields are of type CoreVariable, CoreLiteral, or CoreCons.
 """
 
-from funky.util import get_unique_varname
+from funky.util import global_counter
 from funky.frontend import FunkyDesugarError
 
 from funky.corelang.coretree import CoreCons, CoreVariable, CoreLiteral, \
                                     CoreMatch, CoreAlt
+
+get_unique_varname = lambda: "v" + str(global_counter())
 
 def get_column_scores(pattern_matrix):
     """Scores the columns. Wildcards do not add anything to a column's score.

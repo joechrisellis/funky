@@ -33,6 +33,8 @@ fixities = {
     # Remove backslashes from the lexer regexes for operators. This gets the
     # 'raw' operator string. If the operator lexemes are changed in the lexer,
     # the change is automatically propagated to here.
+    _rmb(FunkyLexer.t_OR)                :  ("right",     2),
+    _rmb(FunkyLexer.t_AND)               :  ("right",     3),
     _rmb(FunkyLexer.t_EQUALITY)          :  ("nonassoc",  4),
     _rmb(FunkyLexer.t_GEQ)               :  ("nonassoc",  4),
     _rmb(FunkyLexer.t_GREATER)           :  ("nonassoc",  4),
@@ -122,6 +124,7 @@ def parse(op1, exp, tokens):
     # Case 3: op1 and op2 are right associative.
     (r, rest) = parse_neg(op2, tokens[1:])
 
+    print("!!", op2)
     if op2 not in BUILTIN_FUNCTIONS:
         op2 = UsedVar(op2)
 

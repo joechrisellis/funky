@@ -21,7 +21,8 @@ log = logging.getLogger(__name__)
 
 def compile_to_c(source, dump_parsed=False,
                          dump_renamed=False,
-                         dump_desugared=False):
+                         dump_desugared=False,
+                         dump_types=False):
     """Compiles funky source code.
     
     Input:
@@ -71,7 +72,10 @@ def compile_to_c(source, dump_parsed=False,
 
     try:
         try:
-            do_type_inference(core_tree)
+            types = do_type_inference(core_tree)
+            if dump_types:
+                print("## CORE TYPES")
+                print(types)
         except FunkyTypeError as e:
             err_and_exit("Your program failed type checks, will not compile.",
                          e, TYPE_ERROR)

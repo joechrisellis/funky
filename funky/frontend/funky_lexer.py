@@ -25,7 +25,7 @@ class FunkyLexer:
     reserved = [
         "as", "else", "if", "import", "in", "lambda", "leftassoc", "let",
         "match", "module", "newcons", "newtype", "nonassoc", "of",
-        "rightassoc", "setfix", "then", "where"
+        "rightassoc", "setfix", "then", "where",
     ]
     reserved = {k : k.upper() for k in reserved}
 
@@ -38,7 +38,8 @@ class FunkyLexer:
         "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
 
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
-        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "LIST_CONSTRUCTOR",
+        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "AND", "OR",
+        "LIST_CONSTRUCTOR",
 
         "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",
         "OPEN_BRACE", "CLOSE_BRACE",
@@ -118,6 +119,8 @@ class FunkyLexer:
     t_MINUS             =  r"-"
     t_TIMES             =  r"\*"
     t_DIVIDE            =  r"/"
+    t_AND               =  r"&&"
+    t_OR                =  r"\|\|"
     t_LIST_CONSTRUCTOR  =  r":"
 
     # Brackets.

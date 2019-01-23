@@ -1,21 +1,9 @@
+from itertools import count
 import inspect
 import sys
 
-from itertools import count, product
-from string import ascii_lowercase
-
-def string_generator():
-    """Generator that yields as many strings as you need. Returns (a, b, ...,
-    aa, ab, ...).
-    """
-    for i in count():
-        for t in product(ascii_lowercase, repeat=i+1):
-            yield "".join(t)
-
-unique_varname = string_generator()
-
-def get_unique_varname(generator=unique_varname):
-    return next(generator)
+_global_counter = count()
+global_counter = lambda: next(_global_counter)
 
 def get_user_attributes(cls):
     """Returns the user attributes of a class. These are attributes which are

@@ -49,7 +49,8 @@ class TypeOperator:
             return "({} {} {})".format(str(self.types[0]), self.type_name,
                                        str(self.types[1]))
         else:
-            return "{} {}".format(self.type_name, " ".join(self.types))
+            print(self.type_name, self.types)
+            return "{} {}".format(self.type_name, " ".join(str(x) for x in self.types))
 
 class FunctionType(TypeOperator):
     """A function type. Really, a function type is just a slightly extended

@@ -97,7 +97,7 @@ def parse_neg(operator, tokens):
         if prec1 >= minus_precedence:
             raise FunkySyntaxError("Invalid negation.")
         r, rest = parse_neg("-", tokens[1:])
-        return parse(operator, FunctionApplication("-", r),
+        return parse(operator, FunctionApplication("negate", r),
                      rest)
     else:
         return parse(operator, tokens[0], tokens[1:])

@@ -16,8 +16,8 @@ class TypeVariable:
     """
 
     def __init__(self):
-        self._type_name  =  None
-        self.instance    =  None
+        self._type_name  =  None # lazily defined, so None for now
+        self.instance    =  None # if type variable refers to a concrete type
 
     @property
     def type_name(self):
@@ -30,24 +30,26 @@ class TypeVariable:
         return self._type_name
 
     def __str__(self):
-        return str(self.type_name)
+        """If we have a concrete type instance, print that. Otherwise, use our
+        lazy-defined type name.
+        """
+        return str(self.instance) if self.instance else str(self.type_name)
 
 class TypeOperator:
     """An n-ary type constructor."""
 
     def __init__(self, name, types):
-        self.name   =  name
-        self.types  =  types
+        self.type_name  =  name
+        self.types      =  types
 
     def __str__(self):
-        n = len(self.types)
-        if n == 0:
-            return self.name
-        elif n == 2:
-            return "({} {} {})".format(str(self.types[0]), self.name,
+        if len(self.types) == 0: # 0-ary constructor
+            return self.type_name
+        elif len(self.types) == 2: # binary constructor
+            return "({} {} {})".format(str(self.types[0]), self.type_name,
                                        str(self.types[1]))
         else:
-            return "{} {}".format(self.name, " ".join(self.types))
+            return "{} {}".format(self.type_name, " ".join(self.types))
 
 class FunctionType(TypeOperator):
     """A function type. Really, a function type is just a slightly extended

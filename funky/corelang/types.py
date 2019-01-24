@@ -18,8 +18,9 @@ class TypeVariable:
     __repr__ = output_attributes
 
     def __init__(self):
-        self._type_name  =  None # lazily defined, so None for now
-        self.instance    =  None # if type variable refers to a concrete type
+        self._type_name   =  None  # lazily defined so None for now
+        self.instance     =  None  # if type variable refers to a concrete type
+        self.constraints  =  []    # can only be instantiated to these types
 
     @property
     def type_name(self):
@@ -55,6 +56,17 @@ class TypeOperator:
         else:
             print(self.type_name, self.types)
             return "{} {}".format(self.type_name, " ".join(str(x) for x in self.types))
+
+class TypeClass:
+
+    def __init__(self, types):
+        self.types = types
+
+    def __contains__(self, t):
+        return any(t.type_name == x.type_name for x in self.types)
+
+    def __str__(self):
+        return "[{}]".format(" | ".join(str(t.type_name) for t in self.types))
 
 class FunctionType(TypeOperator):
     """A function type. Really, a function type is just a slightly extended

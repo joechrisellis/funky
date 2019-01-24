@@ -23,7 +23,7 @@ def infer_variable(node, ctx, non_generic):
     """
     try:
         from pprint import pprint
-        pprint({k : repr(v) for k, v in ctx.items()})
+        pprint({k : str(v) for k, v in ctx.items()})
         return get_fresh(ctx[node.identifier], non_generic)
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
@@ -123,6 +123,7 @@ def infer_cons(node, ctx, non_generic):
         for parameter, op in zip(node.parameters, typeop.types):
             typ = infer(parameter, ctx, non_generic)
             unify(typ, op)
+        return typeop
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
                              "'{}'.".format(node.constructor))
@@ -167,6 +168,13 @@ def unify(type1, type2):
 
         for x, y in zip(a.types, b.types):
             unify(x, y)
+    elif isinstance(a, TypeOperator) and isinstance(b, TypeClass):
+        unify(b, a)
+    elif isinstance(a, TypeClass) and isinstance(b, TypeOperator):
+        if b not in a:
+            raise FunkyTypeError("Type class {} does not permit "
+                                 "{}.".format(str(a), str(b)))
+        a.instance = b
     else:
         raise RuntimeError("Python typing error encountered when unifying!")
 
@@ -214,11 +222,12 @@ def create_type_alias(typedef, ctx):
     
 def create_algebraic_data_structure(typedef, ctx):
     t = TypeOperator(typedef.identifier, [])
-    ctx[typedef.identifier] = t
+    ctx[typedef.identifier] = TypeClass([])
     for alternative in typedef.typ.constructors:
         p = [ctx[i] for i in alternative.parameters]
         alt_op = TypeOperator(alternative.identifier, p)
         ctx[alternative.identifier] = alt_op
+        ctx[typedef.identifier].types.append(alt_op)
 
 def create_type(typedef, ctx):
     if isinstance(typedef.typ, AlgebraicDataType): # newcons

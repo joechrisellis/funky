@@ -7,7 +7,7 @@ from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
 
-from funky.intermediate.tarjan import create_dependency_graph, \
+from funky.intermediate.tarjan import create_dependency_graph,            \
                                       find_strongly_connected_components, \
                                       reorder_bindings
 
@@ -22,6 +22,8 @@ def infer_variable(node, ctx, non_generic):
     type expression with get_fresh().
     """
     try:
+        from pprint import pprint
+        pprint({k : repr(v) for k, v in ctx.items()})
         return get_fresh(ctx[node.identifier], non_generic)
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
@@ -114,6 +116,17 @@ def infer_match(node, ctx, non_generic):
 
     return return_type
 
+@infer.register(CoreCons)
+def infer_cons(node, ctx, non_generic):
+    try:
+        typeop = ctx[node.constructor]
+        for parameter, op in zip(node.parameters, typeop.types):
+            typ = infer(parameter, ctx, non_generic)
+            unify(typ, op)
+    except KeyError:
+        raise FunkyTypeError("Undefined constructor "
+                             "'{}'.".format(node.constructor))
+
 def get_fresh(typ, non_generic):
     """Make a copy of a type expression. The type is copied, generic variables
     are duplicated, and non-generic variables are shared.
@@ -138,6 +151,7 @@ def unify(type1, type2):
     """Unifies two type variables, making them equivalent if they 'fit' and
     raising an error otherwise.
     """
+    print("Unifying", type1, "and", type2)
     a, b = prune(type1), prune(type2)
     if isinstance(a, TypeVariable):
         if a != b:
@@ -191,12 +205,36 @@ def occurs_in(t, types):
     """
     return any(occurs_in_type(t, t2) for t2 in types)
 
-def do_type_inference(core_tree):
+def create_type_alias(typedef, ctx):
+    try:
+        ctx[typedef.identifier] = ctx[typedef.typ]
+    except KeyError:
+        raise FunkyTypeError("Type '{}' not defined, so it cannot be used in "
+                             "a type alias.".format(typedef.typ))
+    
+def create_algebraic_data_structure(typedef, ctx):
+    t = TypeOperator(typedef.identifier, [])
+    ctx[typedef.identifier] = t
+    for alternative in typedef.typ.constructors:
+        p = [ctx[i] for i in alternative.parameters]
+        alt_op = TypeOperator(alternative.identifier, p)
+        ctx[alternative.identifier] = alt_op
+
+def create_type(typedef, ctx):
+    if isinstance(typedef.typ, AlgebraicDataType): # newcons
+        create_algebraic_data_structure(typedef, ctx)
+    else: # newtype
+        create_type_alias(typedef, ctx)
+
+def do_type_inference(core_tree, typedefs):
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
-    ctx, non_generic = BUILTIN_FUNCTIONS, set()
+
+    ctx, non_generic = DEFAULT_ENVIRONMENT, set()
+    for typedef in typedefs:
+        create_type(typedef, ctx)
+
     t = infer(core_tree, ctx, non_generic)
-    print(t)
 
     log.info("Completed type inference.")
     log.info("The program has output type {}.".format(t))

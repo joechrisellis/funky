@@ -48,3 +48,11 @@ BUILTIN_FUNCTIONS = {
     "||"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
     ":"       :  FunctionType(t, FunctionType(Cons, Cons)),
 }
+
+BUILTIN_CONSTRUCTORS = {
+    # TODO
+}
+
+# All of the builtins form the default environment.
+DEFAULT_ENVIRONMENT = {**BUILTIN_PRIMITIVES, **BUILTIN_FUNCTIONS,
+                       **BUILTIN_CONSTRUCTORS}

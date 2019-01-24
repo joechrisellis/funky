@@ -1,3 +1,6 @@
 module test where
 
-    main = 1 : 2 : 3
+    newcons List = Cons Integer List | Nil
+
+    f x = Cons x Nil
+    main = f

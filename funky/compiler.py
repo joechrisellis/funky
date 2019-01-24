@@ -59,9 +59,11 @@ def compile_to_c(source, dump_parsed=False,
             err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
         
         try:
-            core_tree = do_desugar(parsed)
+            core_tree, typedefs = do_desugar(parsed)
             if dump_desugared:
-                print("## CORE (DESUGARED) CODE")
+                print("## TYPE DEFINITIONS")
+                print(typedefs)
+                print("\n## CORE (DESUGARED) CODE")
                 print(core_tree)
         except FunkyDesugarError as e:
             err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
@@ -72,7 +74,7 @@ def compile_to_c(source, dump_parsed=False,
 
     try:
         try:
-            types = do_type_inference(core_tree)
+            types = do_type_inference(core_tree, typedefs)
             if dump_types:
                 print("## CORE TYPES")
                 print(types)

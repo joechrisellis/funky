@@ -10,6 +10,16 @@ class CoreNode:
 
     __repr__ = output_attributes
 
+class CoreTypeDefinition(CoreNode):
+
+    def __init__(self, identifier, typ):
+        self.identifier  =  identifier
+        self.typ         =  typ
+    
+    def __str__(self):
+        # TODO
+        return ""
+
 class CoreBind(CoreNode):
 
     def __init__(self, identifier, bindee):
@@ -19,16 +29,6 @@ class CoreBind(CoreNode):
     def __str__(self):
         bindee_str = str(self.bindee)
         return "{} = {}".format(self.identifier, bindee_str)
-
-class CoreTypeDeclaration(CoreNode):
-
-    def __init__(self, identifier, typ):
-        self.identifier  =  identifier
-        self.typ         =  typ
-    
-    def __str__(self):
-        # TODO
-        return ""
 
 class CoreCons(CoreNode):
 

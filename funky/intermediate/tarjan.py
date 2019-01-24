@@ -4,9 +4,10 @@ components in graphs.
 
 from collections import defaultdict
 
+from funky.corelang.coretree import *
+from funky.corelang.types import AlgebraicDataType
 from funky.ds import Graph
 from funky.util import get_registry_function
-from funky.corelang.coretree import *
 
 UNVISITED = -1
 
@@ -150,6 +151,11 @@ def add_edges_match(bindee, graph, current, ids):
 def add_edges_alt(bindee, graph, current, ids):
     if bindee.expr is None: return
     add_edges(bindee.expr, graph, current, ids)
+
+@add_edges.register(AlgebraicDataType)
+def add_edges_algebraic_data_type(bindee, graph, current, ids):
+    for constructor in bindee.constructors:
+        add_edges(constructor, graph, current, ids)
 
 @add_edges.register(CoreLiteral)
 @add_edges.register(str) # <- builtin functions

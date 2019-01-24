@@ -35,7 +35,18 @@ def module_desugar(node):
 def program_body_desugar(node):
     # TODO: imports should already be in the parse tree by now, so no need to
     #       do anything with imports.
-    toplevel_declarations = [desugar(t) for t in node.toplevel_declarations]
+    
+    # separate type definitions from code
+    typedefs = [t for t in node.toplevel_declarations
+                if isinstance(t, NewConsStatement) or \
+                   isinstance(t, NewTypeStatement)]
+    code = [t for t in node.toplevel_declarations
+              if not (isinstance(t, NewConsStatement) or \
+                      isinstance(t, NewTypeStatement))]
+
+    typedefs = [desugar(t) for t in typedefs]
+    toplevel_declarations = [desugar(t) for t in code]
+
     main_expr = None
     for i, bind in enumerate(toplevel_declarations):
         if bind.identifier == "main":
@@ -47,32 +58,27 @@ def program_body_desugar(node):
 
     toplevel_let = CoreLet(toplevel_declarations, main_expr)
     toplevel_let.binds = condense_function_binds(toplevel_let.binds)
-    return toplevel_let
+    return toplevel_let, typedefs
+
+@desugar.register(NewConsStatement)
+def new_cons_statement_desugar(node):
+    constructors = [desugar(d) for d in node.constructors]
+    the_adt = AlgebraicDataType(node.identifier, None, constructors)
+    return CoreTypeDefinition(node.identifier, the_adt)
+
+@desugar.register(NewTypeStatement)
+def new_type_statement_desugar(node):
+    typ = desugar(node.typ)
+    return CoreTypeDefinition(node.identifier, typ)
 
 @desugar.register(ImportStatement)
 def import_statement_desugar(node):
     raise NotImplementedError
 
-@desugar.register(NewTypeStatement)
-def new_type_statement_desugar(node):
-    typ = desugar(node.typ)
-    return CoreBind(node.identifier, typ)
-
-@desugar.register(NewConsStatement)
-def new_cons_statement_desugar(node):
-    constructors = [desugar(d) for d in node.constructors]
-    the_adt = AlgebraicDataType(None, constructors)
-    return CoreBind(node.identifier, the_adt)
-
 @desugar.register(Construction)
 def construction_desugar(node):
     parameters = [desugar(param) for param in node.parameters]
     return CoreCons(node.constructor, parameters)
-
-@desugar.register(ConstructorType)
-def constructor_definition_desugar(node):
-    parameters = [desugar(t) for t in node.parameters]
-    return CoreCons(node.identifier, parameters)
 
 @desugar.register(TypeDeclaration)
 def type_declaration_desugar(node):
@@ -191,13 +197,14 @@ def variable_desugar(node):
 def literal_desugar(node):
     return CoreLiteral(node.value)
 
+@desugar.register(ConstructorType)
 @desugar.register(CoreCons)
 @desugar.register(CoreList)
 @desugar.register(CoreTuple)
-@desugar.register(TypeVariable)
 @desugar.register(FunctionType)
 @desugar.register(ListType)
 @desugar.register(TupleType)
+@desugar.register(TypeVariable)
 @desugar.register(str)
 def noop_desugar(node):
     # default functions -- we must acknowledge these when we translate to C. No
@@ -274,6 +281,9 @@ def do_desugar(source_tree):
     """
     assert source_tree.parsed and source_tree.fixities_resolved
     log.info("Desugaring parse tree...")
-    desugared = desugar(source_tree)
+    desugared, typedefs = desugar(source_tree)
     log.info("Completed desugaring parse tree.")
-    return desugared
+
+    print(repr(desugared))
+
+    return desugared, typedefs

@@ -277,6 +277,7 @@ class FunkyParser:
                 | OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN
                 | OPEN_SQUARE EXP CLOSE_SQUARE
                 | OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE
+                | TYPENAME CONSTRUCTION_PARAMS
         """
         if len(p) == 2:
             if p[1] == ():
@@ -287,6 +288,8 @@ class FunkyParser:
                 p[0] = UsedVar(p[1])
             else:
                 p[0] = p[1]
+        elif len(p) == 3:
+            p[0] = Construction(p[1], p[2])
         elif p[1] == "(":
             if len(p) == 4:
                 p[0] = p[2]
@@ -297,6 +300,15 @@ class FunkyParser:
                 p[0] = CoreList([p[2]])
             else:
                 p[0] = CoreList([p[2], *p[4]])
+
+    def p_CONSTRUCTION_PARAMS(self, p):
+        """CONSTRUCTION_PARAMS : CONSTRUCTION_PARAMS AEXP
+                               | AEXP
+        """
+        if len(p) == 3:
+            p[0] = p[1] + [p[2]]
+        else:
+            p[0] = [p[1]]
 
     def p_ALTS(self, p):
         """ALTS : ALT ENDSTATEMENT ALTS

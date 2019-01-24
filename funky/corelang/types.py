@@ -14,6 +14,8 @@ class TypeVariable:
     """A type variable. In type inference, this is used as a placeholder for a
     to-be-discovered type, or for parametric polymorphism..
     """
+    
+    __repr__ = output_attributes
 
     def __init__(self):
         self._type_name  =  None # lazily defined, so None for now
@@ -37,6 +39,8 @@ class TypeVariable:
 
 class TypeOperator:
     """An n-ary type constructor."""
+
+    __repr__ = output_attributes
 
     def __init__(self, name, types):
         self.type_name  =  name
@@ -90,16 +94,23 @@ class AlgebraicDataType:
     used in pattern matching.
     """
     
-    def __init__(self, context, constructors):
+    __repr__ = output_attributes
+    
+    def __init__(self, type_name, context, constructors):
+        self.type_name     =  type_name
         self.context       =  context
         self.constructors  =  constructors
 
     def __str__(self):
-        constructors_str = " | ".join(str(constructor) for constructor in self.constructors)
-        return "[context={}] {}".format(str(self.context), constructors_str)
+        constructors_str = " | ".join(str(constructor)
+                                      for constructor in self.constructors)
+        return "{} [context={}] {}".format(self.type_name, str(self.context),
+                                           constructors_str)
 
 class ConstructorType:
     """A constructor type under an algebraic data type."""
+
+    __repr__ = output_attributes
 
     def __init__(self, identifier, parameters):
         self.identifier  =  identifier

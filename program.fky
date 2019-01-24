@@ -1,6 +1,8 @@
 module test where
 
     newcons List = Cons Integer List | Nil
+    newcons Tree = Branch Tree Integer Tree | Leaf Integer
 
-    f x = Cons x Nil
-    main = f
+    getval (Leaf x) = x
+
+    main = getval

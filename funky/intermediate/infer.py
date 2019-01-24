@@ -22,8 +22,6 @@ def infer_variable(node, ctx, non_generic):
     type expression with get_fresh().
     """
     try:
-        from pprint import pprint
-        pprint({k : str(v) for k, v in ctx.items()})
         return get_fresh(ctx[node.identifier], non_generic)
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
@@ -119,10 +117,12 @@ def infer_match(node, ctx, non_generic):
 @infer.register(CoreCons)
 def infer_cons(node, ctx, non_generic):
     try:
-        typeop = ctx[node.constructor]
+        typeop = get_fresh(ctx[node.constructor], non_generic)
         for parameter, op in zip(node.parameters, typeop.types):
             typ = infer(parameter, ctx, non_generic)
             unify(typ, op)
+        typeop.class_name = "Tree"
+        print("!!", typeop, typeop.class_name, type(typeop))
         return typeop
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
@@ -139,12 +139,14 @@ def get_fresh(typ, non_generic):
         if isinstance(p, TypeVariable):
             if is_generic(p, non_generic):
                 if p not in type_map:
-                    type_map[p] = TypeVariable()
+                    type_map[p] = TypeVariable(class_name=p.class_name,
+                                               constraints=p.constraints)
                 return type_map.get(p, TypeVariable())
             else:
                 return p
         elif isinstance(p, TypeOperator):
-            return TypeOperator(p.type_name, [aux(x) for x in p.types])
+            return TypeOperator(p.type_name, [aux(x) for x in p.types],
+                                class_name=p.class_name)
 
     return aux(typ)
 
@@ -152,12 +154,13 @@ def unify(type1, type2):
     """Unifies two type variables, making them equivalent if they 'fit' and
     raising an error otherwise.
     """
-    print("Unifying", type1, "and", type2)
     a, b = prune(type1), prune(type2)
     if isinstance(a, TypeVariable):
         if a != b:
             if occurs_in_type(a, b):
                 raise FunkyTypeError("Recursive unification detected, stopping.")
+            if not a.accepts(b):
+                raise FunkyTypeError("Constraints on {} do not permit {}".format(str(a), str(b)))
             a.instance = b
     elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
         unify(b, a)
@@ -168,13 +171,6 @@ def unify(type1, type2):
 
         for x, y in zip(a.types, b.types):
             unify(x, y)
-    elif isinstance(a, TypeOperator) and isinstance(b, TypeClass):
-        unify(b, a)
-    elif isinstance(a, TypeClass) and isinstance(b, TypeOperator):
-        if b not in a:
-            raise FunkyTypeError("Type class {} does not permit "
-                                 "{}.".format(str(a), str(b)))
-        a.instance = b
     else:
         raise RuntimeError("Python typing error encountered when unifying!")
 
@@ -222,12 +218,13 @@ def create_type_alias(typedef, ctx):
     
 def create_algebraic_data_structure(typedef, ctx):
     t = TypeOperator(typedef.identifier, [])
-    ctx[typedef.identifier] = TypeClass([])
+    ctx[typedef.identifier] = TypeVariable()
     for alternative in typedef.typ.constructors:
         p = [ctx[i] for i in alternative.parameters]
         alt_op = TypeOperator(alternative.identifier, p)
         ctx[alternative.identifier] = alt_op
-        ctx[typedef.identifier].types.append(alt_op)
+        ctx[typedef.identifier].class_name = typedef.identifier
+        ctx[typedef.identifier].constraints.append(alt_op)
 
 def create_type(typedef, ctx):
     if isinstance(typedef.typ, AlgebraicDataType): # newcons
@@ -244,6 +241,5 @@ def do_type_inference(core_tree, typedefs):
         create_type(typedef, ctx)
 
     t = infer(core_tree, ctx, non_generic)
-
     log.info("Completed type inference.")
     log.info("The program has output type {}.".format(t))

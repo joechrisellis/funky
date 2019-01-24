@@ -17,10 +17,13 @@ class TypeVariable:
     
     __repr__ = output_attributes
 
-    def __init__(self):
+    def __init__(self, class_name=None, constraints=None):
         self._type_name   =  None  # lazily defined so None for now
         self.instance     =  None  # if type variable refers to a concrete type
-        self.constraints  =  []    # can only be instantiated to these types
+
+        # If this var is constrained, and if it is, what its class name is.
+        self.class_name   =  class_name
+        self.constraints  =  constraints if constraints else []
 
     @property
     def type_name(self):
@@ -32,41 +35,49 @@ class TypeVariable:
         self._type_name = next(get_typename)
         return self._type_name
 
+    def accepts(self, t):
+        if self.constraints:
+            for constraint in self.constraints:
+                if t.type_name == constraint.type_name:
+                    return True
+            return False
+        return True
+        # return not any(a.type_name == t.type_name for a in self.constraints)
+
     def __str__(self):
         """If we have a concrete type instance, print that. Otherwise, use our
+        class name. Otherwise, print the constraints. Otherwise, use our
         lazy-defined type name.
         """
-        return str(self.instance) if self.instance else str(self.type_name)
+        if self.instance:
+            return str(self.instance)
+        if self.class_name:
+            return self.class_name
+        if self.constraints:
+            return "[{}]".format(" | ".join(c.type_name for c in self.constraints))
+        return self.type_name
 
 class TypeOperator:
     """An n-ary type constructor."""
 
     __repr__ = output_attributes
 
-    def __init__(self, name, types):
-        self.type_name  =  name
-        self.types      =  types
+    def __init__(self, name, types, class_name=None):
+        self.type_name   =  name
+        self.types       =  types
+        self.class_name  =  class_name
 
     def __str__(self):
+        if self.class_name:
+            return self.class_name
+
         if len(self.types) == 0: # 0-ary constructor
             return self.type_name
         elif len(self.types) == 2: # binary constructor
             return "({} {} {})".format(str(self.types[0]), self.type_name,
                                        str(self.types[1]))
         else:
-            print(self.type_name, self.types)
-            return "{} {}".format(self.type_name, " ".join(str(x) for x in self.types))
-
-class TypeClass:
-
-    def __init__(self, types):
-        self.types = types
-
-    def __contains__(self, t):
-        return any(t.type_name == x.type_name for x in self.types)
-
-    def __str__(self):
-        return "[{}]".format(" | ".join(str(t.type_name) for t in self.types))
+            return "({} {})".format(self.type_name, " ".join(str(x) for x in self.types))
 
 class FunctionType(TypeOperator):
     """A function type. Really, a function type is just a slightly extended

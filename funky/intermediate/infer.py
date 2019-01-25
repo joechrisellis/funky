@@ -31,6 +31,7 @@ def infer_variable(node, ctx, non_generic):
     """Infer the type for a core literal. Literals have their type pre-encoded
     from parsing.
     """
+    print("!! hello", node.typ)
     return node.typ
 
 @infer.register(str)
@@ -108,8 +109,10 @@ def infer_match(node, ctx, non_generic):
                  else infer(alt.altcon, ctx, non_generic)
 
         unify(scrutinee_type, altcon_type)
-
         alt_expr_type = infer(alt.expr, ctx, non_generic)
+        print("!!!", repr(return_type))
+        print("!!!", repr(alt_expr_type))
+        print("---")
         unify(return_type, alt_expr_type)
 
     return return_type
@@ -139,14 +142,12 @@ def get_fresh(typ, non_generic):
         if isinstance(p, TypeVariable):
             if is_generic(p, non_generic):
                 if p not in type_map:
-                    type_map[p] = TypeVariable(class_name=p.class_name,
-                                               constraints=p.constraints)
+                    type_map[p] = TypeVariable()
                 return type_map.get(p, TypeVariable())
             else:
                 return p
         elif isinstance(p, TypeOperator):
-            return TypeOperator(p.type_name, [aux(x) for x in p.types],
-                                class_name=p.class_name)
+            return TypeOperator(p.type_name, [aux(x) for x in p.types])
 
     return aux(typ)
 
@@ -159,8 +160,6 @@ def unify(type1, type2):
         if a != b:
             if occurs_in_type(a, b):
                 raise FunkyTypeError("Recursive unification detected, stopping.")
-            if not a.accepts(b):
-                raise FunkyTypeError("Constraints on {} do not permit {}".format(str(a), str(b)))
             a.instance = b
     elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
         unify(b, a)
@@ -170,6 +169,7 @@ def unify(type1, type2):
                                  "{}.".format(str(a), str(b)))
 
         for x, y in zip(a.types, b.types):
+            print("Unifying", x, "and", y)
             unify(x, y)
     else:
         raise RuntimeError("Python typing error encountered when unifying!")
@@ -217,15 +217,25 @@ def create_type_alias(typedef, ctx):
                              "a type alias.".format(typedef.typ))
     
 def create_algebraic_data_structure(typedef, ctx):
-    t = TypeOperator(typedef.identifier, [])
-    ctx[typedef.identifier] = TypeVariable()
+    type_class = TypeClass(typedef.identifier, [])
     for alternative in typedef.typ.constructors:
-        p = [ctx[i] for i in alternative.parameters]
-        alt_op = TypeOperator(alternative.identifier, p)
-        ctx[alternative.identifier] = alt_op
-        ctx[typedef.identifier].class_name = typedef.identifier
-        ctx[typedef.identifier].constraints.append(alt_op)
-    print(repr(ctx["Cons"]))
+        tyvars = []
+        for parameter in alternative.parameters:
+            t = TypeVariable()
+            unify(t, parameter)
+            tyvars.append(t)
+        alt_type = TypeOperator(alternative.identifier, tyvars)
+        print("!!", alt_type)
+        
+        f = type_class
+        for parameter in reversed(tyvars):
+            f = FunctionType(parameter, f)
+        ctx[alternative.identifier] = f
+        type_class.types.append(f)
+
+    ctx[type_class.class_name] = type_class
+    from pprint import pprint
+    pprint({k : str(v) for k, v in ctx.items()})
 
 def create_type(typedef, ctx):
     if isinstance(typedef.typ, AlgebraicDataType): # newcons

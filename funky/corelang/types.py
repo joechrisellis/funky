@@ -14,16 +14,12 @@ class TypeVariable:
     """A type variable. In type inference, this is used as a placeholder for a
     to-be-discovered type, or for parametric polymorphism..
     """
-    
+
     __repr__ = output_attributes
 
     def __init__(self, class_name=None, constraints=None):
         self._type_name   =  None  # lazily defined so None for now
         self.instance     =  None  # if type variable refers to a concrete type
-
-        # If this var is constrained, and if it is, what its class name is.
-        self.class_name   =  class_name
-        self.constraints  =  constraints if constraints else []
 
     @property
     def type_name(self):
@@ -35,15 +31,6 @@ class TypeVariable:
         self._type_name = next(get_typename)
         return self._type_name
 
-    def accepts(self, t):
-        if self.constraints:
-            for constraint in self.constraints:
-                if t.type_name == constraint.type_name:
-                    return True
-            return False
-        return True
-        # return not any(a.type_name == t.type_name for a in self.constraints)
-
     def __str__(self):
         """If we have a concrete type instance, print that. Otherwise, use our
         class name. Otherwise, print the constraints. Otherwise, use our
@@ -51,11 +38,16 @@ class TypeVariable:
         """
         if self.instance:
             return str(self.instance)
-        if self.class_name:
-            return self.class_name
-        if self.constraints:
-            return "[{}]".format(" | ".join(c.type_name for c in self.constraints))
         return self.type_name
+
+class TypeClass:
+    
+    def __init__(self, class_name, types):
+        self.class_name  =  class_name
+        self.types       =  types
+
+    def __str__(self):
+        return self.class_name
 
 class TypeOperator:
     """An n-ary type constructor."""
@@ -65,12 +57,8 @@ class TypeOperator:
     def __init__(self, name, types, class_name=None):
         self.type_name   =  name
         self.types       =  types
-        self.class_name  =  class_name
 
     def __str__(self):
-        if self.class_name:
-            return self.class_name
-
         if len(self.types) == 0: # 0-ary constructor
             return self.type_name
         elif len(self.types) == 2: # binary constructor
@@ -101,7 +89,7 @@ class TupleType:
     def __init__(self, types):
         self.types  =  types
         self.arity  =  len(types)
-    
+
     def __str__(self):
         return str(self.types)
 
@@ -116,9 +104,9 @@ class AlgebraicDataType:
     """An algebraic data type defined with the 'newcons' keyword. These are
     used in pattern matching.
     """
-    
+
     __repr__ = output_attributes
-    
+
     def __init__(self, type_name, context, constructors):
         self.type_name     =  type_name
         self.context       =  context

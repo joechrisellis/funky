@@ -116,14 +116,21 @@ def infer_match(node, ctx, non_generic):
 
 @infer.register(CoreCons)
 def infer_cons(node, ctx, non_generic):
+    # Occurs in the context of pattern matching always.
+    # core cons has a constructor, and a list of parameters
     try:
-        typeop = get_fresh(ctx[node.constructor], non_generic)
-        for parameter, op in zip(node.parameters, typeop.types):
+        typeop = ctx[node.constructor]
+        f = typeop.type_class
+        for parameter in reversed(node.parameters):
+            t = TypeVariable()
+            f = FunctionType(t, f)
             if isinstance(parameter, CoreVariable):
-                ctx[parameter.identifier] = TypeVariable() if node.pattern \
-                                       else infer(parameter, ctx, non_generic)
-                unify(ctx[parameter.identifier], op)
-        return typeop
+                ctx[parameter.identifier] = t
+        print("!!", f)
+        print("!!", typeop)
+        unify(f, typeop)
+
+        return typeop.type_class
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
                              "'{}'.".format(node.constructor))
@@ -154,6 +161,7 @@ def unify(type1, type2):
     """Unifies two type variables, making them equivalent if they 'fit' and
     raising an error otherwise.
     """
+    print("Unifying", type1, type2)
     a, b = prune(type1), prune(type2)
     if isinstance(a, TypeVariable):
         if a != b:
@@ -179,10 +187,12 @@ def unify(type1, type2):
         if a not in b.types:
             raise FunkyTypeError("Cannot unify {} with typeclass "
                                  "{}".format(str(a), str(b)))
+    elif isinstance(a, TypeClass) and isinstance(b, TypeVariable):
+        unify(b, a)
     else:
-        print("!!", a, type(a))
-        print("!!", b, type(b))
-        raise RuntimeError("Python typing error encountered when unifying!")
+        raise RuntimeError("Python typing error encountered when unifying. "
+                           "Cannot perform unification between types {} and "
+                           "{}.".format(a, b))
 
 def prune(t):
     """Returns the defining instance of the given type. Also collapses the list
@@ -235,11 +245,13 @@ def create_algebraic_data_structure(typedef, ctx):
             t = TypeVariable()
             unify(t, ctx[parameter])
             tyvars.append(t)
-        alt_type = TypeOperator(alternative.identifier, tyvars)
+        alt_type = TypeOperator(alternative.identifier, tyvars,
+                                type_class=type_class)
         
         f = type_class
         for parameter in reversed(tyvars):
             f = FunctionType(parameter, f)
+        f.type_class = type_class
         ctx[alternative.identifier] = f
         type_class.types.append(f)
 

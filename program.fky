@@ -1,8 +1,13 @@
 module test where
 
-    newcons List = Cons Integer List | Nil
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
+    newcons List = Cons Integer List | Nil
 
-    fst a b = Cons a b
+    # drop n (Cons a b) = drop (n - 1) b
+    # drop 0 (Cons a b) = (Cons a b)
+    # drop 0 Nil = Nil
 
-    main = fst 1 x + x where x = Cons 1 Nil
+    test n (Cons a _) = a
+    test 0 Nil = 0
+
+    main = test

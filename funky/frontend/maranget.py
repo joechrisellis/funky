@@ -95,6 +95,9 @@ def get_match_tree(pattern_matrix, variables, outcomes):
     # swap the first column with the most necessary column in the matrix
     columns = list(zip(*pattern_matrix))
     columns[0], columns[best_column] = columns[best_column], columns[0]
+    print("PATTERN_MATRIX", pattern_matrix)
+    print("SCORES", scores)
+    print("VARIABLES", variables)
     variables[0], variables[best_column] = variables[best_column], variables[0]
     pattern_matrix = [list(t) for t in zip(*columns)]
 
@@ -117,12 +120,21 @@ def get_match_tree(pattern_matrix, variables, outcomes):
 
     # if our scrutinee is a construction, we must 'expand' it, placing its
     # parameters into the specialised matrix explicitly.
+    print("bee")
     if isinstance(scrutinee, CoreCons):
+        new_rows = 0
         for row in specialised:
+            print("BEFORE", row)
             x = row.pop(0)
             if isinstance(x, CoreCons):
-                for param in reversed(x.parameters):
-                    row.insert(0, param)
+                x.parameters = x.parameters
+                new_rows = max(len(x.parameters), new_rows)
+                for i in range(new_rows):
+                    new_item = x.parameters[i] if i < len(x.parameters) \
+                          else CoreVariable("_")
+                    row.append(new_item)
+
+                    print("!!", row)
             else:
                 for _ in scrutinee.parameters:
                     row.insert(0, CoreVariable(get_unique_varname()))
@@ -143,6 +155,9 @@ def get_match_tree(pattern_matrix, variables, outcomes):
         # otherwise, just drop the first row.
         specialised = [row[1:] for row in specialised]
         altcon = scrutinee
+
+    if len(default) != len(variables):
+        print("uh oh")
 
     alts = [
         CoreAlt(altcon, get_match_tree(specialised, specialised_variables,

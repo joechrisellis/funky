@@ -54,9 +54,10 @@ class TypeOperator:
 
     __repr__ = output_attributes
 
-    def __init__(self, name, types, class_name=None):
+    def __init__(self, name, types, type_class=None):
         self.type_name   =  name
         self.types       =  types
+        self.type_class  =  type_class # reference to the typeclass, if any
 
     def __str__(self):
         if len(self.types) == 0: # 0-ary constructor
@@ -73,8 +74,8 @@ class FunctionType(TypeOperator):
     constructor.
     """
 
-    def __init__(self, input_type, output_type):
-        super().__init__("->", [input_type, output_type])
+    def __init__(self, input_type, output_type, type_class=None):
+        super().__init__("->", [input_type, output_type], type_class=type_class)
         self.input_type = input_type
         self.output_type = output_type
 

@@ -18,7 +18,7 @@ class CoreTypeDefinition(CoreNode):
     
     def __str__(self):
         # TODO
-        return ""
+        return "{} := {}".format(self.identifier, str(self.typ))
 
 class CoreBind(CoreNode):
 
@@ -32,9 +32,12 @@ class CoreBind(CoreNode):
 
 class CoreCons(CoreNode):
 
-    def __init__(self, constructor, parameters):
+    def __init__(self, constructor, parameters, pattern=False):
         self.constructor  =  constructor
         self.parameters   =  parameters
+
+        # set to true when this is used in the context of pattern matching
+        self.pattern      =  pattern
     
     def __str__(self):
         parameters_str = " ".join(str(param) for param in self.parameters)

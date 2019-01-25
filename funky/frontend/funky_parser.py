@@ -289,7 +289,7 @@ class FunkyParser:
             else:
                 p[0] = p[1]
         elif len(p) == 3:
-            p[0] = Construction(p[1], p[2])
+            p[0] = Construction(p[1], p[2], pattern=False)
         elif p[1] == "(":
             if len(p) == 4:
                 p[0] = p[2]
@@ -343,7 +343,7 @@ class FunkyParser:
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 4:
-            p[0] = Construction(p[1], [p[2]] + p[3])
+            p[0] = Construction(p[1], [p[2]] + p[3], pattern=True)
         else:
             p[0] = Literal(-p[3])
 

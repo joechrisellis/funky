@@ -15,7 +15,7 @@ from funky.ds import Scope
 from funky.util import get_registry_function, global_counter
 from funky.frontend.sourcetree import *
 from funky.corelang.types import *
-from funky.corelang.coretree import CoreCons, CoreTuple, CoreList
+from funky.corelang.coretree import CoreTuple, CoreList
 
 from funky.frontend import FunkyRenamingError
 

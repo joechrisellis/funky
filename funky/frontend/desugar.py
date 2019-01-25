@@ -78,7 +78,7 @@ def import_statement_desugar(node):
 @desugar.register(Construction)
 def construction_desugar(node):
     parameters = [desugar(param) for param in node.parameters]
-    return CoreCons(node.constructor, parameters)
+    return CoreCons(node.constructor, parameters, pattern=node.pattern)
 
 @desugar.register(TypeDeclaration)
 def type_declaration_desugar(node):
@@ -145,7 +145,7 @@ def lambda_desugar(node):
     lam = desugar(node.expression)
     for p in reversed(node.parameters):
         p = desugar(p)
-        if isinstance(p, CoreCons):
+        if isinstance(p, CoreCons) and p.pattern:
             # the parameter is a pattern -- desugar it to a match structure.
             on_match = CoreAlt(p, lam)
             no_match = CoreAlt(CoreVariable("_"), None)

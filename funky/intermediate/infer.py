@@ -119,10 +119,10 @@ def infer_cons(node, ctx, non_generic):
     try:
         typeop = get_fresh(ctx[node.constructor], non_generic)
         for parameter, op in zip(node.parameters, typeop.types):
-            typ = infer(parameter, ctx, non_generic)
-            unify(typ, op)
-        typeop.class_name = "Tree"
-        print("!!", typeop, typeop.class_name, type(typeop))
+            if isinstance(parameter, CoreVariable):
+                ctx[parameter.identifier] = TypeVariable() if node.pattern \
+                                       else infer(parameter, ctx, non_generic)
+                unify(ctx[parameter.identifier], op)
         return typeop
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
@@ -225,6 +225,7 @@ def create_algebraic_data_structure(typedef, ctx):
         ctx[alternative.identifier] = alt_op
         ctx[typedef.identifier].class_name = typedef.identifier
         ctx[typedef.identifier].constraints.append(alt_op)
+    print(repr(ctx["Cons"]))
 
 def create_type(typedef, ctx):
     if isinstance(typedef.typ, AlgebraicDataType): # newcons

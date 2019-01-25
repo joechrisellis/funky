@@ -3,6 +3,7 @@ module test where
     newcons List = Cons Integer List | Nil
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
 
-    getval (Leaf x) = x
+    id x = (Leaf x)
+    id 1 = (Branch (Leaf 1) 1 (Leaf 1))
 
-    main = getval
+    main = id 1

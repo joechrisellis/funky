@@ -62,7 +62,7 @@ def compile_to_c(source, dump_parsed=False,
             core_tree, typedefs = do_desugar(parsed)
             if dump_desugared:
                 print("## TYPE DEFINITIONS")
-                print(typedefs)
+                print("\n".join(str(t) for t in typedefs))
                 print("\n## CORE (DESUGARED) CODE")
                 print(core_tree)
         except FunkyDesugarError as e:

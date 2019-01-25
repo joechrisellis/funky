@@ -137,7 +137,8 @@ def get_match_tree(pattern_matrix, variables, outcomes):
                 specialised_variables.insert(0, CoreVariable(get_unique_varname()))
 
         altcon = CoreCons(scrutinee.constructor,
-                          specialised_variables[:len(scrutinee.parameters)])
+                          specialised_variables[:len(scrutinee.parameters)],
+                          pattern=True)
     else:
         # otherwise, just drop the first row.
         specialised = [row[1:] for row in specialised]

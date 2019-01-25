@@ -3,4 +3,6 @@ module test where
     newcons List = Cons Integer List | Nil
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
 
-    main = (Leaf "x")
+    fst a b = Cons a b
+
+    main = fst 1 x + x where x = Cons 1 Nil

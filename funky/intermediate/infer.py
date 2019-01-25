@@ -22,7 +22,8 @@ def infer_variable(node, ctx, non_generic):
     type expression with get_fresh().
     """
     try:
-        return get_fresh(ctx[node.identifier], non_generic)
+        retval = get_fresh(ctx[node.identifier], non_generic)
+        return retval
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
 
@@ -31,7 +32,6 @@ def infer_variable(node, ctx, non_generic):
     """Infer the type for a core literal. Literals have their type pre-encoded
     from parsing.
     """
-    print("!! hello", node.typ)
     return node.typ
 
 @infer.register(str)
@@ -110,9 +110,6 @@ def infer_match(node, ctx, non_generic):
 
         unify(scrutinee_type, altcon_type)
         alt_expr_type = infer(alt.expr, ctx, non_generic)
-        print("!!!", repr(return_type))
-        print("!!!", repr(alt_expr_type))
-        print("---")
         unify(return_type, alt_expr_type)
 
     return return_type
@@ -143,11 +140,13 @@ def get_fresh(typ, non_generic):
             if is_generic(p, non_generic):
                 if p not in type_map:
                     type_map[p] = TypeVariable()
-                return type_map.get(p, TypeVariable())
+                return type_map[p]
             else:
                 return p
         elif isinstance(p, TypeOperator):
             return TypeOperator(p.type_name, [aux(x) for x in p.types])
+        elif isinstance(p, TypeClass):
+            return p # TODO maybe need to clone the object
 
     return aux(typ)
 
@@ -169,9 +168,20 @@ def unify(type1, type2):
                                  "{}.".format(str(a), str(b)))
 
         for x, y in zip(a.types, b.types):
-            print("Unifying", x, "and", y)
             unify(x, y)
+    elif isinstance(a, TypeClass) and isinstance(b, TypeClass):
+        if a.class_name != b.class_name or len(a.types) != len(b.types):
+            raise FunkyTypeError("Cannot unify typeclasses {} and "
+                                 "{}".format(str(a), str(b)))
+    elif isinstance(a, TypeClass) and isinstance(b, TypeOperator):
+        unify(b, a)
+    elif isinstance(a, TypeOperator) and isinstance(b, TypeClass):
+        if a not in b.types:
+            raise FunkyTypeError("Cannot unify {} with typeclass "
+                                 "{}".format(str(a), str(b)))
     else:
+        print("!!", a, type(a))
+        print("!!", b, type(b))
         raise RuntimeError("Python typing error encountered when unifying!")
 
 def prune(t):
@@ -218,14 +228,14 @@ def create_type_alias(typedef, ctx):
     
 def create_algebraic_data_structure(typedef, ctx):
     type_class = TypeClass(typedef.identifier, [])
+    ctx[typedef.identifier] = type_class
     for alternative in typedef.typ.constructors:
         tyvars = []
         for parameter in alternative.parameters:
             t = TypeVariable()
-            unify(t, parameter)
+            unify(t, ctx[parameter])
             tyvars.append(t)
         alt_type = TypeOperator(alternative.identifier, tyvars)
-        print("!!", alt_type)
         
         f = type_class
         for parameter in reversed(tyvars):
@@ -234,8 +244,6 @@ def create_algebraic_data_structure(typedef, ctx):
         type_class.types.append(f)
 
     ctx[type_class.class_name] = type_class
-    from pprint import pprint
-    pprint({k : str(v) for k, v in ctx.items()})
 
 def create_type(typedef, ctx):
     if isinstance(typedef.typ, AlgebraicDataType): # newcons
@@ -246,7 +254,7 @@ def create_type(typedef, ctx):
 def do_type_inference(core_tree, typedefs):
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
-
+    
     ctx, non_generic = DEFAULT_ENVIRONMENT, set()
     for typedef in typedefs:
         create_type(typedef, ctx)

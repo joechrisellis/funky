@@ -54,26 +54,26 @@ def get_specialised_and_default_matrices(scrutinee, pattern_matrix, outcomes):
     for row, outcome in zip(pattern_matrix, outcomes):
         x, y = row[0], scrutinee
         if isinstance(x, CoreVariable):
-            default.append(row)
+            default.append(row[:])
             default_outcomes.append(outcome)
-            specialised.append(row)
+            specialised.append(row[:])
             specialised_outcomes.append(outcome)
         elif isinstance(x, CoreLiteral):
             if isinstance(y, CoreLiteral) and \
                x.value == y.value and x.typ == y.typ:
-                specialised.append(row)
+                specialised.append(row[:])
                 specialised_outcomes.append(outcome)
             else:
-                default.append(row)
+                default.append(row[:])
                 default_outcomes.append(outcome)
         elif isinstance(x, CoreCons):
             if isinstance(y, CoreCons) and \
                x.constructor == y.constructor and \
                len(x.parameters) == len(y.parameters):
-                specialised.append(row)
+                specialised.append(row[:])
                 specialised_outcomes.append(outcome)
             else:
-                default.append(row)
+                default.append(row[:])
                 default_outcomes.append(outcome)
         else:
             raise FunkyDesugarError("Attempted to match things with types " + \
@@ -82,6 +82,7 @@ def get_specialised_and_default_matrices(scrutinee, pattern_matrix, outcomes):
     return specialised, specialised_outcomes, default, default_outcomes
 
 def get_match_tree(pattern_matrix, variables, outcomes):
+    print(variables)
     if not pattern_matrix:
         return None
     if all(isinstance(x, CoreVariable) for x in pattern_matrix[0]):
@@ -95,9 +96,6 @@ def get_match_tree(pattern_matrix, variables, outcomes):
     # swap the first column with the most necessary column in the matrix
     columns = list(zip(*pattern_matrix))
     columns[0], columns[best_column] = columns[best_column], columns[0]
-    print("PATTERN_MATRIX", pattern_matrix)
-    print("SCORES", scores)
-    print("VARIABLES", variables)
     variables[0], variables[best_column] = variables[best_column], variables[0]
     pattern_matrix = [list(t) for t in zip(*columns)]
 
@@ -120,21 +118,12 @@ def get_match_tree(pattern_matrix, variables, outcomes):
 
     # if our scrutinee is a construction, we must 'expand' it, placing its
     # parameters into the specialised matrix explicitly.
-    print("bee")
     if isinstance(scrutinee, CoreCons):
-        new_rows = 0
         for row in specialised:
-            print("BEFORE", row)
             x = row.pop(0)
             if isinstance(x, CoreCons):
-                x.parameters = x.parameters
-                new_rows = max(len(x.parameters), new_rows)
-                for i in range(new_rows):
-                    new_item = x.parameters[i] if i < len(x.parameters) \
-                          else CoreVariable("_")
-                    row.append(new_item)
-
-                    print("!!", row)
+                for param in reversed(x.parameters):
+                    row.insert(0, param)
             else:
                 for _ in scrutinee.parameters:
                     row.insert(0, CoreVariable(get_unique_varname()))
@@ -156,8 +145,23 @@ def get_match_tree(pattern_matrix, variables, outcomes):
         specialised = [row[1:] for row in specialised]
         altcon = scrutinee
 
-    if len(default) != len(variables):
-        print("uh oh")
+    from pprint import pprint
+    print("\n\n\nSPECIALISED")
+    print("Matrix:")
+    pprint(specialised)
+    print("Variables:")
+    pprint(specialised_variables)
+    print("Outcomes:", specialised_outcomes)
+    pprint(specialised_outcomes)
+
+    print("\n\n\nDEFAULT")
+    print("Matrix:")
+    pprint(default)
+    print("Variables:")
+    pprint(variables)
+    print("Outcomes:", default_outcomes)
+    pprint(default_outcomes)
+
 
     alts = [
         CoreAlt(altcon, get_match_tree(specialised, specialised_variables,

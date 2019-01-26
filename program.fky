@@ -3,11 +3,9 @@ module test where
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
     newcons List = Cons Integer List | Nil
 
-    # drop n (Cons a b) = drop (n - 1) b
-    # drop 0 (Cons a b) = (Cons a b)
-    # drop 0 Nil = Nil
+    drop n (Cons a b) = drop (n - 1) b
+    drop 0 (Cons a b) = (Cons a b)
+    drop n Nil = Nil
+    drop 0 Nil = Nil
 
-    test n (Cons a _) = a
-    test 0 Nil = 0
-
-    main = test
+    main = drop

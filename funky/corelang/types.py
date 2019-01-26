@@ -75,7 +75,7 @@ class FunctionType(TypeOperator):
     """
 
     def __init__(self, input_type, output_type, type_class=None):
-        super().__init__("->", [input_type, output_type], type_class=type_class)
+        super().__init__("->", [input_type, output_type], type_class.type_class if type_class else None)
         self.input_type = input_type
         self.output_type = output_type
 

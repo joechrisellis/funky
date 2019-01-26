@@ -101,15 +101,24 @@ def infer_match(node, ctx, non_generic):
     same type as all of the altcons, and the alt expressions must all be of the
     same type.
     """
+    new_ctx = ctx.copy()
     scrutinee_type = infer(node.scrutinee, ctx, non_generic)
     
     return_type = TypeVariable()
     for alt in node.alts:
-        altcon_type = TypeVariable() if isinstance(alt.altcon, CoreVariable) \
-                 else infer(alt.altcon, ctx, non_generic)
+        if not alt.expr:
+            log.warning("Non-exhaustive pattern matching detected when "
+                        "matching against '{}'.".format(node.scrutinee))
+            continue
+
+        if isinstance(alt.altcon, CoreVariable):
+            altcon_type = TypeVariable()
+            new_ctx[alt.altcon.identifier] = altcon_type
+        else:
+            altcon_type = infer(alt.altcon, new_ctx, non_generic)
 
         unify(scrutinee_type, altcon_type)
-        alt_expr_type = infer(alt.expr, ctx, non_generic)
+        alt_expr_type = infer(alt.expr, new_ctx, non_generic)
         unify(return_type, alt_expr_type)
 
     return return_type

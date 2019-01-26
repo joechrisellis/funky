@@ -3,10 +3,13 @@ module test where
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
     newcons List = Cons Integer List | Nil
 
-    drop 0 (Cons a b) = Cons a b
-    drop n (Cons a b) = drop (n - 1) b
-    drop n Nil        = Nil
+    otherwise = True
 
-    tail = drop 1
+    filter f (Cons a b) | f a       = Cons a (filter f b)
+                        | otherwise = filter f b
+    filter f Nil = Nil
 
-    main = tail
+    map f (Cons a b) = Cons (f a) (map f b)
+    map f Nil = Nil
+
+    main = map (lambda x -> x * 2) (Cons 1 Nil)

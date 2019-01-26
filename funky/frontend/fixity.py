@@ -124,7 +124,6 @@ def parse(op1, exp, tokens):
     # Case 3: op1 and op2 are right associative.
     (r, rest) = parse_neg(op2, tokens[1:])
 
-    print("!!", op2)
     if op2 not in BUILTIN_FUNCTIONS:
         op2 = UsedVar(op2)
 

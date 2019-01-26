@@ -284,6 +284,4 @@ def do_desugar(source_tree):
     desugared, typedefs = desugar(source_tree)
     log.info("Completed desugaring parse tree.")
 
-    print(repr(desugared))
-
     return desugared, typedefs

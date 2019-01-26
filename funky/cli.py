@@ -12,6 +12,8 @@ def main():
     parser.add_argument("--output", "-o", type=argparse.FileType("w"),
                         required=True,
                         help="File to write compiled program to.")
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+                        help="How much noise should the compiler make?")
     parser.add_argument("--dump-parsed", default=False, required=False,
                         action="store_true",
                         help="Dump the parse tree to stdout.")
@@ -30,6 +32,16 @@ def main():
 
     args = parser.parse_args()
 
+    verbosity_2_loglevel = {
+        0 : logging.WARNING,
+        1 : logging.INFO,
+        2 : logging.DEBUG,
+    }
+
+    most_verbose = verbosity_2_loglevel[max(verbosity_2_loglevel)]
+    desired_loglevel = verbosity_2_loglevel.get(args.verbose, most_verbose)
+    logging.getLogger().setLevel(desired_loglevel)
+
     lines = args.input.readlines()
     log.info("Will compile {}, with {} lines.".format(args.input.name,
                                                           len(lines)))
@@ -47,9 +59,7 @@ def main():
 
 def start():
     """Exists only for setuptools."""
-    log.debug("Funky compiler started via command-line.")
     main()
 
 if __name__ == "__main__":
-    log.debug("Funky compiler started.")
     main()

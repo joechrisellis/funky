@@ -107,6 +107,8 @@ def infer_match(node, ctx, non_generic):
     return_type = TypeVariable()
     for alt in node.alts:
         if not alt.expr:
+            # this false-positives sometimes -- i.e. when pattern matching
+            # a boolean.
             log.warning("Non-exhaustive pattern matching detected when "
                         "matching against '{}'.".format(node.scrutinee))
             continue
@@ -135,8 +137,6 @@ def infer_cons(node, ctx, non_generic):
             f = FunctionType(t, f)
             if isinstance(parameter, CoreVariable):
                 ctx[parameter.identifier] = t
-        print("!!", f)
-        print("!!", typeop)
         unify(f, typeop)
 
         return typeop.type_class
@@ -170,7 +170,6 @@ def unify(type1, type2):
     """Unifies two type variables, making them equivalent if they 'fit' and
     raising an error otherwise.
     """
-    print("Unifying", type1, type2)
     a, b = prune(type1), prune(type2)
     if isinstance(a, TypeVariable):
         if a != b:

@@ -82,7 +82,6 @@ def get_specialised_and_default_matrices(scrutinee, pattern_matrix, outcomes):
     return specialised, specialised_outcomes, default, default_outcomes
 
 def get_match_tree(pattern_matrix, variables, outcomes):
-    print(variables)
     if not pattern_matrix:
         return None
     if all(isinstance(x, CoreVariable) for x in pattern_matrix[0]):
@@ -144,24 +143,6 @@ def get_match_tree(pattern_matrix, variables, outcomes):
         # otherwise, just drop the first row.
         specialised = [row[1:] for row in specialised]
         altcon = scrutinee
-
-    from pprint import pprint
-    print("\n\n\nSPECIALISED")
-    print("Matrix:")
-    pprint(specialised)
-    print("Variables:")
-    pprint(specialised_variables)
-    print("Outcomes:", specialised_outcomes)
-    pprint(specialised_outcomes)
-
-    print("\n\n\nDEFAULT")
-    print("Matrix:")
-    pprint(default)
-    print("Variables:")
-    pprint(variables)
-    print("Outcomes:", default_outcomes)
-    pprint(default_outcomes)
-
 
     alts = [
         CoreAlt(altcon, get_match_tree(specialised, specialised_variables,

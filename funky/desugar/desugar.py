@@ -198,6 +198,10 @@ def variable_desugar(node):
 def literal_desugar(node):
     return CoreLiteral(node.value)
 
+@desugar.register(str)
+def builtin_desugar(node):
+    return CoreVariable(node)
+
 @desugar.register(ConstructorType)
 @desugar.register(CoreCons)
 @desugar.register(CoreList)
@@ -206,7 +210,6 @@ def literal_desugar(node):
 @desugar.register(ListType)
 @desugar.register(TupleType)
 @desugar.register(TypeVariable)
-@desugar.register(str)
 def noop_desugar(node):
     # default functions -- we must acknowledge these when we translate to C. No
     # further work here.

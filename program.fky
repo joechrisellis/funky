@@ -1,15 +1,21 @@
 module test where
 
-    newcons Tree = Branch Tree Integer Tree | Leaf Integer
     newcons List = Cons Integer List | Nil
+    newcons Tree = Branch Tree Integer Tree | Leaf Integer
+
+    concatenate (Cons a b) l2 = Cons a (concatenate b l2)
+    concatenate Nil l2 = l2
 
     otherwise = True
-
+    
+    inorder (Branch l v r) = concatenate left (Cons v right)
+                             where left  = inorder l
+                                   right = inorder r
+    
+    is_sorted (Cons a (Cons b c)) | a > b      = False
+                                  | otherwise  = is_sorted (Cons b c)
+    
     filter f (Cons a b) | f a       = Cons a (filter f b)
-                        | otherwise = filter f b
-    filter f Nil = Nil
+                        | otherwise = b
 
-    map f (Cons a b) = Cons (f a) (map f b)
-    map f Nil = Nil
-
-    main = map (lambda x -> x * 2) (Cons 1 Nil)
+    main = filter

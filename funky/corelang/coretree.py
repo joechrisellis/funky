@@ -10,10 +10,14 @@ class CoreNode:
 
     __repr__ = output_attributes
 
+    def __init__(self):
+        self.inferred_type = None # filled in when type inference is performed
+
 class CoreTypeDefinition(CoreNode):
     """A type definition -- assigning a name to a type."""
 
     def __init__(self, identifier, typ):
+        super().__init__()
         self.identifier  =  identifier
         self.typ         =  typ
     
@@ -25,6 +29,7 @@ class CoreBind(CoreNode):
     """A bind -- assigning a name to an expression."""
 
     def __init__(self, identifier, bindee):
+        super().__init__()
         self.identifier  =  identifier
         self.bindee      =  bindee
     
@@ -36,6 +41,7 @@ class CoreCons(CoreNode):
     """A construction -- a constructor applied to a list of parameters."""
 
     def __init__(self, constructor, parameters, pattern=False):
+        super().__init__()
         self.constructor  =  constructor
         self.parameters   =  parameters
 
@@ -51,6 +57,7 @@ class CoreVariable(CoreNode):
     """A reference to a defined variable."""
 
     def __init__(self, identifier):
+        super().__init__()
         self.identifier  =  identifier
 
     def __str__(self):
@@ -60,8 +67,8 @@ class CoreLiteral(CoreNode):
     """A literal."""
     
     def __init__(self, value):
-        self.value  =  value
-        self.typ    =  python_to_funky[type(value)]
+        super().__init__()
+        self.value = value
 
     def __str__(self):
         return repr(self.value)
@@ -70,6 +77,7 @@ class CoreApplication(CoreNode):
     """Application of an expression (of type function) to an argument."""
 
     def __init__(self, expr, arg):
+        super().__init__()
         self.expr  =  expr
         self.arg   =  arg
 
@@ -80,6 +88,7 @@ class CoreLambda(CoreNode):
     """An anonymous lambda expression."""
     
     def __init__(self, param, expr):
+        super().__init__()
         self.param  =  param
         self.expr   =  expr
     
@@ -93,6 +102,7 @@ class CoreLet(CoreNode):
     """
 
     def __init__(self, binds, expr):
+        super().__init__()
         self.binds  =  binds
         self.expr   =  expr
 
@@ -106,6 +116,7 @@ class CoreMatch(CoreNode):
     """
     
     def __init__(self, scrutinee, alts):
+        super().__init__()
         self.scrutinee  =  scrutinee
         self.alts       =  alts
     
@@ -117,6 +128,7 @@ class CoreAlt(CoreNode):
     """An alternative in a match statement."""
     
     def __init__(self, altcon, expr):
+        super().__init__()
         self.altcon   =  altcon
         self.expr     =  expr
     
@@ -126,6 +138,7 @@ class CoreAlt(CoreNode):
 class CoreTuple(CoreNode):
     
     def __init__(self, items):
+        super().__init__()
         self.items  =  tuple(items)
         self.arity  =  len(items)
     
@@ -135,6 +148,7 @@ class CoreTuple(CoreNode):
 class CoreList(CoreNode):
     
     def __init__(self, items):
+        super().__init__()
         self.items  =  items
     
     def __str__(self):

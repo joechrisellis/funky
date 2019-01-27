@@ -8,13 +8,13 @@ from funky.util import get_user_attributes
 import funky
 
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
-from funky.parse.funky_parser import FunkyParser
-
-from funky.rename.rename import do_rename
-
-from funky.desugar.desugar import do_desugar
-
+from funky.rename import FunkyRenamingError
+from funky.desugar import FunkyDesugarError
 from funky.infer import FunkyTypeError
+
+from funky.parse.funky_parser import FunkyParser
+from funky.rename.rename import do_rename
+from funky.desugar.desugar import do_desugar
 from funky.infer.infer import do_type_inference
 
 log = logging.getLogger(__name__)

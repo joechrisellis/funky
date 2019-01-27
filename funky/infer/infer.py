@@ -22,38 +22,26 @@ def infer_variable(node, ctx, non_generic):
     type expression with get_fresh().
     """
     try:
-        retval = get_fresh(ctx[node.identifier], non_generic)
-        return retval
+        node.inferred_type = get_fresh(ctx[node.identifier], non_generic)
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
 
 @infer.register(CoreLiteral)
 def infer_variable(node, ctx, non_generic):
-    """Infer the type for a core literal. Literals have their type pre-encoded
-    from parsing.
+    """Infer the type for a core literal. Simply use the mapping from Python
+    types to function types to infer the type of the literal.
     """
-    return node.typ
-
-@infer.register(str)
-def infer_function(node, ctx, non_generic):
-    """Infer the type of a built-in function. These should be pre-defined in
-    the environment -- if they are not, the programmer has made a mistake, and
-    a runtime error will be raised. This error is never user-caused and is only
-    to alert the programmer to a configuration error.
-    """
-    try:
-        return get_fresh(ctx[node], non_generic)
-    except KeyError:
-        raise FunkyTypeError("Undefined function '{}'.".format(node))
+    node.inferred_type = python_to_funky[type(node.value)]
 
 @infer.register(CoreApplication)
 def infer_application(node, ctx, non_generic):
     """Infer the type of a function application."""
-    expr_type, arg_type = infer(node.expr, ctx, non_generic), \
-                          infer(node.arg, ctx, non_generic)
+    infer(node.expr, ctx, non_generic)
+    infer(node.arg, ctx, non_generic)
     app_type = TypeVariable()
-    unify(FunctionType(arg_type, app_type), expr_type)
-    return app_type
+    unify(FunctionType(node.arg.inferred_type, app_type),
+                       node.expr.inferred_type)
+    node.inferred_type = app_type
 
 @infer.register(CoreLambda)
 def infer_lambda(node, ctx, non_generic):
@@ -63,8 +51,9 @@ def infer_lambda(node, ctx, non_generic):
     new_ctx[node.param.identifier] = arg_type
     new_non_generic = non_generic.copy()
     new_non_generic.add(arg_type)
-    result_type = infer(node.expr, new_ctx, new_non_generic)
-    return FunctionType(arg_type, result_type)
+    infer(node.expr, new_ctx, new_non_generic)
+
+    node.inferred_type = FunctionType(arg_type, node.expr.inferred_type)
 
 @infer.register(CoreLet)
 def infer_let(node, ctx, non_generic):
@@ -88,12 +77,13 @@ def infer_let(node, ctx, non_generic):
         
         # then, for each bind and its type, infer the type and unify it.
         for bind, new_type in zip(group, types):
-            defn_type = infer(bind.bindee, new_ctx, new_non_generic)
-            unify(new_type, defn_type)
+            infer(bind.bindee, new_ctx, new_non_generic)
+            unify(new_type, bind.bindee.inferred_type)
     
     # given what we know about the let definitions, infer the type of the
     # expression
-    return infer(node.expr, new_ctx, non_generic)
+    infer(node.expr, new_ctx, non_generic)
+    node.inferred_type = node.expr.inferred_type
 
 @infer.register(CoreMatch)
 def infer_match(node, ctx, non_generic):
@@ -102,28 +92,26 @@ def infer_match(node, ctx, non_generic):
     same type.
     """
     new_ctx = ctx.copy()
-    scrutinee_type = infer(node.scrutinee, ctx, non_generic)
+    infer(node.scrutinee, ctx, non_generic)
     
-    return_type = TypeVariable()
+    node.inferred_type = TypeVariable()
     for alt in node.alts:
         if not alt.expr:
-            # this false-positives sometimes -- i.e. when pattern matching
-            # a boolean.
-            log.warning("Non-exhaustive pattern matching detected when "
-                        "matching against '{}'.".format(node.scrutinee))
+            # this false-positives sometimes -- i.e. when pattern matching a
+            # boolean.
+            log.warning("Potential non-exhaustive pattern matching detected "
+                        "when matching against '{}'.".format(node.scrutinee))
             continue
 
         if isinstance(alt.altcon, CoreVariable):
-            altcon_type = TypeVariable()
-            new_ctx[alt.altcon.identifier] = altcon_type
+            alt.altcon.inferred_type = TypeVariable()
+            new_ctx[alt.altcon.identifier] = alt.altcon.inferred_type
         else:
-            altcon_type = infer(alt.altcon, new_ctx, non_generic)
+            infer(alt.altcon, new_ctx, non_generic)
 
-        unify(scrutinee_type, altcon_type)
-        alt_expr_type = infer(alt.expr, new_ctx, non_generic)
-        unify(return_type, alt_expr_type)
-
-    return return_type
+        unify(node.scrutinee.inferred_type, alt.altcon.inferred_type)
+        infer(alt.expr, new_ctx, non_generic)
+        unify(node.inferred_type, alt.expr.inferred_type)
 
 @infer.register(CoreCons)
 def infer_cons(node, ctx, non_generic):
@@ -138,8 +126,7 @@ def infer_cons(node, ctx, non_generic):
             if isinstance(parameter, CoreVariable):
                 ctx[parameter.identifier] = t
         unify(f, typeop)
-
-        return typeop.type_class
+        node.inferred_type = typeop.type_class
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
                              "'{}'.".format(node.constructor))
@@ -325,6 +312,6 @@ def do_type_inference(core_tree, typedefs):
     for typedef in typedefs:
         create_type(typedef, ctx)
 
-    t = infer(core_tree, ctx, non_generic)
+    infer(core_tree, ctx, non_generic)
     log.info("Completed type inference.")
-    log.info("The program has output type {}.".format(t))
+    log.info("The program has output type {}.".format(core_tree.inferred_type))

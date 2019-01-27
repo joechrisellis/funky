@@ -147,6 +147,9 @@ def infer_cons(node, ctx, non_generic):
 def get_fresh(typ, non_generic):
     """Make a copy of a type expression. The type is copied, generic variables
     are duplicated, and non-generic variables are shared.
+
+    :param typ: the type expression
+    :returns:   a copy of the type expression
     """
     type_map = {}
 
@@ -169,6 +172,9 @@ def get_fresh(typ, non_generic):
 def unify(type1, type2):
     """Unifies two type variables, making them equivalent if they 'fit' and
     raising an error otherwise.
+
+    :param type1: the first type
+    :param type1: the second type
     """
     a, b = prune(type1), prune(type2)
     if isinstance(a, TypeVariable):
@@ -205,6 +211,9 @@ def unify(type1, type2):
 def prune(t):
     """Returns the defining instance of the given type. Also collapses the list
     of type instances.
+
+    :param t: a type expression (only TypeVariable will do anything!)
+    :return:  the defining instance of the type, if there is one
     """
     if isinstance(t, TypeVariable):
         if t.instance is not None:
@@ -216,6 +225,11 @@ def is_generic(v, non_generic):
     """Returns true if the given variable appears in the list of non-generic
     variables, false otherwise. In other words, returns true if the variable is
     generic, false otherwise.
+
+    :param v:           the variable you want to check whether it is generic
+    :param non_generic: a list of known non-generic variables
+    :return:            True if the variable is generic, False otherwise
+    :rtype:             bool
     """
     return not occurs_in(v, non_generic)
 
@@ -223,6 +237,12 @@ def occurs_in_type(v, typ):
     """Returns true if the given type variable v occurs in the type expression
     typ, false otherwise. You must pre-call prune() on v before attempting to
     run this function.
+
+    :param v:   a type variable
+    :param typ: a typ expression
+    :return:    True if the given type variable occurs in the type expression,
+                False otherwise
+    :rtype:     bool
     """
     pruned_typ = prune(typ)
     if pruned_typ == v:
@@ -234,10 +254,20 @@ def occurs_in_type(v, typ):
 def occurs_in(t, types):
     """Delegates to occurs_in_type for a list of types. Returns true if t
     occurs in any of the types. False otherwise.
+
+    :param t:     a type variable
+    :param types: a list of types
+    :return:      True if t occurs in any of the types, False otherwise
+    :rtype:       bool
     """
     return any(occurs_in_type(t, t2) for t2 in types)
 
 def create_type_alias(typedef, ctx):
+    """Creates a type alias within the given context.
+    
+    :param typedef: the type definition from the core tree
+    :param ctx:     the context to create the type alias in
+    """
     try:
         ctx[typedef.identifier] = ctx[typedef.typ]
     except KeyError:
@@ -245,6 +275,11 @@ def create_type_alias(typedef, ctx):
                              "a type alias.".format(typedef.typ))
     
 def create_algebraic_data_structure(typedef, ctx):
+    """Creates an algebraic data structure within the given context.
+
+    :param typedef: the type definition from the core tree
+    :param ctx:     the context to create the algebraic data structure in
+    """
     type_class = TypeClass(typedef.identifier, [])
     ctx[typedef.identifier] = type_class
     for alternative in typedef.typ.constructors:
@@ -266,12 +301,23 @@ def create_algebraic_data_structure(typedef, ctx):
     ctx[type_class.class_name] = type_class
 
 def create_type(typedef, ctx):
+    """Creates a type for use in the inferencer.
+    
+    :param typedef: the type definition
+    :param ctx:     the context to place the new definition in
+    """
     if isinstance(typedef.typ, AlgebraicDataType): # newcons
         create_algebraic_data_structure(typedef, ctx)
     else: # newtype
         create_type_alias(typedef, ctx)
 
 def do_type_inference(core_tree, typedefs):
+    """Perform type inference on the core tree.
+    
+    :param core_tree: the program statements to perform inference on
+    :param typedefs:  any type definitions
+    """
+
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
     

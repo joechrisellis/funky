@@ -11,6 +11,7 @@ class CoreNode:
     __repr__ = output_attributes
 
 class CoreTypeDefinition(CoreNode):
+    """A type definition -- assigning a name to a type."""
 
     def __init__(self, identifier, typ):
         self.identifier  =  identifier
@@ -21,6 +22,7 @@ class CoreTypeDefinition(CoreNode):
         return "{} := {}".format(self.identifier, str(self.typ))
 
 class CoreBind(CoreNode):
+    """A bind -- assigning a name to an expression."""
 
     def __init__(self, identifier, bindee):
         self.identifier  =  identifier
@@ -31,6 +33,7 @@ class CoreBind(CoreNode):
         return "{} = {}".format(self.identifier, bindee_str)
 
 class CoreCons(CoreNode):
+    """A construction -- a constructor applied to a list of parameters."""
 
     def __init__(self, constructor, parameters, pattern=False):
         self.constructor  =  constructor
@@ -45,6 +48,7 @@ class CoreCons(CoreNode):
                                 parameters_str)
 
 class CoreVariable(CoreNode):
+    """A reference to a defined variable."""
 
     def __init__(self, identifier):
         self.identifier  =  identifier
@@ -53,6 +57,7 @@ class CoreVariable(CoreNode):
         return str(self.identifier)
 
 class CoreLiteral(CoreNode):
+    """A literal."""
     
     def __init__(self, value):
         self.value  =  value
@@ -62,6 +67,7 @@ class CoreLiteral(CoreNode):
         return repr(self.value)
 
 class CoreApplication(CoreNode):
+    """Application of an expression (of type function) to an argument."""
 
     def __init__(self, expr, arg):
         self.expr  =  expr
@@ -71,6 +77,7 @@ class CoreApplication(CoreNode):
         return "({}) ({})".format(str(self.expr), str(self.arg))
 
 class CoreLambda(CoreNode):
+    """An anonymous lambda expression."""
     
     def __init__(self, param, expr):
         self.param  =  param
@@ -81,6 +88,9 @@ class CoreLambda(CoreNode):
                                         str(self.expr))
 
 class CoreLet(CoreNode):
+    """A recursive let binding. A series of (potentially recursive, or mutually
+    recursive) bindings to be made available in an expression.
+    """
 
     def __init__(self, binds, expr):
         self.binds  =  binds
@@ -91,6 +101,9 @@ class CoreLet(CoreNode):
         return "let {} in {}".format(binds_str, str(self.expr))
 
 class CoreMatch(CoreNode):
+    """A match statement -- matching a scrutinee against a series
+    of alternatives.
+    """
     
     def __init__(self, scrutinee, alts):
         self.scrutinee  =  scrutinee
@@ -101,6 +114,7 @@ class CoreMatch(CoreNode):
         return "match {} of ({})".format(str(self.scrutinee), alts_str)
 
 class CoreAlt(CoreNode):
+    """An alternative in a match statement."""
     
     def __init__(self, altcon, expr):
         self.altcon   =  altcon

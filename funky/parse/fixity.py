@@ -50,22 +50,20 @@ fixities = {
 def set_fixity(operator, associativity, precedence):
     """Sets the fixity of an operator.
     
-    Input:
-        operator -- the operator for which you want to set a fixity.
-        associativity -- the associativity. Either left, right, or nonassoc.
-        precedence -- the precedence of the operator.
+    :param operator:      the operator for which you want to set a fixity
+    :param associativity: the associativity; either left, right, or nonassoc
+    :param precedence:    the precedence of the operator
     """
     fixities[operator] = (associativity, precedence)
 
 def get_fixity(operator):
     """Gets the associativity and precedence of an operator.
     
-    Input:
-        operator -- the operator to be considered.
-    
-    Output:
-        a tuple (associativity, precedence), where associativity is either
-        "left", "right", or "nonassoc", and precedence is an integer.
+    :param operator: the operator under consideration
+    :return:         a tuple (associativity, precedence), where associativity
+                     is either "left", "right", or "nonassoc", and precedence
+                     is an integer
+    :rtype:          tuple
     """
     try:
         return fixities[operator]
@@ -78,11 +76,9 @@ def resolve_fixity(infix_expr):
     into a tree-like structure that correctly reflects operator precedence and
     associativity.
     
-    Input:
-        infix_expr -- the infix expression from the parser.
-
-    Output:
-        a chain of FunctionApplications equivalent to the infix expression.
+    :param infix_expr: the infix expression from the parser
+    :return:           a chain of FunctionApplications equivalent to the infix
+                       expression
     """
     log.debug("Resolving fixity for expression '{}'.".format(infix_expr))
     retval = parse_neg("!!!", infix_expr.tokens)[0]

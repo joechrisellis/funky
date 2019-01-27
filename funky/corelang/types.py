@@ -12,7 +12,7 @@ get_typename = typename_generator()
 
 class TypeVariable:
     """A type variable. In type inference, this is used as a placeholder for a
-    to-be-discovered type, or for parametric polymorphism..
+    to-be-discovered type, or for parametric polymorphism.
     """
 
     __repr__ = output_attributes

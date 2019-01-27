@@ -470,6 +470,7 @@ class FunkyParser:
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
     def build(self, **kwargs):
+        """Build the parser."""
         self.lexer = FunkyLexer()
         self.lexer.build()
         self.lexer = IndentationLexer(self.lexer)
@@ -478,6 +479,12 @@ class FunkyParser:
         log.debug("Parser built.")
 
     def do_parse(self, source):
+        """Parse the given source code.
+        
+        :param source str: the source code as a raw string
+        :return:           a parse tree representing the source code
+        :rtype:            SourceTree
+        """
         self.lexer.input(source)
 
         log.info("Parsing lexed source...")

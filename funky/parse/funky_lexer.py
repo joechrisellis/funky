@@ -198,6 +198,8 @@ class IndentationLexer:
     def _insert_implicit_tokens(self, tokens):
         """Inserts explicit braces into a token stream containing omitted
         braces.
+
+        :param tokens list: a list of tokens from the first-pass lexer
         """
         log.debug("Using the layout rule to convert indentation to explicit "
                   "braces.")
@@ -239,14 +241,12 @@ class IndentationLexer:
     def _make_token(self, typ, value=None, lineno=None, lexpos=None):
         """Creates a token with the given arguments.
 
-        Input:
-            type   -- token type.
-            value  -- token value
-            lineno -- line number.
-            lexpos -- lexing position.
-        
-        Returns:
-            a token with the given arguments.
+        :param type:   token type
+        :param value:  token value
+        :param lineno: line number
+        :param lexpos: lexing position
+        :return:       a token with the given arguments
+        :rtype:        Token
         """
         tok         =  lex.LexToken()
         tok.type    =  typ
@@ -260,12 +260,9 @@ class IndentationLexer:
         gets the column in the line that the token appeared in. This is
         required for layout ruling.
 
-        Input:
-            token -- a token.
-        
-        Returns:
-            an integer representing the column in the line where the token
-            appeared.
+        :param token: a token
+        :return:      an integer representing the column in the line where the
+                      token appeared.
         """
         line_start = self.source.rfind("\n", 0, token.lexpos) + 1
         return (token.lexpos - line_start)

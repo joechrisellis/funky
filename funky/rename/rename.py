@@ -24,6 +24,7 @@ log = logging.getLogger(__name__)
 get_unique_varname = lambda: "v" + str(global_counter())
 
 def get_parameter_name(*args):
+    """Gets an underscore-separated parameter name."""
     return "_".join(str(a) for a in args if a is not None)
 
 rename = get_registry_function()
@@ -297,6 +298,8 @@ def do_rename(source_tree):
     """Renames items in the source tree so that they all have a unique name
     Also performs sanity checks such as making sure that duplicate declarations
     don't exist, etc.
+
+    :param source_tree: the source tree from parsing
     """
     assert source_tree.parsed and source_tree.fixities_resolved
     logging.info("Renaming and sanity checking parse tree...")

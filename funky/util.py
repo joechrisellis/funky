@@ -9,24 +9,19 @@ def get_user_attributes(cls):
     """Returns the user attributes of a class. These are attributes which are
     not functions, and whose identifier's do not begin with '_' (which
     conventionally denotes a private attribute in Python).
-
-    Input:
-        cls -- the class.
-
-    Returns:
-        a list of the public attributes of the class (those that do not begin
-        with an underscore).
+    
+    :param cls class: a class of any kind.
+    :return:          a list of the public attributes of the class (those that
+                      do not begin with an underscore).
+    :rtype:           list
     """
     attributes = inspect.getmembers(cls, lambda a: not(inspect.isroutine(a)))
     attributes = [a for a in attributes if a[0][0] != "_"]
     return attributes
 
 def output_attributes(self):
-    """Recursively outputs the attributes of an object in the format:
-        ObjectName(attribute1=..., attribute2=...)
-
-    This is useful as the __repr__ function for tree-like structures, like the
-    parse tree.
+    """Recursively outputs the attributes of an object in the format
+    ObjectName(attribute1=..., attribute2=...).
     """
     children = ", ".join("{}={}".format(a[0], repr(a[1]))
                          for a in get_user_attributes(self))
@@ -36,7 +31,12 @@ def output_attributes(self):
 # trivial interface for tree-walking, so it's well worth using your brain power
 # to understand it!
 def get_registry_function(throw_err=True):
-    """Gets a registry function. Read docstring for 'register' below."""
+    """Gets a registry function. Read docstring for 'register' below.
+    
+    :param throw_err bool: whether or not to throw a runtime error if no
+                           registered function exists.
+    :return:               the registry function.
+    """
     def f(obj, *args, **kwargs):
         try:
             return f.register.registry[type(obj)](obj, *args, **kwargs)

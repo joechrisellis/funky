@@ -33,6 +33,11 @@ get_unique_varname = lambda: "v" + str(global_counter())
 def get_column_scores(pattern_matrix):
     """Scores the columns. Wildcards do not add anything to a column's score.
     Similarly, anything below a wildcard does not add to a column's score.
+
+    :param pattern_matrix: the pattern matrix to score
+    :return:               a list of integers, where each of the integers
+                           corresponds to a column in the pattern matrix
+    :rtype:                List
     """
     columns = list(zip(*pattern_matrix))
     scores = [0 for _ in columns]
@@ -47,6 +52,17 @@ def get_specialised_and_default_matrices(scrutinee, pattern_matrix, outcomes):
     """Given a scrutinee, a pattern matrix, and a list of outcomes
     corresponding to the rows in the pattern matrix, returns the specialised
     and default matrices for that scrutinee.
+
+    :param scrutinee:      the item in the matrix under scrutiny
+    :param pattern_matrix: the pattern matrix to work on
+    :param outcomes:       the corresponding outcomes for each row in the
+                           pattern matrix
+    :return:               a quadruple where the first element is the
+                           specialised matrix, the second element is the
+                           specialised outcomes, the third element is the
+                           default matrix, and the third element is the default
+                           outcomes
+    :rtype:                quadruple
     """
     specialised, specialised_outcomes = [], []
     default, default_outcomes = [], []
@@ -82,6 +98,19 @@ def get_specialised_and_default_matrices(scrutinee, pattern_matrix, outcomes):
     return specialised, specialised_outcomes, default, default_outcomes
 
 def get_match_tree(pattern_matrix, variables, outcomes):
+    """Recursive algorithm to generate a decision tree (composed of CoreMatch
+    objects) representing pattern matching. Uses Luc Maranget's algorithm as
+    described in his paper "Generating Good Decision Trees from Pattern
+    Matching".  In a nutshell, compiles a pattern match matrix down into an
+    efficient decision tree.
+    
+    :param pattern_matrix: the matrix representing the pattern match
+    :param variables:      the variables each matrix column corresponds to
+    :param outcomes:       the outcomes each matrix row corresponds to
+    :return:               a decision tree representing the pattern match
+    :rtype:                CoreMatch
+    """
+
     if not pattern_matrix:
         return None
     if all(isinstance(x, CoreVariable) for x in pattern_matrix[0]):

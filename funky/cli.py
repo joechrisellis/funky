@@ -38,6 +38,7 @@ def main():
         2  :  logging.DEBUG,
     }
 
+    # set the desired log level
     most_verbose = verbosity_2_loglevel[max(verbosity_2_loglevel)]
     desired_loglevel = verbosity_2_loglevel.get(args.verbose, most_verbose)
     logging.getLogger().setLevel(desired_loglevel)

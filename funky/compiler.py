@@ -4,16 +4,18 @@ import sys
 
 from funky.exitcode import *
 
+from funky.util import get_user_attributes
+import funky
+
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.parse.funky_parser import FunkyParser
+
 from funky.rename.rename import do_rename
+
 from funky.desugar.desugar import do_desugar
 
 from funky.infer import FunkyTypeError
 from funky.infer.infer import do_type_inference
-
-from funky.util import get_user_attributes
-import funky
 
 log = logging.getLogger(__name__)
 
@@ -22,12 +24,10 @@ def compile_to_c(source, dump_parsed=False,
                          dump_desugared=False,
                          dump_types=False):
     """Compiles funky source code.
-    
-    Input:
-        source -- the source code for the program as a plain string.
-        
-    Returns:
-        C source code, ready to be written to a file
+
+    :param source str: the source code for the program as a raw string.
+    :return:           the C source code, ready to be written to a file.
+    :rtype:            str
     """
 
     # lex and parse code

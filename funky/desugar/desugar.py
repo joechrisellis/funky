@@ -232,6 +232,9 @@ def condense_function_binds(binds):
     these implicit pattern matches. This function is responsible for finding
     these binds, and condensing the pattern matching down to core match
     statements.
+
+    :param binds: a list of let-bindings to condense
+    :return:      the new desugared bindings after condensing
     """
     seen = set()
 
@@ -279,6 +282,12 @@ def do_desugar(source_tree):
     """Desugars the AST, reducing complex syntactic structures down into a
     simple core language for easier translation later. This constitutes
     'intermediate code generation'.
+
+    :param source_tree: the renamed source tree.
+    :return:            a tuple where the first element is the desugared
+                        program statements and the second is a standard
+                        representation of type definitions.
+    :rtype:             tuple
     """
     assert source_tree.parsed and source_tree.fixities_resolved
     log.info("Desugaring parse tree...")

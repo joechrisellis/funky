@@ -12,6 +12,13 @@ from funky.util import get_registry_function
 UNVISITED = -1
 
 def reorder_bindings(bindings):
+    """Reorders the given bindings by dependencies. Keeps mutually-dependent
+    groups together.
+    
+    :param bindings: a list of bindings
+    :return:         the bindings, sorted in reverse dependency order
+    :rtype:          list
+    """
     dependency_graph = create_dependency_graph(bindings)
     sccs = find_strongly_connected_components(dependency_graph)
     visited = set()
@@ -49,6 +56,10 @@ def create_dependency_graph(bindings):
         c = a
     
     a depends on b, b depends on nothing, and c depends on a.
+
+    :param bindings: the bindings
+    :return:         a graph object representing the dependencies
+    :rtype:          Graph
     """
 
     graph = Graph()
@@ -64,6 +75,10 @@ def find_strongly_connected_components(graph):
     """Applies Tarjan's algorithm to split a graph down into its strongly
     connected components. We use this in the compiler to 'sort' bindings
     in a core let statement.
+
+    :param graph: a dependency graph
+    :return:      a list of strongly connected components
+    :rtype:       list
     """
     # TODO: document this better
 

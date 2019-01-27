@@ -23,7 +23,7 @@ Where the fields are of type CoreVariable, CoreLiteral, or CoreCons.
 """
 
 from funky.util import global_counter
-from funky.frontend import FunkyDesugarError
+from funky.desugar import FunkyDesugarError
 
 from funky.corelang.coretree import CoreCons, CoreVariable, CoreLiteral, \
                                     CoreMatch, CoreAlt

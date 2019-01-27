@@ -33,9 +33,9 @@ def main():
     args = parser.parse_args()
 
     verbosity_2_loglevel = {
-        0 : logging.WARNING,
-        1 : logging.INFO,
-        2 : logging.DEBUG,
+        0  :  logging.WARNING,
+        1  :  logging.INFO,
+        2  :  logging.DEBUG,
     }
 
     most_verbose = verbosity_2_loglevel[max(verbosity_2_loglevel)]

@@ -12,13 +12,14 @@ This tree is then 'desugared', resulting in a 'core tree' suitable for
 translation.
 """
 
-from funky.frontend import FunkyRenamingError
 from funky.util import output_attributes
 
 class ASTNode:
     """Superclass for all abstract syntax tree nodes. Provides a __repr__
     function which allows the nodes to be printed nicely.
     """
+
+    __repr__ = output_attributes
 
     def __init__(self):
         # These booleans represent the operations that have been performed on
@@ -29,8 +30,6 @@ class ASTNode:
         self.fixities_resolved  =  False
         self.renamed            =  False
         self.desugared          =  False
-
-    __repr__ = output_attributes
 
 class Module(ASTNode):
     """Node representing a module in Funky. Comprises a module ID and a program

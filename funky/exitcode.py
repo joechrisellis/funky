@@ -4,13 +4,12 @@ import logging
 log = logging.getLogger(__name__)
 
 SUCCESS                 =  0
-GENERIC_FRONTEND_ERROR  =  1
-LEXING_ERROR            =  2
-SYNTAX_ERROR            =  3
-RENAMING_ERROR          =  4
-DESUGAR_ERROR           =  5
-GENERIC_PARSING_ERROR   =  6
-TYPE_ERROR              =  7
+LEXING_ERROR            =  1
+SYNTAX_ERROR            =  2
+RENAMING_ERROR          =  3
+DESUGAR_ERROR           =  4
+GENERIC_PARSING_ERROR   =  5
+TYPE_ERROR              =  6
 
 def err_and_exit(msg, exception, exit_code):
     log.error(msg)

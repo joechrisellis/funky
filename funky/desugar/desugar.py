@@ -14,12 +14,13 @@ from collections import OrderedDict
 from funky.util import get_registry_function, global_counter
 
 from funky.corelang.coretree import *
+from funky.corelang.sourcetree import *
 from funky.corelang.types import *
-from funky.frontend.sourcetree import *
-from funky.frontend.rename import get_parameter_name
-from funky.frontend.maranget import get_match_tree
+from funky.rename.rename import get_parameter_name
 
-from funky.frontend import FunkyDesugarError
+from funky.desugar.maranget import get_match_tree
+
+from funky.desugar import FunkyDesugarError
 
 log = logging.getLogger(__name__)
 

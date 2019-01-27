@@ -1,11 +1,11 @@
 import logging
 import ply.yacc as yacc
 
-from funky.frontend.funky_lexer import FunkyLexer, IndentationLexer
-from funky.frontend import FunkySyntaxError
-import funky.frontend.fixity as fixity
+from funky.parse.funky_lexer import FunkyLexer, IndentationLexer
+from funky.parse import FunkySyntaxError
+import funky.parse.fixity as fixity
 
-from funky.frontend.sourcetree import *
+from funky.corelang.sourcetree import *
 from funky.corelang.types import TypeVariable, TupleType, ListType, \
                                  FunctionType, ConstructorType
 from funky.corelang.coretree import CoreTuple, CoreList

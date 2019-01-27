@@ -1,15 +1,15 @@
 """Type inference."""
 
 import logging
-from funky.intermediate import FunkyTypeError
+from funky.infer import FunkyTypeError
 from funky.util import get_registry_function
 from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
 
-from funky.intermediate.tarjan import create_dependency_graph,            \
-                                      find_strongly_connected_components, \
-                                      reorder_bindings
+from funky.infer.tarjan import create_dependency_graph,            \
+                               find_strongly_connected_components, \
+                               reorder_bindings
 
 log = logging.getLogger(__name__)
 

@@ -11,7 +11,7 @@ that we handle this is very similar to the 'layout' rule in Haskell.
 import logging
 import ply.lex as lex
 
-from funky.frontend import FunkyLexingError
+from funky.parse import FunkyLexingError
 
 log = logging.getLogger(__name__)
 

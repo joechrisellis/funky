@@ -10,14 +10,14 @@ from itertools import count
 import logging
 
 from funky.corelang.builtins import BUILTIN_PRIMITIVES
+from funky.corelang.coretree import CoreTuple, CoreList
+from funky.corelang.sourcetree import *
+from funky.corelang.types import *
 
 from funky.ds import Scope
 from funky.util import get_registry_function, global_counter
-from funky.frontend.sourcetree import *
-from funky.corelang.types import *
-from funky.corelang.coretree import CoreTuple, CoreList
 
-from funky.frontend import FunkyRenamingError
+from funky.rename import FunkyRenamingError
 
 log = logging.getLogger(__name__)
 

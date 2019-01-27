@@ -6,12 +6,10 @@ resolution algorithm, described at:
 import logging
 
 from funky.corelang.builtins import BUILTIN_FUNCTIONS
+from funky.corelang.sourcetree import UsedVar, FunctionApplication
 
-from funky.frontend import FunkySyntaxError
-from funky.frontend.sourcetree import FunctionApplication
-from funky.frontend.funky_lexer import FunkyLexer
-
-from funky.frontend.sourcetree import UsedVar
+from funky.parse import FunkySyntaxError
+from funky.parse.funky_lexer import FunkyLexer
 
 log = logging.getLogger(__name__)
 

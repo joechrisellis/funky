@@ -4,7 +4,7 @@ import sys
 
 from funky.exitcode import *
 
-from funky.util import get_user_attributes
+from funky.util import get_registry_function
 import funky
 
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
@@ -72,10 +72,10 @@ def compile_to_c(source, dump_parsed=False,
     log.info("Desugaring source code completed.")
 
     try:
-        types = do_type_inference(core_tree, typedefs)
+        do_type_inference(core_tree, typedefs)
         if dump_types:
             print("## CORE TYPES")
-            print(types)
+            print(core_tree)
     except FunkyTypeError as e:
         err_and_exit("Your program failed type checks, will not compile.",
                      e, TYPE_ERROR)

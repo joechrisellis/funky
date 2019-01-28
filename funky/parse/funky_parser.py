@@ -358,7 +358,7 @@ class FunkyParser:
             elif p[1] == []:
                 p[0] = CoreList(p[1])
             elif type(p[1]) == str:
-                p[0] = Parameter(p[1])
+                p[0] = Construction(p[1], [], pattern=True)
             else:
                 p[0] = p[1]
         elif len(p) == 4:

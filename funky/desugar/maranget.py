@@ -110,7 +110,6 @@ def get_match_tree(pattern_matrix, variables, outcomes):
     :return:               a decision tree representing the pattern match
     :rtype:                CoreMatch
     """
-
     if not pattern_matrix:
         return None
     if all(isinstance(x, CoreVariable) for x in pattern_matrix[0]):

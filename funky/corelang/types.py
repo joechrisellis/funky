@@ -17,9 +17,10 @@ class TypeVariable:
 
     __repr__ = output_attributes
 
-    def __init__(self, class_name=None, constraints=None):
+    def __init__(self, constraints=None):
         self._type_name   =  None  # lazily defined so None for now
         self.instance     =  None  # if type variable refers to a concrete type
+        self.constraints  =  constraints if constraints else []
 
     @property
     def type_name(self):
@@ -32,9 +33,8 @@ class TypeVariable:
         return self._type_name
 
     def __str__(self):
-        """If we have a concrete type instance, print that. Otherwise, use our
-        class name. Otherwise, print the constraints. Otherwise, use our
-        lazy-defined type name.
+        """If we have a concrete type instance, print that.  . Otherwise, use
+        our lazy-defined type name.
         """
         if self.instance:
             return str(self.instance)
@@ -42,12 +42,14 @@ class TypeVariable:
 
 class TypeClass:
     
-    def __init__(self, class_name, types):
-        self.class_name  =  class_name
-        self.types       =  types
+    def __init__(self, class_name, type_parameters, types):
+        self.class_name       =  class_name
+        self.type_parameters  =  type_parameters
+        self.types            =  types
 
     def __str__(self):
-        return self.class_name
+        return "{} {}".format(self.class_name,
+                              " ".join(str(p) for p in self.type_parameters))
 
 class TypeOperator:
     """An n-ary type constructor."""
@@ -108,16 +110,16 @@ class AlgebraicDataType:
 
     __repr__ = output_attributes
 
-    def __init__(self, type_name, context, constructors):
-        self.type_name     =  type_name
-        self.context       =  context
-        self.constructors  =  constructors
+    def __init__(self, type_name, type_parameters, constructors):
+        self.type_name        =  type_name
+        self.type_parameters  =  type_parameters
+        self.constructors     =  constructors
 
     def __str__(self):
         constructors_str = " | ".join(str(constructor)
                                       for constructor in self.constructors)
-        return "{} [context={}] {}".format(self.type_name, str(self.context),
-                                           constructors_str)
+        params_str = " ".join(self.type_parameters)
+        return "{} {} = {}".format(self.type_name, params_str, constructors_str)
 
 class ConstructorType:
     """A constructor type under an algebraic data type."""

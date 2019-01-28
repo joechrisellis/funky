@@ -70,9 +70,10 @@ class NewTypeStatement(ASTNode):
 class NewConsStatement(ASTNode):
     """Definition of a new constructor."""
 
-    def __init__(self, identifier, constructors):
-        self.identifier    =  identifier
-        self.constructors  =  constructors
+    def __init__(self, identifier, type_parameters, constructors):
+        self.identifier       =  identifier
+        self.type_parameters  =  type_parameters
+        self.constructors     =  constructors
 
 class Construction(ASTNode):
     """Instance of a constructor -- i.e. (Leaf x)."""

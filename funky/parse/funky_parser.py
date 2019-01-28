@@ -61,15 +61,24 @@ class FunkyParser:
 
     def p_TOP_DECLARATION(self, p):
         """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPE
-                           | NEWCONS TYPENAME EQUALS CONSTRUCTORS
+                           | NEWCONS TYPENAME TYPE_PARAMETERS EQUALS CONSTRUCTORS
                            | DECLARATION
         """
         if p[1] == "newtype":
             p[0] = NewTypeStatement(p[2], p[4])
         elif p[1] == "newcons":
-            p[0] = NewConsStatement(p[2], p[4])
+            p[0] = NewConsStatement(p[2], p[3], p[5])
         else:
             p[0] = p[1]
+
+    def p_TYPE_PARAMETERS(self, p):
+        """TYPE_PARAMETERS : TYPE_PARAMETERS IDENTIFIER
+                           |
+        """
+        if len(p) == 3:
+            p[0] = p[1] + [p[2]]
+        else:
+            p[0] = []
 
     def p_CONSTRUCTORS(self, p):
         """CONSTRUCTORS : CONSTRUCTORS PIPE CONSTRUCTOR
@@ -151,6 +160,7 @@ class FunkyParser:
 
     def p_ATYPE(self, p):
         """ATYPE : TYPENAME
+                 | IDENTIFIER
                  | OPEN_PAREN TYPES_LIST CLOSE_PAREN
                  | OPEN_PAREN TYPE CLOSE_PAREN
                  | OPEN_SQUARE TYPE CLOSE_SQUARE

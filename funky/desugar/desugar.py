@@ -64,7 +64,8 @@ def program_body_desugar(node):
 @desugar.register(NewConsStatement)
 def new_cons_statement_desugar(node):
     constructors = [desugar(d) for d in node.constructors]
-    the_adt = AlgebraicDataType(node.identifier, None, constructors)
+    the_adt = AlgebraicDataType(node.identifier, node.type_parameters,
+                                constructors)
     return CoreTypeDefinition(node.identifier, the_adt)
 
 @desugar.register(NewTypeStatement)

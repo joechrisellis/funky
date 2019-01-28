@@ -23,6 +23,7 @@ def infer_variable(node, ctx, non_generic):
     """
     try:
         node.inferred_type = get_fresh(ctx[node.identifier], non_generic)
+        print("!!!", node, node.inferred_type)
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
 
@@ -74,12 +75,12 @@ def infer_let(node, ctx, non_generic):
             new_ctx[bind.identifier] = new_type
             new_non_generic.add(new_type)
             types.append(new_type)
-        
+
         # then, for each bind and its type, infer the type and unify it.
         for bind, new_type in zip(group, types):
             infer(bind.bindee, new_ctx, new_non_generic)
             unify(new_type, bind.bindee.inferred_type)
-    
+
     # given what we know about the let definitions, infer the type of the
     # expression
     infer(node.expr, new_ctx, non_generic)
@@ -93,7 +94,7 @@ def infer_match(node, ctx, non_generic):
     """
     new_ctx = ctx.copy()
     infer(node.scrutinee, ctx, non_generic)
-    
+
     node.inferred_type = TypeVariable()
     for alt in node.alts:
         if not alt.expr:
@@ -152,7 +153,8 @@ def get_fresh(typ, non_generic):
         elif isinstance(p, TypeOperator):
             return TypeOperator(p.type_name, [aux(x) for x in p.types])
         elif isinstance(p, TypeClass):
-            return p # TODO maybe need to clone the object
+            return TypeClass(p.class_name, [aux(x) for x in p.type_parameters],
+                             [])
 
     return aux(typ)
 
@@ -182,6 +184,9 @@ def unify(type1, type2):
         if a.class_name != b.class_name or len(a.types) != len(b.types):
             raise FunkyTypeError("Cannot unify typeclasses {} and "
                                  "{}".format(str(a), str(b)))
+        for x, y in zip(a.type_parameters, b.type_parameters):
+            print("Unifying", x, y)
+            unify(x, y)
     elif isinstance(a, TypeClass) and isinstance(b, TypeOperator):
         unify(b, a)
     elif isinstance(a, TypeOperator) and isinstance(b, TypeClass):
@@ -251,7 +256,7 @@ def occurs_in(t, types):
 
 def create_type_alias(typedef, ctx):
     """Creates a type alias within the given context.
-    
+
     :param typedef: the type definition from the core tree
     :param ctx:     the context to create the type alias in
     """
@@ -260,15 +265,20 @@ def create_type_alias(typedef, ctx):
     except KeyError:
         raise FunkyTypeError("Type '{}' not defined, so it cannot be used in "
                              "a type alias.".format(typedef.typ))
-    
+
 def create_algebraic_data_structure(typedef, ctx):
     """Creates an algebraic data structure within the given context.
 
     :param typedef: the type definition from the core tree
     :param ctx:     the context to create the algebraic data structure in
     """
-    type_class = TypeClass(typedef.identifier, [])
+    type_class = TypeClass(typedef.identifier, [], [])
     ctx[typedef.identifier] = type_class
+    for type_parameter in typedef.typ.type_parameters:
+        t = TypeVariable()
+        ctx[type_parameter] = t
+        type_class.type_parameters.append(t)
+
     for alternative in typedef.typ.constructors:
         tyvars = []
         for parameter in alternative.parameters:
@@ -277,7 +287,7 @@ def create_algebraic_data_structure(typedef, ctx):
             tyvars.append(t)
         alt_type = TypeOperator(alternative.identifier, tyvars,
                                 type_class=type_class)
-        
+
         f = type_class
         for parameter in reversed(tyvars):
             f = FunctionType(parameter, f)
@@ -289,7 +299,7 @@ def create_algebraic_data_structure(typedef, ctx):
 
 def create_type(typedef, ctx):
     """Creates a type for use in the inferencer.
-    
+
     :param typedef: the type definition
     :param ctx:     the context to place the new definition in
     """
@@ -300,17 +310,20 @@ def create_type(typedef, ctx):
 
 def do_type_inference(core_tree, typedefs):
     """Perform type inference on the core tree.
-    
+
     :param core_tree: the program statements to perform inference on
     :param typedefs:  any type definitions
     """
 
     log.info("Performing type inference...")
     graph = create_dependency_graph(core_tree.binds)
-    
+
     ctx, non_generic = DEFAULT_ENVIRONMENT, set()
     for typedef in typedefs:
         create_type(typedef, ctx)
+
+    from pprint import pprint
+    pprint({k : str(v) for k, v in ctx.items()})
 
     infer(core_tree, ctx, non_generic)
     log.info("Completed type inference.")

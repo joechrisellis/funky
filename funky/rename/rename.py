@@ -66,8 +66,17 @@ def new_cons_statement_rename(node, scope):
     # we don't rename the type, only the variables
     scope[node.identifier] = node.identifier
     
+    tmp_scope = Scope(parent=scope)
+    for i, param in enumerate(node.type_parameters):
+        tmp_scope[param] = get_parameter_name(node.identifier, i)
     for cons in node.constructors:
-        rename(cons, scope)
+        rename(cons, tmp_scope)
+
+    # BIG HACK -- please please please fix me
+    for i, param in enumerate(node.type_parameters):
+        del tmp_scope.local[param]
+
+    scope.local.update(tmp_scope.local)
     
 @rename.register(Construction)
 def construction_rename(node, scope, fname=None, index=None):

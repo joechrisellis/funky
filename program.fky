@@ -1,7 +1,7 @@
 module test where
 
-    newcons List a = Cons a List | Nil
-    newcons Tree a = Branch Tree a Tree | Leaf a
+    newcons List = Cons Integer List | Nil
+    newcons Tree = Branch Tree Integer Tree | Leaf Integer
 
     fst (Cons a b) = a
 

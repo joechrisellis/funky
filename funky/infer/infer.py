@@ -15,6 +15,12 @@ log = logging.getLogger(__name__)
 
 infer = get_registry_function()
 
+# Used to map constructors to their parent class. For instance:
+# newcons List =Cons Integer List | Nil
+# Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
+# prefix.
+typeclass_mapping = {}
+
 @infer.register(CoreVariable)
 def infer_variable(node, ctx, non_generic):
     """Infer the type for a core variable. If there is no such variable in the
@@ -78,6 +84,7 @@ def infer_let(node, ctx, non_generic):
         # then, for each bind and its type, infer the type and unify it.
         for bind, new_type in zip(group, types):
             infer(bind.bindee, new_ctx, new_non_generic)
+            print(new_type, bind.bindee.inferred_type)
             unify(new_type, bind.bindee.inferred_type)
 
     # given what we know about the let definitions, infer the type of the
@@ -118,10 +125,10 @@ def infer_cons(node, ctx, non_generic):
     # Occurs in the context of pattern matching always.
     # core cons has a constructor, and a list of parameters
     try:
-        typeop = get_fresh(ctx[operator_prefix(node.constructor)], non_generic)
+        typeop = ctx[operator_prefix(node.constructor)]
         for x, y in zip(node.parameters, typeop.types):
             ctx[x.identifier] = y
-        node.inferred_type = typeop
+        node.inferred_type = get_fresh(typeop, non_generic)
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
                              "'{}'.".format(node.constructor))
@@ -142,11 +149,13 @@ def get_fresh(typ, non_generic):
                 if p not in type_map:
                     type_map[p] = TypeVariable()
                     type_map[p].constraints = p.constraints
+                    type_map[p].parent_class = p.parent_class
                 return type_map[p]
             else:
                 return p
         elif isinstance(p, TypeOperator):
-            return TypeOperator(p.type_name, [aux(x) for x in p.types])
+            return TypeOperator(p.type_name, [aux(x) for x in p.types],
+                                parent_class=p.parent_class)
 
     return aux(typ)
 
@@ -170,12 +179,14 @@ def unify(type1, type2):
     elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
         unify(b, a)
     elif isinstance(a, TypeOperator) and isinstance(b, TypeOperator):
-        if a.type_name != b.type_name or len(a.types) != len(b.types):
+        if (a.type_name != b.type_name or len(a.types) != len(b.types)) and \
+            a.parent_class != b.parent_class:
             raise FunkyTypeError("Type mismatch: found {} but expected "
                                  "{}.".format(str(a), str(b)))
 
-        for x, y in zip(a.types, b.types):
-            unify(x, y)
+        if a.type_name == b.type_name:
+            for x, y in zip(a.types, b.types):
+                unify(x, y)
     else:
         raise RuntimeError("Python typing error encountered when unifying. "
                            "Cannot perform unification between types {} and "
@@ -250,8 +261,6 @@ def create_type_alias(typedef, ctx):
 def operator_prefix(s):
     return "OP_{}".format(s)
 
-mapping = {}
-
 def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
 
@@ -262,28 +271,27 @@ def create_algebraic_data_structure(adt, ctx):
     for constructor in adt.constructors:
         prefixed = operator_prefix(constructor.identifier)
         try:
-            mapping[adt.type_name].append(prefixed)
+            typeclass_mapping[adt.type_name].append(prefixed)
         except KeyError:
-            mapping[adt.type_name] = [prefixed]
+            typeclass_mapping[adt.type_name] = [prefixed]
 
         tyvars = []
-        constructor_op = TypeOperator(prefixed, tyvars)
+        constructor_op = TypeOperator(prefixed, tyvars,
+                                      parent_class=adt.type_name)
 
         f = constructor_op
         for p in reversed(constructor.parameters):
             t = TypeVariable()
-            t.constraints = mapping.get(p, [])
+            t.constraints = typeclass_mapping.get(p, [])
+            t.parent_class = adt.type_name if p in typeclass_mapping else None
             tyvars.insert(0, t)
 
             if p in ctx:
                 unify(t, ctx[p])
-            f = FunctionType(t, f)
+            f = FunctionType(get_fresh(t, ctx), f)
 
         ctx[prefixed] = constructor_op
         ctx[constructor.identifier] = f
-
-    from pprint import pprint
-    pprint({k : str(v) for k, v in ctx.items()})
 
 def create_type(typedef, ctx):
     """Creates a type for use in the inferencer.
@@ -294,7 +302,7 @@ def create_type(typedef, ctx):
     if isinstance(typedef.typ, AlgebraicDataType): # newcons
         create_algebraic_data_structure(typedef.typ, ctx)
     else: # newtype
-        create_type_alias(typedef.typ, ctx)
+        create_type_alias(typedef, ctx)
 
 def do_type_inference(core_tree, typedefs):
     """Perform type inference on the core tree.

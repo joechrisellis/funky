@@ -3,7 +3,22 @@ module test where
     newcons List = Cons Integer List | Nil
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
 
-    concatenate (Cons a b) x = Cons a (concatenate b x)
-    concatenate Nil        x = x
+    concatenate (Cons a b) x          = (concatenate b x)
+    concatenate Nil        (Cons x a) = Cons x a
 
-    main = concatenate
+    inorder (Branch l v r) = concatenate left (Cons v right)
+                             where left  = inorder l
+                                   right = inorder r
+    inorder (Leaf v) = Cons v Nil
+
+    map f (Cons x xs) = Cons (f x) (map f xs)
+    map f Nil = Nil
+
+    filter f (Cons x xs) | f x  = Cons x (filter f xs)
+                         | True = filter f xs
+    filter f Nil = Nil
+
+    foldr f z Nil         = z
+    foldr f z (Cons x xs) = f x (foldr f z xs)
+
+    main = foldr

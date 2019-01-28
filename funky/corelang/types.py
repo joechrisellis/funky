@@ -17,14 +17,16 @@ class TypeVariable:
 
     __repr__ = output_attributes
 
-    def __init__(self, constraints=None):
+    def __init__(self, constraints=None, parent_class=None):
         self._type_name   =  None  # lazily defined so None for now
         self.instance     =  None  # if type variable refers to a concrete type
         self.constraints  =  constraints if constraints else []
+        self.parent_class =  parent_class
 
     def accepts(self, t):
         if self.constraints:
-            return t.type_name in self.constraints
+            return t.type_name in self.constraints or \
+                    t.constraints == self.constraints
         return True
 
     @property
@@ -41,6 +43,8 @@ class TypeVariable:
         """If we have a concrete type instance, print that.  . Otherwise, use
         our lazy-defined type name.
         """
+        if self.parent_class:
+            return self.parent_class
         if self.instance:
             return str(self.instance)
         if self.constraints:
@@ -52,11 +56,14 @@ class TypeOperator:
 
     __repr__ = output_attributes
 
-    def __init__(self, name, types):
-        self.type_name   =  name
-        self.types       =  types
+    def __init__(self, name, types, parent_class=None):
+        self.type_name     =  name
+        self.types         =  types
+        self.parent_class  =  parent_class
 
     def __str__(self):
+        if self.parent_class:
+            return self.parent_class
         if len(self.types) == 0: # 0-ary constructor
             return self.type_name
         elif len(self.types) == 2: # binary constructor

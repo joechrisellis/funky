@@ -23,7 +23,6 @@ def infer_variable(node, ctx, non_generic):
     """
     try:
         node.inferred_type = get_fresh(ctx[node.identifier], non_generic)
-        print("!!!", node, node.inferred_type)
     except KeyError:
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
 
@@ -119,15 +118,10 @@ def infer_cons(node, ctx, non_generic):
     # Occurs in the context of pattern matching always.
     # core cons has a constructor, and a list of parameters
     try:
-        typeop = ctx[node.constructor]
-        f = typeop.type_class
-        for parameter in reversed(node.parameters):
-            t = TypeVariable()
-            f = FunctionType(t, f)
-            if isinstance(parameter, CoreVariable):
-                ctx[parameter.identifier] = t
-        unify(f, typeop)
-        node.inferred_type = typeop.type_class
+        typeop = get_fresh(ctx[operator_prefix(node.constructor)], non_generic)
+        for x, y in zip(node.parameters, typeop.types):
+            ctx[x.identifier] = y
+        node.inferred_type = typeop
     except KeyError:
         raise FunkyTypeError("Undefined constructor "
                              "'{}'.".format(node.constructor))
@@ -147,14 +141,12 @@ def get_fresh(typ, non_generic):
             if is_generic(p, non_generic):
                 if p not in type_map:
                     type_map[p] = TypeVariable()
+                    type_map[p].constraints = p.constraints
                 return type_map[p]
             else:
                 return p
         elif isinstance(p, TypeOperator):
             return TypeOperator(p.type_name, [aux(x) for x in p.types])
-        elif isinstance(p, TypeClass):
-            return TypeClass(p.class_name, [aux(x) for x in p.type_parameters],
-                             [])
 
     return aux(typ)
 
@@ -169,7 +161,11 @@ def unify(type1, type2):
     if isinstance(a, TypeVariable):
         if a != b:
             if occurs_in_type(a, b):
+                print("{} occurs in {}".format(a, b))
                 raise FunkyTypeError("Recursive unification detected, stopping.")
+            if not a.accepts(b):
+                raise FunkyTypeError("Constraints on {} do not permit "
+                                     "{}.".format(a, b))
             a.instance = b
     elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
         unify(b, a)
@@ -180,21 +176,6 @@ def unify(type1, type2):
 
         for x, y in zip(a.types, b.types):
             unify(x, y)
-    elif isinstance(a, TypeClass) and isinstance(b, TypeClass):
-        if a.class_name != b.class_name or len(a.types) != len(b.types):
-            raise FunkyTypeError("Cannot unify typeclasses {} and "
-                                 "{}".format(str(a), str(b)))
-        for x, y in zip(a.type_parameters, b.type_parameters):
-            print("Unifying", x, y)
-            unify(x, y)
-    elif isinstance(a, TypeClass) and isinstance(b, TypeOperator):
-        unify(b, a)
-    elif isinstance(a, TypeOperator) and isinstance(b, TypeClass):
-        if a not in b.types:
-            raise FunkyTypeError("Cannot unify {} with typeclass "
-                                 "{}".format(str(a), str(b)))
-    elif isinstance(a, TypeClass) and isinstance(b, TypeVariable):
-        unify(b, a)
     else:
         raise RuntimeError("Python typing error encountered when unifying. "
                            "Cannot perform unification between types {} and "
@@ -266,36 +247,43 @@ def create_type_alias(typedef, ctx):
         raise FunkyTypeError("Type '{}' not defined, so it cannot be used in "
                              "a type alias.".format(typedef.typ))
 
-def create_algebraic_data_structure(typedef, ctx):
+def operator_prefix(s):
+    return "OP_{}".format(s)
+
+mapping = {}
+
+def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
 
-    :param typedef: the type definition from the core tree
-    :param ctx:     the context to create the algebraic data structure in
+    :param adt: the algebraic data type object
+    :param ctx: the context to create the algebraic data structure in
     """
-    type_class = TypeClass(typedef.identifier, [], [])
-    ctx[typedef.identifier] = type_class
-    for type_parameter in typedef.typ.type_parameters:
-        t = TypeVariable()
-        ctx[type_parameter] = t
-        type_class.type_parameters.append(t)
 
-    for alternative in typedef.typ.constructors:
+    for constructor in adt.constructors:
+        prefixed = operator_prefix(constructor.identifier)
+        try:
+            mapping[adt.type_name].append(prefixed)
+        except KeyError:
+            mapping[adt.type_name] = [prefixed]
+
         tyvars = []
-        for parameter in alternative.parameters:
+        constructor_op = TypeOperator(prefixed, tyvars)
+
+        f = constructor_op
+        for p in reversed(constructor.parameters):
             t = TypeVariable()
-            unify(t, ctx[parameter])
-            tyvars.append(t)
-        alt_type = TypeOperator(alternative.identifier, tyvars,
-                                type_class=type_class)
+            t.constraints = mapping.get(p, [])
+            tyvars.insert(0, t)
 
-        f = type_class
-        for parameter in reversed(tyvars):
-            f = FunctionType(parameter, f)
-        f.type_class = type_class
-        ctx[alternative.identifier] = f
-        type_class.types.append(f)
+            if p in ctx:
+                unify(t, ctx[p])
+            f = FunctionType(t, f)
 
-    ctx[type_class.class_name] = type_class
+        ctx[prefixed] = constructor_op
+        ctx[constructor.identifier] = f
+
+    from pprint import pprint
+    pprint({k : str(v) for k, v in ctx.items()})
 
 def create_type(typedef, ctx):
     """Creates a type for use in the inferencer.
@@ -304,9 +292,9 @@ def create_type(typedef, ctx):
     :param ctx:     the context to place the new definition in
     """
     if isinstance(typedef.typ, AlgebraicDataType): # newcons
-        create_algebraic_data_structure(typedef, ctx)
+        create_algebraic_data_structure(typedef.typ, ctx)
     else: # newtype
-        create_type_alias(typedef, ctx)
+        create_type_alias(typedef.typ, ctx)
 
 def do_type_inference(core_tree, typedefs):
     """Perform type inference on the core tree.
@@ -321,9 +309,6 @@ def do_type_inference(core_tree, typedefs):
     ctx, non_generic = DEFAULT_ENVIRONMENT, set()
     for typedef in typedefs:
         create_type(typedef, ctx)
-
-    from pprint import pprint
-    pprint({k : str(v) for k, v in ctx.items()})
 
     infer(core_tree, ctx, non_generic)
     log.info("Completed type inference.")

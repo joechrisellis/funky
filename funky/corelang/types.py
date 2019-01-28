@@ -22,6 +22,11 @@ class TypeVariable:
         self.instance     =  None  # if type variable refers to a concrete type
         self.constraints  =  constraints if constraints else []
 
+    def accepts(self, t):
+        if self.constraints:
+            return t.type_name in self.constraints
+        return True
+
     @property
     def type_name(self):
         """We assign names lazily, just so that when the signature of a
@@ -38,28 +43,18 @@ class TypeVariable:
         """
         if self.instance:
             return str(self.instance)
+        if self.constraints:
+            return "{} [{}]".format(self.type_name, "/".join(self.constraints))
         return self.type_name
-
-class TypeClass:
-    
-    def __init__(self, class_name, type_parameters, types):
-        self.class_name       =  class_name
-        self.type_parameters  =  type_parameters
-        self.types            =  types
-
-    def __str__(self):
-        return "{} {}".format(self.class_name,
-                              " ".join(str(p) for p in self.type_parameters))
 
 class TypeOperator:
     """An n-ary type constructor."""
 
     __repr__ = output_attributes
 
-    def __init__(self, name, types, type_class=None):
+    def __init__(self, name, types):
         self.type_name   =  name
         self.types       =  types
-        self.type_class  =  type_class # reference to the typeclass, if any
 
     def __str__(self):
         if len(self.types) == 0: # 0-ary constructor
@@ -76,8 +71,8 @@ class FunctionType(TypeOperator):
     constructor.
     """
 
-    def __init__(self, input_type, output_type, type_class=None):
-        super().__init__("->", [input_type, output_type], type_class.type_class if type_class else None)
+    def __init__(self, input_type, output_type):
+        super().__init__("->", [input_type, output_type])
         self.input_type = input_type
         self.output_type = output_type
 

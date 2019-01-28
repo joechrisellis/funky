@@ -3,6 +3,7 @@ module test where
     newcons List = Cons Integer List | Nil
     newcons Tree = Branch Tree Integer Tree | Leaf Integer
 
-    fst (Cons a b) = a
+    concatenate (Cons a b) x = Cons a (concatenate b x)
+    concatenate Nil        x = x
 
-    main = fst (Cons 1 Nil)
+    main = concatenate

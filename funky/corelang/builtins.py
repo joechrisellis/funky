@@ -26,11 +26,6 @@ python_to_funky = {
     str    :  Char,
 }
 
-t    = TypeVariable()
-op   = TypeOperator("Cons", (t,))
-Cons = TypeOperator("Cons", (op,))
-
-
 BUILTIN_FUNCTIONS = {
     "=="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
     "!="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
@@ -46,13 +41,8 @@ BUILTIN_FUNCTIONS = {
     "/"       :  FunctionType(Integer, FunctionType(Integer, Integer)),
     "&&"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
     "||"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
-    ":"       :  FunctionType(t, FunctionType(Cons, Cons)),
-}
-
-BUILTIN_CONSTRUCTORS = {
-    # TODO
+    # ":"       :  FunctionType(t, FunctionType(Cons, Cons)),
 }
 
 # All of the builtins form the default environment.
-DEFAULT_ENVIRONMENT = {**BUILTIN_PRIMITIVES, **BUILTIN_FUNCTIONS,
-                       **BUILTIN_CONSTRUCTORS}
+DEFAULT_ENVIRONMENT = {**BUILTIN_PRIMITIVES, **BUILTIN_FUNCTIONS}

@@ -47,9 +47,6 @@ class FunkyLexer:
         "IDENTIFIER", "TYPENAME",
     ] + list(reserved.values())
 
-    # Ignore tabs.
-    t_ignore        =  "\t"
-
     # True if we are at the start of the line -- in this case, we consider any
     # whitespace to be indentation. False otherwise.
     at_line_start   = True
@@ -66,6 +63,14 @@ class FunkyLexer:
         if self.at_line_start:
             t.value = len(t.value)
             return t
+
+    # Tabs should be ignored, except if they are used for indentation. In
+    # Funky, SPACES are used for indentation -- throw an error if tabs are
+    # used.
+    def t_TAB(self, t):
+        r"\t+"
+        if self.at_line_start:
+            raise FunkyLexingError("Use spaces to indent your code, not tabs.")
 
     # Newlines increment the line number.
     def t_NEWLINE(self, t):

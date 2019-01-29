@@ -1,5 +1,5 @@
 module test where
 
-	f = x + y
-		where x = 2
-	main = f
+    f x = x + y where		x = 2
+
+    main = f

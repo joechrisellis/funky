@@ -76,7 +76,7 @@ def get_specialised_and_default_matrices(scrutinee, pattern_matrix, outcomes):
             specialised_outcomes.append(outcome)
         elif isinstance(x, CoreLiteral):
             if isinstance(y, CoreLiteral) and \
-               x.value == y.value and x.typ == y.typ:
+               x.value == y.value:
                 specialised.append(row[:])
                 specialised_outcomes.append(outcome)
             else:

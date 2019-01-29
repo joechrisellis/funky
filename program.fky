@@ -1,5 +1,6 @@
 module test where
 
-    f x = x + y where		y = 4
+    not False = True
+    not True  = False
 
-    main = f
+    main = not

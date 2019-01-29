@@ -150,8 +150,8 @@ def lambda_desugar(node):
         if isinstance(p, CoreCons) and p.pattern:
             # the parameter is a pattern -- desugar it to a match structure.
             on_match = CoreAlt(p, lam)
-            no_match = CoreAlt(CoreVariable("_"), None)
-            scrutinee = CoreVariable(get_unique_varname())
+            no_match = CoreAlt(CoreVariable("_", True), None)
+            scrutinee = CoreVariable(get_unique_varname(), False)
             match_structure = CoreMatch(scrutinee, [on_match, no_match])
             lam = CoreLambda(scrutinee, match_structure)
         else:
@@ -191,9 +191,12 @@ def function_application_desugar(node):
     return CoreApplication(func, expr)
 
 @desugar.register(Parameter)
+def parameter_desugar(node):
+    return CoreVariable(node.name, True)
+
 @desugar.register(UsedVar)
-def variable_desugar(node):
-    return CoreVariable(node.name)
+def usedvar_desugar(node):
+    return CoreVariable(node.name, False)
 
 @desugar.register(Literal)
 def literal_desugar(node):
@@ -263,7 +266,7 @@ def condense_function_binds(binds):
         # into a match statement.
         pattern_matrix = []
         outcomes = []
-        variables = [CoreVariable(get_parameter_name(identifier, i))
+        variables = [CoreVariable(get_parameter_name(identifier, i), True)
                      for i in range(bindees[0].original_arity)]
 
         for bindee in bindees:

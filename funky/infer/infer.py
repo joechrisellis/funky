@@ -27,7 +27,7 @@ def infer_variable(node, ctx, non_generic):
         raise FunkyTypeError("Undefined symbol '{}'.".format(node.identifier))
 
 @infer.register(CoreLiteral)
-def infer_variable(node, ctx, non_generic):
+def infer_literal(node, ctx, non_generic):
     """Infer the type for a core literal. Simply use the mapping from Python
     types to function types to infer the type of the literal.
     """
@@ -172,9 +172,10 @@ def unify(type1, type2):
         unify(b, a)
     elif isinstance(a, TypeOperator) and isinstance(b, TypeOperator):
         if (a.type_name != b.type_name or len(a.types) != len(b.types)) and \
-            a.parent_class != b.parent_class:
-            raise FunkyTypeError("Type mismatch: found {} but expected "
-                                 "{}.".format(str(a), str(b)))
+           not (a.parent_class and b.parent_class
+                and a.parent_class == b.parent_class):
+                raise FunkyTypeError("Type mismatch: found {} but expected "
+                                     "{}.".format(str(a), str(b)))
 
         if a.type_name == b.type_name:
             for x, y in zip(a.types, b.types):

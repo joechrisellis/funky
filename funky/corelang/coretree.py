@@ -1,5 +1,5 @@
-"""Module containing classes used to represent the abstract syntax tree for the
-intermediate language.
+"""Module containing classes used to represent the abstract syntax tree
+for the intermediate language.
 """
 
 from funky.corelang.builtins import python_to_funky
@@ -56,12 +56,14 @@ class CoreCons(CoreNode):
 class CoreVariable(CoreNode):
     """A reference to a defined variable."""
 
-    def __init__(self, identifier):
+    def __init__(self, identifier, is_parameter):
         super().__init__()
-        self.identifier  =  identifier
+        self.identifier     =  identifier
+        self.free           =  None
+        self.is_parameter   =  is_parameter
 
     def __str__(self):
-        return str(self.identifier)
+        return ("param:" if self.is_parameter else "") + str(self.identifier)
 
 class CoreLiteral(CoreNode):
     """A literal."""

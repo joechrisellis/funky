@@ -1,6 +1,8 @@
 module test where
 
-    not False = True
-    not True  = False
+    newcons List = Cons Integer List | Nil
 
-    main = not
+    fst (Cons x xs) = x
+    fst Nil = "test"
+
+    main = fst

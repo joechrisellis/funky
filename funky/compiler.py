@@ -11,11 +11,13 @@ from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.rename import FunkyRenamingError
 from funky.desugar import FunkyDesugarError
 from funky.infer import FunkyTypeError
+from funky.generate import FunkyCodeGenerationError
 
 from funky.parse.funky_parser import FunkyParser
 from funky.rename.rename import do_rename
 from funky.desugar.desugar import do_desugar
 from funky.infer.infer import do_type_inference
+from funky.generate.gen_c import do_generate_c_code
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +25,8 @@ def compile_to_c(source, dump_lexed=False,
                          dump_parsed=False,
                          dump_renamed=False,
                          dump_desugared=False,
-                         dump_types=False):
+                         dump_types=False,
+                         dump_generated=False):
     """Compiles funky source code.
 
     :param source str: the source code for the program as a raw string.
@@ -88,3 +91,12 @@ def compile_to_c(source, dump_lexed=False,
                      e, TYPE_ERROR)
 
     log.info("Type inference completed.")
+
+    try:
+        c_program = do_generate_c_code(core_tree, typedefs)
+        if dump_generated:
+            print("## GENERATED C CODE")
+            print(c_program)
+            print("")
+    except FunkyCodeGenerationError:
+        err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)

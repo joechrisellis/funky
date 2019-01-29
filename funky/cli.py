@@ -30,6 +30,9 @@ def main():
                         action="store_true",
                         help="Dump the types of all symbols in the core tree "
                              "to stdout.")
+    parser.add_argument("--dump-generated", default=False, required=False,
+                        action="store_true",
+                        help="Dump the generated code to stdout.")
     parser.add_argument("input", type=argparse.FileType("r"),
                         help="Input program (funky source).")
 
@@ -57,7 +60,8 @@ def main():
                                            dump_parsed=args.dump_parsed,
                                            dump_renamed=args.dump_renamed,
                                            dump_desugared=args.dump_desugared,
-                                           dump_types=args.dump_types)
+                                           dump_types=args.dump_types,
+                                           dump_generated=args.dump_generated)
     finish = time.time()
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {} seconds.".format(finish - start))

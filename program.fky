@@ -2,7 +2,9 @@ module test where
 
     newcons List = Cons Integer List | Nil
 
-    fst (Cons x xs) = x
-    fst Nil = "test"
+    index e (Cons x xs) | e == x    = 0
+                        | otherwise = 1 + index e xs
 
-    main = fst
+    otherwise = True
+
+    main = index

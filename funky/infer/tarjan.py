@@ -159,6 +159,7 @@ def add_edges_let(bindee, graph, current, ids):
 @add_edges.register(CoreMatch)
 def add_edges_match(bindee, graph, current, ids):
     # TODO: there might be an issue here with scrutinees and binding?
+    add_edges(bindee.scrutinee, graph, current, ids)
     for alt in bindee.alts:
         add_edges(alt, graph, current, ids)
 

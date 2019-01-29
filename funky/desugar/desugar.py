@@ -204,7 +204,7 @@ def literal_desugar(node):
 
 @desugar.register(str)
 def builtin_desugar(node):
-    return CoreVariable(node)
+    return CoreVariable(node, False)
 
 @desugar.register(ConstructorType)
 @desugar.register(CoreCons)

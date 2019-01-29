@@ -182,10 +182,15 @@ class IndentationLexer:
         self.new_tokens  =  []
         self.source      =  ""
 
-    def input(self, source, *args, **kwargs):
+    def input(self, source, dump_lexed=False, *args, **kwargs):
         self.source       =  source
         self.orig_tokens  =  self.lexer.do_lex(source, *args, **kwargs)
         self.new_tokens   =  self._insert_implicit_tokens(self.orig_tokens)
+
+        if dump_lexed:
+            print("## DUMPED LEXED SOURCE")
+            print(" ".join(str(t.value) for t in self.new_tokens))
+            print("")
 
     def __iter__(self):
         return self

@@ -478,14 +478,14 @@ class FunkyParser:
         self.parser = yacc.yacc(module=self, **kwargs)
         log.debug("Parser built.")
 
-    def do_parse(self, source):
+    def do_parse(self, source, dump_lexed=False):
         """Parse the given source code.
         
         :param source str: the source code as a raw string
         :return:           a parse tree representing the source code
         :rtype:            SourceTree
         """
-        self.lexer.input(source)
+        self.lexer.input(source, dump_lexed=dump_lexed)
 
         log.info("Parsing lexed source...")
         ast = self.parser.parse(source, self.lexer)

@@ -19,7 +19,8 @@ from funky.infer.infer import do_type_inference
 
 log = logging.getLogger(__name__)
 
-def compile_to_c(source, dump_parsed=False,
+def compile_to_c(source, dump_lexed=False,
+                         dump_parsed=False,
                          dump_renamed=False,
                          dump_desugared=False,
                          dump_types=False):
@@ -34,10 +35,13 @@ def compile_to_c(source, dump_parsed=False,
     try:
         parser = FunkyParser()
         parser.build()
-        parsed = parser.do_parse(source)
+        # lexing is done in the same step as parsing -- so we have to tell the
+        # parser whether we want the lexer's output to be displayed
+        parsed = parser.do_parse(source, dump_lexed=dump_lexed)
         if dump_parsed:
             print("## DUMPED PARSE TREE")
             print(parsed)
+            print("")
     except FunkyLexingError as e:
         err_and_exit("Failed to lex source code.", e, LEXING_ERROR)
     except FunkySyntaxError as e:
@@ -54,6 +58,7 @@ def compile_to_c(source, dump_parsed=False,
         if dump_renamed:
             print("## DUMPED RENAMED PARSE TREE")
             print(parsed)
+            print("")
     except FunkyRenamingError as e:
         err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
 
@@ -66,6 +71,7 @@ def compile_to_c(source, dump_parsed=False,
             print("\n".join(str(t) for t in typedefs))
             print("\n## CORE (DESUGARED) CODE")
             print(core_tree)
+            print("")
     except FunkyDesugarError as e:
         err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
 
@@ -76,6 +82,7 @@ def compile_to_c(source, dump_parsed=False,
         if dump_types:
             print("## CORE TYPES")
             print(core_tree)
+            print("")
     except FunkyTypeError as e:
         err_and_exit("Your program failed type checks, will not compile.",
                      e, TYPE_ERROR)

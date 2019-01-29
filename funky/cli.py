@@ -14,6 +14,9 @@ def main():
                         help="File to write compiled program to.")
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="How much noise should the compiler make?")
+    parser.add_argument("--dump-lexed", default=False, required=False,
+                        action="store_true",
+                        help="Dump the lexed source code to stdout.")
     parser.add_argument("--dump-parsed", default=False, required=False,
                         action="store_true",
                         help="Dump the parse tree to stdout.")
@@ -50,7 +53,8 @@ def main():
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))
-    output = compiler.compile_to_c(source, dump_parsed=args.dump_parsed,
+    output = compiler.compile_to_c(source, dump_lexed=args.dump_lexed,
+                                           dump_parsed=args.dump_parsed,
                                            dump_renamed=args.dump_renamed,
                                            dump_desugared=args.dump_desugared,
                                            dump_types=args.dump_types)

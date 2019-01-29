@@ -1,8 +1,5 @@
 module test where
 
-    newcons IntList = Cons Integer List | Nil
-
-    foldr f z Nil         = z
-    foldr f z (Cons x xs) = f x (foldr f z xs)
-
-    main = foldr
+	f = x + y
+		where x = 2
+	main = f

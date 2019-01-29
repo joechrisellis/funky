@@ -15,12 +15,6 @@ log = logging.getLogger(__name__)
 
 infer = get_registry_function()
 
-# Used to map constructors to their parent class. For instance:
-# newcons List =Cons Integer List | Nil
-# Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
-# prefix.
-typeclass_mapping = {}
-
 @infer.register(CoreVariable)
 def infer_variable(node, ctx, non_generic):
     """Infer the type for a core variable. If there is no such variable in the
@@ -84,7 +78,6 @@ def infer_let(node, ctx, non_generic):
         # then, for each bind and its type, infer the type and unify it.
         for bind, new_type in zip(group, types):
             infer(bind.bindee, new_ctx, new_non_generic)
-            print(new_type, bind.bindee.inferred_type)
             unify(new_type, bind.bindee.inferred_type)
 
     # given what we know about the let definitions, infer the type of the
@@ -170,7 +163,6 @@ def unify(type1, type2):
     if isinstance(a, TypeVariable):
         if a != b:
             if occurs_in_type(a, b):
-                print("{} occurs in {}".format(a, b))
                 raise FunkyTypeError("Recursive unification detected, stopping.")
             if not a.accepts(b):
                 raise FunkyTypeError("Constraints on {} do not permit "
@@ -263,10 +255,25 @@ def operator_prefix(s):
 
 def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
+    Specifically, creates a TypeOperator and function returning that type
+    operator for each of the alternatives. I.e.
+    newcons List = Cons Integer List | Nil yields:
+
+        OP_Cons as binary TypeOperator
+        OP_NIL as a nullary TypeOperator
+        Cons :: Integer -> List -> List
+
+    where OP_ is the operator prefix.
 
     :param adt: the algebraic data type object
     :param ctx: the context to create the algebraic data structure in
     """
+
+    # Used to map constructors to their parent class. For instance:
+    # newcons List =Cons Integer List | Nil
+    # Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
+    # prefix.
+    typeclass_mapping = {}
 
     for constructor in adt.constructors:
         prefixed = operator_prefix(constructor.identifier)
@@ -288,6 +295,8 @@ def create_algebraic_data_structure(adt, ctx):
 
             if p in ctx:
                 unify(t, ctx[p])
+            elif p != adt.type_name:
+                raise FunkyTypeError("Type {} not defined.".format(p))
             f = FunctionType(get_fresh(t, ctx), f)
 
         ctx[prefixed] = constructor_op

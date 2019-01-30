@@ -256,6 +256,12 @@ def create_type_alias(typedef, ctx):
 def operator_prefix(s):
     return "OP_{}".format(s)
 
+# Used to map constructors to their parent class. For instance:
+# newcons List =Cons Integer List | Nil
+# Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
+# prefix.
+typeclass_mapping = {}
+
 def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
     Specifically, creates a TypeOperator and function returning that type
@@ -273,12 +279,6 @@ def create_algebraic_data_structure(adt, ctx):
     """
 
     log.debug("Creating algebraic data type for {}...".format(adt))
-
-    # Used to map constructors to their parent class. For instance:
-    # newcons List =Cons Integer List | Nil
-    # Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
-    # prefix.
-    typeclass_mapping = {}
 
     for constructor in adt.constructors:
         prefixed = operator_prefix(constructor.identifier)
@@ -300,7 +300,7 @@ def create_algebraic_data_structure(adt, ctx):
 
             if p in ctx:
                 unify(t, ctx[p])
-            elif p != adt.type_name:
+            elif p not in typeclass_mapping:
                 raise FunkyTypeError("Type {} not defined.".format(p))
             f = FunctionType(get_fresh(t, ctx), f)
 

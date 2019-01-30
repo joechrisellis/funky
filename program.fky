@@ -1,11 +1,10 @@
 module test where
 
-    newtype Test = Integer
-    newcons List = Cons Test List | Nil
+    newcons IntList    = Cons Integer IntList | Nil
+    newcons BinaryTree = Branch BinaryTree IntList BinaryTree | Leaf Integer
 
-    index e (Cons x xs) | e == x    = 0
-                        | otherwise = 1 + index e xs
+    filter f (Cons x xs) | f x  = Cons x (filter f xs)
+                         | True = filter f xs
+    filter f Nil = Nil
 
-    otherwise = True
-
-    main = index
+    main = filter

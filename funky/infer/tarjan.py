@@ -2,12 +2,16 @@
 components in graphs.
 """
 
+import logging
+
 from collections import defaultdict
 
 from funky.corelang.coretree import *
 from funky.corelang.types import AlgebraicDataType
 from funky.ds import Graph
 from funky.util import get_registry_function
+
+log = logging.getLogger(__name__)
 
 UNVISITED = -1
 
@@ -19,7 +23,12 @@ def reorder_bindings(bindings):
     :return:         the bindings, sorted in reverse dependency order
     :rtype:          list
     """
+    log.debug("Reordering {} bindings...".format(len(bindings)))
+    log.debug("Creating dependency graph...")
     dependency_graph = create_dependency_graph(bindings)
+    log.debug("Dependency graph is: {}".format(dependency_graph))
+
+    log.debug("Finding strongly-connected components within dependecy graph...")
     sccs = find_strongly_connected_components(dependency_graph)
     visited = set()
     reordered = []
@@ -45,6 +54,7 @@ def reorder_bindings(bindings):
     d = {bind.identifier : bind for bind in bindings}
     reordered = [[d[b] for b in g] for g in reordered]
 
+    log.debug("Finished reordering bindings.")
     return reordered
 
 def create_dependency_graph(bindings):

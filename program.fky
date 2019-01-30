@@ -1,6 +1,7 @@
 module test where
 
-    newcons List = Cons Integer List | Nil
+    newtype Test = Integer
+    newcons List = Cons Test List | Nil
 
     index e (Cons x xs) | e == x    = 0
                         | otherwise = 1 + index e xs

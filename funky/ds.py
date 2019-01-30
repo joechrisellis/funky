@@ -154,3 +154,6 @@ class Graph:
         :rtype:  bool
         """
         return node1 in self.graph and node2 in self.graph[node1]
+
+    def __str__(self):
+        return str(self.graph)

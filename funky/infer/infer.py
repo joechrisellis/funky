@@ -160,6 +160,7 @@ def unify(type1, type2):
     :param type1: the second type
     """
     a, b = prune(type1), prune(type2)
+    log.debug("Attempting to unify {} and {}...".format(a, b))
     if isinstance(a, TypeVariable):
         if a != b:
             if occurs_in_type(a, b):
@@ -245,8 +246,9 @@ def create_type_alias(typedef, ctx):
     :param typedef: the type definition from the core tree
     :param ctx:     the context to create the type alias in
     """
+    log.debug("Creating type alias {}...".format(typedef))
     try:
-        ctx[typedef.identifier] = ctx[typedef.typ]
+        ctx[typedef.identifier] = ctx[typedef.typ.identifier]
     except KeyError:
         raise FunkyTypeError("Type '{}' not defined, so it cannot be used in "
                              "a type alias.".format(typedef.typ))
@@ -269,6 +271,8 @@ def create_algebraic_data_structure(adt, ctx):
     :param adt: the algebraic data type object
     :param ctx: the context to create the algebraic data structure in
     """
+
+    log.debug("Creating algebraic data type for {}...".format(adt))
 
     # Used to map constructors to their parent class. For instance:
     # newcons List =Cons Integer List | Nil

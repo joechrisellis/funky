@@ -1,10 +1,8 @@
 module test where
 
     newcons IntList    = Cons Integer IntList | Nil
-    newcons BinaryTree = Branch BinaryTree IntList BinaryTree | Leaf Integer
 
-    filter f (Cons x xs) | f x  = Cons x (filter f xs)
-                         | True = filter f xs
-    filter f Nil = Nil
+    a = 5
+    b = 2
 
-    main = filter
+    main = a

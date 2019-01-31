@@ -33,6 +33,9 @@ def main():
     parser.add_argument("--dump-generated", default=False, required=False,
                         action="store_true",
                         help="Dump the generated code to stdout.")
+    parser.add_argument("--target", choices=compiler.targets.keys(),
+                        required=True,
+                        help="The target language for compilation.")
     parser.add_argument("input", type=argparse.FileType("r"),
                         help="Input program (funky source).")
 
@@ -61,7 +64,8 @@ def main():
                                            dump_renamed=args.dump_renamed,
                                            dump_desugared=args.dump_desugared,
                                            dump_types=args.dump_types,
-                                           dump_generated=args.dump_generated)
+                                           dump_generated=args.dump_generated,
+                                           target=args.target)
     finish = time.time()
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {} seconds.".format(finish - start))

@@ -1,8 +1,10 @@
 module test where
 
-    newcons IntList    = Cons Integer IntList | Nil
+    newcons IntTree = Branch IntTree Integer IntTree | Leaf Integer
 
-    a = 5
-    b = 2
+    otherwise = True
 
-    main = a
+    sum 0 = 0
+    sum n = n + sum (n - 1)
+
+    main = sum

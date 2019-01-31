@@ -30,16 +30,17 @@ def output_attributes(self):
 # This might look ugly, but the logic of it is simple and it allows us to use a
 # trivial interface for tree-walking, so it's well worth using your brain power
 # to understand it!
-def get_registry_function(throw_err=True):
+def get_registry_function(throw_err=True, in_class=False):
     """Gets a registry function. Read docstring for 'register' below.
     
     :param throw_err bool: whether or not to throw a runtime error if no
                            registered function exists.
     :return:               the registry function.
     """
-    def f(obj, *args, **kwargs):
+    def f(*args, **kwargs):
         try:
-            return f.register.registry[type(obj)](obj, *args, **kwargs)
+            obj = args[1] if in_class else args[0]
+            return f.register.registry[type(obj)](*args, **kwargs)
         except KeyError:
             if throw_err:
                 raise RuntimeError("No function registered for " \

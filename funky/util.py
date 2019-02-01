@@ -1,4 +1,5 @@
 from itertools import count
+import collections
 import inspect
 import sys
 
@@ -9,7 +10,7 @@ def get_user_attributes(cls):
     """Returns the user attributes of a class. These are attributes which are
     not functions, and whose identifier's do not begin with '_' (which
     conventionally denotes a private attribute in Python).
-    
+
     :param cls class: a class of any kind.
     :return:          a list of the public attributes of the class (those that
                       do not begin with an underscore).
@@ -27,12 +28,27 @@ def output_attributes(self):
                          for a in get_user_attributes(self))
     return "{}({})".format(type(self).__name__, children)
 
+def flatten(l):
+    """Utility function to flatten an irregular list of lists.
+    
+    :param l list: an irregular list of lists
+    :return:       the flatten list, e.g. [[[1, 2, 3], 4], 5] becomes
+                   [1, 2, 3, 4, 5]
+    :rtype         list
+    """
+    for item in l:
+        if isinstance(item, collections.Iterable) and \
+	   not isinstance(item, (str, bytes)):
+            yield from flatten(item)
+        else:
+            yield item
+
 # This might look ugly, but the logic of it is simple and it allows us to use a
 # trivial interface for tree-walking, so it's well worth using your brain power
 # to understand it!
 def get_registry_function(throw_err=True, in_class=False):
     """Gets a registry function. Read docstring for 'register' below.
-    
+
     :param throw_err bool: whether or not to throw a runtime error if no
                            registered function exists.
     :return:               the registry function.

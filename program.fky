@@ -1,8 +1,8 @@
 module test where
 
-    newcons IntTree = Branch IntTree Integer IntTree | Leaf Integer
+    even  0  =  True
+    even  n  =  odd    (n  -  1)
+    odd   0  =  False
+    odd   n  =  even   (n  -  1)
 
-    test = otherwise
-    otherwise = True
-
-    main = test
+    main = even

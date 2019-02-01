@@ -2,7 +2,7 @@
 
 import logging
 from funky.infer import FunkyTypeError
-from funky.util import get_registry_function
+from funky.util import get_registry_function, flatten
 from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
@@ -64,9 +64,11 @@ def infer_let(node, ctx, non_generic):
     ensures that all definitions have the most general type.
     """
     new_ctx, new_non_generic = ctx.copy(), non_generic.copy()
+    
+    groups = reorder_bindings(node.binds)
 
     # for each strongly-connected component/mutually recursive group...
-    for group in reorder_bindings(node.binds):
+    for group in groups:
         # we assign a type-variable to each unique definition.
         types = []
         for bind in group:
@@ -84,6 +86,7 @@ def infer_let(node, ctx, non_generic):
     # expression
     infer(node.expr, new_ctx, non_generic)
     node.inferred_type = node.expr.inferred_type
+    node.binds = flatten(groups)
 
 @infer.register(CoreMatch)
 def infer_match(node, ctx, non_generic):

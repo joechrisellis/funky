@@ -55,13 +55,16 @@ def __logical_and(a):
 def __logical_or(a):
     return lambda x: a or x
 
-def __match(scrutinee, outcomes):
+def __match(scrutinee, outcomes, default):
     if isinstance(scrutinee, ADT):
         ans = __match_adt(scrutinee, outcomes)
     else:
         ans = __match_literal(scrutinee, outcomes)
 
-    return __lazy(ans)
+    if ans is not None:
+        return __lazy(ans)
+    else:
+        return __lazy(default)
 
 def __match_adt(scrutinee, outcomes):
     raise NotImplementedError()
@@ -212,10 +215,11 @@ class PythonCodeGenerator(CodeGenerator):
                 wildcard = d["_"]
                 del d["_"]
 
-            match = "__match({}, {{{}}})".format(scrutinee, ", ".join(
-                "{} : lambda: {}".format(k, v) for k, v in d.items()
-            ))
-            return "{} if {} is not None else {}".format(match, match, wildcard)
+            match = "__match({}, {{{}}}, lambda: {})".format(scrutinee, ", ".join(
+                "{} : lambda: {}".format(k, v) for k, v in d.items()),
+                wildcard
+            )
+            return match
 
     def do_generate_code(self, core_tree, typedefs):
         self.program = ""

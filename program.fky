@@ -1,10 +1,6 @@
 module test where
+    
+    factorial 0 = 1
+    factorial n = n * factorial (n - 1)
 
-    compose f g x = f (g x)
-
-    double x = x * 2
-    addten x = x + 10
-
-    double_and_add_ten = compose addten double
-
-    main = double_and_add_ten
+    main = factorial

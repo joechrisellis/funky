@@ -43,6 +43,7 @@ BUILTIN_FUNCTIONS = {
     "negate"  :  FunctionType(Num(), Num()),
     "*"       :  FunctionType(Num(), FunctionType(Num(), Num())),
     "/"       :  FunctionType(Num(), FunctionType(Num(), Num())),
+    "%"       :  FunctionType(Num(), FunctionType(Num(), Num())),
     "&&"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
     "||"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
     # ":"       :  FunctionType(t, FunctionType(Cons, Cons)),

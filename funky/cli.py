@@ -70,6 +70,12 @@ def main():
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {} seconds.".format(finish - start))
 
+    args.output.write(output)
+
+    log.info("Written target code to {}.".format(args.output.name))
+
+    print("Success!")
+
 def start():
     """Exists only for setuptools."""
     main()

@@ -427,6 +427,7 @@ class FunkyParser:
                   | MINUS
                   | TIMES
                   | DIVIDE
+                  | MODULO
                   | POW
                   | EQUALITY
                   | INEQUALITY

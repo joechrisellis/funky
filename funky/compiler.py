@@ -37,7 +37,7 @@ def compile_to_c(source, dump_lexed=False,
     """Compiles funky source code.
 
     :param source str: the source code for the program as a raw string.
-    :return:           the C source code, ready to be written to a file.
+    :return:           the target source code, ready to be written to a file.
     :rtype:            str
     """
 
@@ -108,3 +108,5 @@ def compile_to_c(source, dump_lexed=False,
             print("")
     except FunkyCodeGenerationError:
         err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)
+
+    return target_source

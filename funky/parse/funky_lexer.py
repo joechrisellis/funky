@@ -38,7 +38,7 @@ class FunkyLexer:
         "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
 
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
-        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "AND", "OR",
+        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO", "AND", "OR",
         "LIST_CONSTRUCTOR",
 
         "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",
@@ -124,6 +124,7 @@ class FunkyLexer:
     t_MINUS             =  r"-"
     t_TIMES             =  r"\*"
     t_DIVIDE            =  r"/"
+    t_MODULO            =  r"%"
     t_AND               =  r"&&"
     t_OR                =  r"\|\|"
     t_LIST_CONSTRUCTOR  =  r":"

@@ -1,7 +1,8 @@
 module test where
 
-    pi = 3.14
-    area           r  =  pi  *  r   **  2
-    circumference  r  =  2   *  pi  *   r
+    otherwise = True
 
-    main = area 51
+    gcd x y | y == 0    = x
+            | otherwise = gcd y (x + y)
+
+    main = gcd 10 20

@@ -43,6 +43,7 @@ fixities = {
     _rmb(FunkyLexer.t_MINUS)             :  ("left",      6),
     _rmb(FunkyLexer.t_PLUS)              :  ("left",      6),
     _rmb(FunkyLexer.t_DIVIDE)            :  ("left",      7),
+    _rmb(FunkyLexer.t_MODULO)            :  ("left",      7),
     _rmb(FunkyLexer.t_TIMES)             :  ("left",      7),
     _rmb(FunkyLexer.t_POW)               :  ("right",     8),
 }

@@ -52,13 +52,13 @@ def __logical_and(a):
 def __logical_or(a):
     return lambda x: a or x
 
-def __match(scrutinee, outcomes, wildcard=None):
+def __match(scrutinee, outcomes):
     if isinstance(scrutinee, ADT):
         ans = __match_adt(scrutinee, outcomes)
     else:
         ans = __match_literal(scrutinee, outcomes)
 
-    return ans or wildcard
+    return ans
 
 def __match_adt(scrutinee, outcomes):
     raise NotImplementedError()
@@ -78,9 +78,6 @@ def __let(**bindings):
     locals_.update(bindings)
     yield
     locals_.update(original)
-
-def __none_coalesce(x, y):
-    return x if x is not None else y
 """
 
 builtins = {
@@ -207,9 +204,10 @@ class PythonCodeGenerator(CodeGenerator):
                 wildcard = d["_"]
                 del d["_"]
 
-            return "__none_coalesce(__match({}, {{{}}}), {})".format(scrutinee, ", ".join(
+            match = "__match({}, {{{}}})".format(scrutinee, ", ".join(
                 "{} : {}".format(k, v) for k, v in d.items()
-            ), wildcard)
+            ))
+            return "{} if {} is not None else {}".format(match, match, wildcard)
 
     def do_generate_code(self, core_tree, typedefs):
         self.program = ""

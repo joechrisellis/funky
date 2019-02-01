@@ -2,9 +2,7 @@ module test where
 
     newcons IntTree = Branch IntTree Integer IntTree | Leaf Integer
 
+    test = otherwise
     otherwise = True
 
-    sum 0 = 0
-    sum n = n + sum (n - 1)
-
-    main = sum
+    main = test

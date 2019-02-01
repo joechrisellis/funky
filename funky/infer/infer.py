@@ -150,8 +150,9 @@ def get_fresh(typ, non_generic):
             else:
                 return p
         elif isinstance(p, TypeOperator):
-            return TypeOperator(p.type_name, [aux(x) for x in p.types],
-                                parent_class=p.parent_class)
+            retval = TypeOperator(p.type_name, [aux(x) for x in p.types])
+            retval.parent_class = p.parent_class
+            return retval
 
     return aux(typ)
 
@@ -173,6 +174,9 @@ def unify(type1, type2):
                 raise FunkyTypeError("Constraints on {} do not permit "
                                      "{}.".format(a, b))
             a.instance = b
+            if isinstance(b, TypeVariable):
+                a.constraints = b.constraints
+                a.parent_class = b.parent_class
     elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
         unify(b, a)
     elif isinstance(a, TypeOperator) and isinstance(b, TypeOperator):
@@ -182,6 +186,7 @@ def unify(type1, type2):
                 raise FunkyTypeError("Type mismatch: found {} but expected "
                                      "{}.".format(str(a), str(b)))
 
+        a.parent_class = b.parent_class
         if a.type_name == b.type_name:
             for x, y in zip(a.types, b.types):
                 unify(x, y)
@@ -301,8 +306,8 @@ def create_algebraic_data_structure(adt, ctx):
             typeclass_mapping[adt.type_name] = [prefixed]
 
         tyvars = []
-        constructor_op = TypeOperator(prefixed, tyvars,
-                                      parent_class=adt.type_name)
+        constructor_op = TypeOperator(prefixed, tyvars)
+        constructor_op.parent_class = adt.type_name
 
         f = constructor_op
         for p in reversed(constructor.parameters):

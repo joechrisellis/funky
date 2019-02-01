@@ -1,8 +1,10 @@
 module test where
 
-    otherwise = True
+    compose f g x = f (g x)
 
-    gcd x y | y == 0    = x
-            | otherwise = gcd y (x + y)
+    double x = x * 2
+    addten x = x + 10
 
-    main = gcd 10 20
+    double_and_add_ten = compose addten double
+
+    main = double_and_add_ten

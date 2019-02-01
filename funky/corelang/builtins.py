@@ -26,24 +26,24 @@ python_to_funky = {
     str    :  Char,
 }
 
-# Get a fresh 'num' typeclass.
-Num = lambda: TypeVariable(constraints=[Float.type_name, Integer.type_name],
-                           parent_class="Num")
+Num               =  TypeVariable()
+Num.constraints   =  [Float.type_name,  Integer.type_name]
+Num.parent_class  =  "Num"
 
 BUILTIN_FUNCTIONS = {
     "=="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
     "!="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
-    "<"       :  FunctionType(Num(), FunctionType(Num(), Bool)),
-    "<="      :  FunctionType(Num(), FunctionType(Num(), Bool)),
-    ">"       :  FunctionType(Num(), FunctionType(Num(), Bool)),
-    ">="      :  FunctionType(Num(), FunctionType(Num(), Bool)),
-    "**"      :  FunctionType(Num(), FunctionType(Num(), Num())),
-    "+"       :  FunctionType(Num(), FunctionType(Num(), Num())),
-    "-"       :  FunctionType(Num(), FunctionType(Num(), Num())),
-    "negate"  :  FunctionType(Num(), Num()),
-    "*"       :  FunctionType(Num(), FunctionType(Num(), Num())),
-    "/"       :  FunctionType(Num(), FunctionType(Num(), Num())),
-    "%"       :  FunctionType(Num(), FunctionType(Num(), Num())),
+    "<"       :  FunctionType(Num, FunctionType(Num, Bool)),
+    "<="      :  FunctionType(Num, FunctionType(Num, Bool)),
+    ">"       :  FunctionType(Num, FunctionType(Num, Bool)),
+    ">="      :  FunctionType(Num, FunctionType(Num, Bool)),
+    "**"      :  FunctionType(Num, FunctionType(Num, Num)),
+    "+"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "-"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "negate"  :  FunctionType(Num, Num),
+    "*"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "/"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "%"       :  FunctionType(Num, FunctionType(Num, Num)),
     "&&"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
     "||"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
     # ":"       :  FunctionType(t, FunctionType(Cons, Cons)),

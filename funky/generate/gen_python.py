@@ -46,6 +46,9 @@ def __mul(a):
 def __div(a):
     return lambda x: a / x
 
+def __mod(a):
+    return lambda x: a % x
+
 def __logical_and(a):
     return lambda x: a and x
 
@@ -58,7 +61,7 @@ def __match(scrutinee, outcomes):
     else:
         ans = __match_literal(scrutinee, outcomes)
 
-    return ans
+    return __lazy(ans)
 
 def __match_adt(scrutinee, outcomes):
     raise NotImplementedError()
@@ -68,7 +71,8 @@ def __match_literal(scrutinee, outcomes):
         if scrutinee == alt:
             return expr
 
-def __let():
+def __lazy(f):
+    return f()
 
 @contextmanager
 def __let(**bindings):
@@ -95,6 +99,7 @@ builtins = {
     "negate"  :  "__negate",
     "*"       :  "__mul",
     "/"       :  "__div",
+    "%"       :  "__mod",
     "&&"      :  "__logical_and",
     "||"      :  "__logical_or",
 }
@@ -162,6 +167,7 @@ class PythonCodeGenerator(CodeGenerator):
     def py_compile(self, node, context="toplevel"):
         if isinstance(node, CoreBind):
             if context == "toplevel":
+                print(node.bindee.inferred_type)
                 self.emit("{} = {}".format(node.identifier,
                                            self.py_compile(node.bindee)))
             else:
@@ -207,7 +213,7 @@ class PythonCodeGenerator(CodeGenerator):
                 del d["_"]
 
             match = "__match({}, {{{}}})".format(scrutinee, ", ".join(
-                "{} : {}".format(k, v) for k, v in d.items()
+                "{} : lambda: {}".format(k, v) for k, v in d.items()
             ))
             return "{} if {} is not None else {}".format(match, match, wildcard)
 

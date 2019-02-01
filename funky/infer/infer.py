@@ -257,7 +257,16 @@ def create_type_alias(typedef, ctx):
                              "a type alias.".format(typedef.typ))
 
 def operator_prefix(s):
-    return "OP_{}".format(s)
+    """Prefixes a string with an operator prefix. This is used to distinguish
+    between constructors as actual type operators, and constructors as
+    functions that return the type operators.
+    
+    :param s str: the string to prefix
+    :return:      the prefixed string
+    :rtype:       str
+    """
+    OP_PREFIX = "OP"
+    return "{}_{}".format(OP_PREFIX, s)
 
 # Used to map constructors to their parent class. For instance:
 # newcons List =Cons Integer List | Nil

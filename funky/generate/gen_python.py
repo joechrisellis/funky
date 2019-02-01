@@ -68,6 +68,8 @@ def __match_literal(scrutinee, outcomes):
         if scrutinee == alt:
             return expr
 
+def __let():
+
 @contextmanager
 def __let(**bindings):
     # special thanks to Vladimir Iakovlev

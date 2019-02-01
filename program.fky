@@ -1,8 +1,7 @@
 module test where
 
-    even  0  =  True
-    even  n  =  odd    (n  -  1)
-    odd   0  =  False
-    odd   n  =  even   (n  -  1)
+    pi = 3.14
+    area           r  =  pi  *  r   **  2
+    circumference  r  =  2   *  pi  *   r
 
-    main = even
+    main = area 51

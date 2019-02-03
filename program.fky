@@ -10,4 +10,14 @@ module test where
                    odd 0  = False
                    odd n  = even (n - 1)
 
+    area r = pi * r ** 2.0 where pi = 3.14
+
+    factorial 0 = 1
+    factorial n = n * factorial (n - 1)
+
+    g  _      False  True   =  1
+    g  False  True   _      =  2
+    g  _      _      False  =  3
+    g  _      _      True   =  4
+
     main = test

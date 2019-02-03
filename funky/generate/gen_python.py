@@ -211,7 +211,7 @@ class PythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreLambda)
     def py_compile_lambda(self, node, indent):
         param = self.py_compile(node.param, indent)
-        expr = self.py_compile(node.expr, context="nested")
+        expr = self.py_compile(node.expr, indent)
         return "lambda {}: {}".format(param, expr)
 
     @py_compile.register(CoreLet)
@@ -224,7 +224,7 @@ class PythonCodeGenerator(CodeGenerator):
     def py_compile_match(self, node, indent):
         scrutinee = self.py_compile(node.scrutinee, indent)
         d = {self.py_compile(alt.altcon, indent) : self.py_compile(alt.expr, indent)
-             for alt in node.alts}
+             for alt in node.alts if alt.expr} # <-- check if this none check is needed
         
         wildcard = None
         if "_" in d:
@@ -237,72 +237,6 @@ class PythonCodeGenerator(CodeGenerator):
             wildcard
         )
         return match
-
-    def _py_compile(self, node, context="toplevel"):
-        if isinstance(node, CoreBind):
-            if context == "toplevel":
-                self.emit("{} = {}".format(node.identifier,
-                                           self.py_compile(node.bindee,
-                                                           context="nested")))
-            else:
-                return "{}={}".format(node.identifier,
-                                      self.py_compile(node.bindee,
-                                                      context="nested"))
-
-        elif isinstance(node, CoreCons):
-            pass
-
-        elif isinstance(node, CoreVariable):
-            return node.identifier
-
-        elif isinstance(node, CoreLiteral):
-            return node.value
-
-        elif isinstance(node, CoreApplication):
-            if isinstance(node.expr, CoreVariable) and \
-               node.expr.identifier in builtins:
-                f = builtins[node.expr.identifier]
-            else:
-                f = self.py_compile(node.expr, context="nested")
-            return "({})({})".format(f, self.py_compile(node.arg,
-                                                        context="nested"))
-
-        elif isinstance(node, CoreLambda):
-            param = self.py_compile(node.param, context="nested")
-            expr = self.py_compile(node.expr, context="nested")
-            return "lambda {}: {}".format(param, expr)
-
-        elif isinstance(node, CoreLet):
-            if context == "toplevel":
-                for bind in node.binds:
-                    self.emit(self.py_compile(bind, context="nested"))
-            else:
-                str_bindings = []
-                for bind in node.binds:
-                    str_bindings.append(self.py_compile(bind, context="nested"))
-
-                print(node.binds)
-                return "partial(lambda {}: {}, {})".format(", ".join(bind.identifier for bind in node.binds),
-                                                           self.py_compile(node.expr, context="nested"),
-                                                           ", ".join(str_bindings))
-
-        elif isinstance(node, CoreMatch):
-            scrutinee = self.py_compile(node.scrutinee, context="nested")
-            d = {self.py_compile(alt.altcon) : self.py_compile(alt.expr,
-                                                               context="nested")
-                 for alt in node.alts}
-            
-            wildcard = None
-            if "_" in d:
-                wildcard = d["_"]
-                del d["_"]
-
-            match = "__match({}, {{{}}}, lambda: {})".format(scrutinee,
-                                                             ", ".join(
-                "{} : lambda: {}".format(k, v) for k, v in d.items()),
-                wildcard
-            )
-            return match
 
     def do_generate_code(self, core_tree, typedefs):
         self.program = ""

@@ -168,7 +168,77 @@ class PythonCodeGenerator(CodeGenerator):
                                                         ", ".join(varnames)))
                 self.newline()
 
-    def py_compile(self, node, context="toplevel"):
+    py_compile = get_registry_function(registered_index=1) # 1 to skip self
+
+    @py_compile.register(CoreBind)
+    def py_compile_bind(self, node, indent):
+        if isinstance(node.bindee, CoreLambda):
+            lam = node.bindee
+            self.emit("def {}({}):".format(node.identifier,
+                                           self.py_compile(lam.param, indent)),
+                      d=indent)
+            return_statement = self.py_compile(lam.expr, indent+4)
+            self.emit("return {}".format(return_statement), d=indent+4)
+            self.newline()
+        else:
+            # if it's not a function bind, it must be a value bind.
+            val = node.bindee
+            self.emit("{} = {}".format(node.identifier,
+                                       self.py_compile(val, indent)),
+                      d=indent)
+
+    @py_compile.register(CoreCons)
+    def py_compile_cons(self, node, indent):
+        pass
+
+    @py_compile.register(CoreVariable)
+    def py_compile_variable(self, node, indent):
+        return node.identifier
+
+    @py_compile.register(CoreLiteral)
+    def py_compile_literal(self, node, indent):
+        return str(node.value)
+
+    @py_compile.register(CoreApplication)
+    def py_compile_application(self, node, indent):
+        if isinstance(node.expr, CoreVariable) and \
+           node.expr.identifier in builtins:
+            f = builtins[node.expr.identifier]
+        else:
+            f = self.py_compile(node.expr, indent)
+        return "({})({})".format(f, self.py_compile(node.arg, indent))
+
+    @py_compile.register(CoreLambda)
+    def py_compile_lambda(self, node, indent):
+        param = self.py_compile(node.param, indent)
+        expr = self.py_compile(node.expr, context="nested")
+        return "lambda {}: {}".format(param, expr)
+
+    @py_compile.register(CoreLet)
+    def py_compile_let(self, node, indent):
+        for bind in node.binds:
+            self.py_compile(bind, indent)
+        return self.py_compile(node.expr, indent)
+
+    @py_compile.register(CoreMatch)
+    def py_compile_match(self, node, indent):
+        scrutinee = self.py_compile(node.scrutinee, indent)
+        d = {self.py_compile(alt.altcon, indent) : self.py_compile(alt.expr, indent)
+             for alt in node.alts}
+        
+        wildcard = None
+        if "_" in d:
+            wildcard = d["_"]
+            del d["_"]
+
+        match = "__match({}, {{{}}}, lambda: {})".format(scrutinee,
+                                                         ", ".join(
+            "{} : lambda: {}".format(k, v) for k, v in d.items()),
+            wildcard
+        )
+        return match
+
+    def _py_compile(self, node, context="toplevel"):
         if isinstance(node, CoreBind):
             if context == "toplevel":
                 self.emit("{} = {}".format(node.identifier,
@@ -239,5 +309,5 @@ class PythonCodeGenerator(CodeGenerator):
         self.code_header()
         self.code_runtime()
         self.create_adts(typedefs)
-        self.py_compile(core_tree)
+        self.py_compile(core_tree, 0)
         return self.program[:]

@@ -46,7 +46,7 @@ def flatten(l):
 # This might look ugly, but the logic of it is simple and it allows us to use a
 # trivial interface for tree-walking, so it's well worth using your brain power
 # to understand it!
-def get_registry_function(throw_err=True, in_class=False):
+def get_registry_function(throw_err=True, registered_index=0):
     """Gets a registry function. Read docstring for 'register' below.
 
     :param throw_err bool: whether or not to throw a runtime error if no
@@ -55,7 +55,7 @@ def get_registry_function(throw_err=True, in_class=False):
     """
     def f(*args, **kwargs):
         try:
-            obj = args[1] if in_class else args[0]
+            obj = args[registered_index]
             return f.register.registry[type(obj)](*args, **kwargs)
         except KeyError:
             if throw_err:

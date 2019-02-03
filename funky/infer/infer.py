@@ -86,7 +86,7 @@ def infer_let(node, ctx, non_generic):
     # expression
     infer(node.expr, new_ctx, non_generic)
     node.inferred_type = node.expr.inferred_type
-    node.binds = flatten(groups)
+    node.binds = list(flatten(groups))
 
 @infer.register(CoreMatch)
 def infer_match(node, ctx, non_generic):

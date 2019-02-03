@@ -1,6 +1,16 @@
 module test where
-    
+
+    newcons List = Cons Integer List | Nil
+
+    debug = False
+
     factorial 0 = 1
     factorial n = n * factorial (n - 1)
 
-    main = factorial
+    my_val = x + y where
+                    x = match debug of
+                            True -> factorial 5
+                            False -> factorial 2
+                    y = factorial 4
+
+    main = my_val

@@ -5,6 +5,7 @@ import datetime
 
 python_runtime = """from contextlib import contextmanager
 from inspect import currentframe, getouterframes
+from functools import partial
 
 class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
@@ -128,53 +129,55 @@ class PythonCodeGenerator(CodeGenerator):
     def create_adts(self, typedefs):
         for typedef in typedefs:
             adt = typedef.typ
-            superclass_name = adt.type_name
+            superclass_name = "ADT{}".format(adt.type_name)
             self.emit("class {}(ADT):".format(superclass_name))
             self.emit(self.docstring("ADT superclass."), d=4)
             self.emit("    pass")
             self.newline()
 
             for constructor in adt.constructors:
-                self.emit("class {}({}):".format(constructor.identifier,
+                constructor_name = "ADT{}".format(constructor.identifier)
+                self.emit("class {}({}):".format(constructor_name,
                                                  superclass_name))
-                if not constructor.parameters:
-                    self.emit("    pass")
-                    self.newline()
-                    continue
-
                 varnames = ["v{}".format(i)
                             for i, _ in enumerate(constructor.parameters)]
-                self.newline()
-                self.emit("    def __init__(self, {}):".format(", ".join(varnames)))
-                for var in varnames:
-                    self.emit("        self.{} = {}".format(var, var))
+                if varnames:
+                    self.newline()
+                    self.emit("    def __init__(self, {}):".format(", ".join(varnames)))
+                    for var in varnames:
+                        self.emit("        self.{} = {}".format(var, var))
 
                 self.newline()
 
-                eq_cond = " and \\\n               ".join("self.{} == other.{}".format(v, v) for v in varnames)
                 self.emit("    def __eq__(self, other):")
                 self.emit("        if not isinstance(other, self.__class__):")
                 self.emit("            return False")
-                self.emit("        return {}".format(eq_cond))
+                if varnames:
+                    eq_cond = " and \\\n               ".join("self.{} == other.{}".format(v, v) for v in varnames)
+                    self.emit("        return {}".format(eq_cond))
+                else:
+                    self.emit("        return True")
                 self.newline()
 
                 s = ""
                 for var in varnames:
                     s += "lambda {}: ".format(var)
-                self.emit("__make_{} = {}{}({})".format(constructor.identifier,
+                self.emit("{} = {}{}({})".format(constructor.identifier,
                                                         s,
-                                                        constructor.identifier,
+                                                        constructor_name,
                                                         ", ".join(varnames)))
                 self.newline()
 
     def py_compile(self, node, context="toplevel"):
         if isinstance(node, CoreBind):
             if context == "toplevel":
-                print(node.bindee.inferred_type)
                 self.emit("{} = {}".format(node.identifier,
-                                           self.py_compile(node.bindee)))
+                                           self.py_compile(node.bindee,
+                                                           context="nested")))
             else:
-                return "something"
+                return "{}={}".format(node.identifier,
+                                      self.py_compile(node.bindee,
+                                                      context="nested"))
 
         elif isinstance(node, CoreCons):
             pass
@@ -190,24 +193,33 @@ class PythonCodeGenerator(CodeGenerator):
                node.expr.identifier in builtins:
                 f = builtins[node.expr.identifier]
             else:
-                f = self.py_compile(node.expr)
-            return "({})({})".format(f, self.py_compile(node.arg))
+                f = self.py_compile(node.expr, context="nested")
+            return "({})({})".format(f, self.py_compile(node.arg,
+                                                        context="nested"))
 
         elif isinstance(node, CoreLambda):
-            param = self.py_compile(node.param)
-            expr = self.py_compile(node.expr)
+            param = self.py_compile(node.param, context="nested")
+            expr = self.py_compile(node.expr, context="nested")
             return "lambda {}: {}".format(param, expr)
 
         elif isinstance(node, CoreLet):
             if context == "toplevel":
                 for bind in node.binds:
-                    self.emit(self.py_compile(bind))
+                    self.emit(self.py_compile(bind, context="nested"))
             else:
-                pass
+                str_bindings = []
+                for bind in node.binds:
+                    str_bindings.append(self.py_compile(bind, context="nested"))
+
+                print(node.binds)
+                return "partial(lambda {}: {}, {})".format(", ".join(bind.identifier for bind in node.binds),
+                                                           self.py_compile(node.expr, context="nested"),
+                                                           ", ".join(str_bindings))
 
         elif isinstance(node, CoreMatch):
-            scrutinee = self.py_compile(node.scrutinee)
-            d = {self.py_compile(alt.altcon) : self.py_compile(alt.expr)
+            scrutinee = self.py_compile(node.scrutinee, context="nested")
+            d = {self.py_compile(alt.altcon) : self.py_compile(alt.expr,
+                                                               context="nested")
                  for alt in node.alts}
             
             wildcard = None
@@ -215,7 +227,8 @@ class PythonCodeGenerator(CodeGenerator):
                 wildcard = d["_"]
                 del d["_"]
 
-            match = "__match({}, {{{}}}, lambda: {})".format(scrutinee, ", ".join(
+            match = "__match({}, {{{}}}, lambda: {})".format(scrutinee,
+                                                             ", ".join(
                 "{} : lambda: {}".format(k, v) for k, v in d.items()),
                 wildcard
             )

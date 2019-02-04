@@ -9,9 +9,9 @@ def annotate_section(f):
     """
     def wrapper(*args, **kwargs):
         self = args[0]
-        self.comment("section: {}".format(f.__name__))
+        com = self.comment("section: {}".format(f.__name__))
+        self.emit(com)
         f(*args, **kwargs)
-        self.newline()
     return wrapper
 
 class CodeGenerator:

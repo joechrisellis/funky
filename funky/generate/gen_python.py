@@ -3,13 +3,11 @@ from funky.generate.gen import CodeGenerator, annotate_section
 from funky.util import get_registry_function
 import datetime
 
-python_runtime = """from contextlib import contextmanager
-from inspect import currentframe, getouterframes
-from functools import partial
-
-class ADT:
+python_runtime = """class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
-    pass
+
+    def __init__(self, params):
+        self.params = params
 
 def __eq(a):
     return lambda x: a == x
@@ -59,16 +57,21 @@ def __logical_or(a):
 def __match(scrutinee, outcomes, default):
     if isinstance(scrutinee, ADT):
         ans = __match_adt(scrutinee, outcomes)
+        if ans is not None:
+            args = [p for p in scrutinee.params]
+            if args:
+                return __lazy(ans(*args))
+            else:
+                return __lazy(ans)
     else:
         ans = __match_literal(scrutinee, outcomes)
+        if ans is not None:
+            return __lazy(ans)
 
-    if ans is not None:
-        return __lazy(ans)
-    else:
-        return __lazy(default)
+    return __lazy(default)
 
 def __match_adt(scrutinee, outcomes):
-    raise NotImplementedError()
+    return outcomes.get(scrutinee.__class__, None)
 
 def __match_literal(scrutinee, outcomes):
     for alt, expr in outcomes.items():
@@ -77,17 +80,6 @@ def __match_literal(scrutinee, outcomes):
 
 def __lazy(f):
     return f()
-
-@contextmanager
-def __let(**bindings):
-    # special thanks to Vladimir Iakovlev
-    # 2 because first frame in `contextmanager` decorator  
-    frame = getouterframes(currentframe(), 2)[-1][0]
-    locals_ = frame.f_locals
-    original = {var: locals_.get(var) for var in bindings.keys()}
-    locals_.update(bindings)
-    yield
-    locals_.update(original)
 """
 
 builtins = {
@@ -141,22 +133,31 @@ class PythonCodeGenerator(CodeGenerator):
                                                  superclass_name))
                 varnames = ["v{}".format(i)
                             for i, _ in enumerate(constructor.parameters)]
+
+                self.newline()
                 if varnames:
-                    self.newline()
                     self.emit("    def __init__(self, {}):".format(", ".join(varnames)))
-                    for var in varnames:
-                        self.emit("        self.{} = {}".format(var, var))
+                    self.emit("        super().__init__([{}])".format(", ".join(v for v in varnames)))
+                else:
+                    self.emit("    def __init__(self):".format(", ".join(varnames)))
+                    self.emit("        super().__init__([])")
 
                 self.newline()
 
                 self.emit("    def __eq__(self, other):")
                 self.emit("        if not isinstance(other, self.__class__):")
                 self.emit("            return False")
+                self.emit("        return all(x == y for x, y in zip(self.params, other.params))")
+                self.newline()
+
+                self.emit("    def __str__(self):")
+                self.emit("        name = type(self).__name__[3:]")
                 if varnames:
-                    eq_cond = " and \\\n               ".join("self.{} == other.{}".format(v, v) for v in varnames)
-                    self.emit("        return {}".format(eq_cond))
+                    self.emit("        vars = [str(x) for x in self.params]")
+                    self.emit("        return \"({} {})\".format(name, \" \".join(vars))")
                 else:
-                    self.emit("        return True")
+                    self.emit("        return name")
+
                 self.newline()
 
                 s = ""
@@ -189,7 +190,13 @@ class PythonCodeGenerator(CodeGenerator):
 
     @py_compile.register(CoreCons)
     def py_compile_cons(self, node, indent):
-        pass
+        vs = []
+        for parameter in node.parameters:
+            if isinstance(parameter, CoreVariable):
+                vs.append("FreeVariable({})".format(parameter.identifier))
+            else:
+                pass
+        return "ADT{}".format(node.constructor)
 
     @py_compile.register(CoreVariable)
     def py_compile_variable(self, node, indent):
@@ -223,25 +230,46 @@ class PythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreMatch)
     def py_compile_match(self, node, indent):
         scrutinee = self.py_compile(node.scrutinee, indent)
-        d = {self.py_compile(alt.altcon, indent) : self.py_compile(alt.expr, indent)
-             for alt in node.alts if alt.expr} # <-- check if this none check is needed
-        
+        d = {}
+        for alt in node.alts:
+            if not alt.expr: continue
+            k = self.py_compile(alt.altcon, indent)
+            v = self.py_compile(alt.expr, indent)
+            if isinstance(alt.altcon, CoreCons) and alt.altcon.parameters:
+                v = "lambda {}: lambda: {}".format(
+                    ", ".join(self.py_compile(x, indent) for x in alt.altcon.parameters),
+                    v,
+                )
+            else:
+                v = "lambda: {}".format(v)
+            d[k] = v
+
         wildcard = None
         if "_" in d:
             wildcard = d["_"]
             del d["_"]
 
-        match = "__match({}, {{{}}}, lambda: {})".format(scrutinee,
+        match = "__match({}, {{{}}}, {})".format(scrutinee,
                                                          ", ".join(
-            "{} : lambda: {}".format(k, v) for k, v in d.items()),
+            "{} : {}".format(k, v) for k, v in d.items()),
             wildcard
         )
         return match
+
+    @annotate_section
+    def emit_main(self, main):
+        self.emit("def main():")
+        self.emit("print({})".format(main), d=4)
+        self.newline()
+        self.emit("if __name__ == \"__main__\":")
+        self.emit("    main()")
 
     def do_generate_code(self, core_tree, typedefs):
         self.program = ""
         self.code_header()
         self.code_runtime()
         self.create_adts(typedefs)
-        self.py_compile(core_tree, 0)
+        main = self.py_compile(core_tree, 0)
+
+        self.emit_main(main)
         return self.program[:]

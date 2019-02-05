@@ -43,7 +43,10 @@ def __mul(a):
     return lambda x: a * x
 
 def __div(a):
-    return lambda x: a / x
+    if isinstance(a, int):
+        return lambda x: a // x
+    else:
+        return lambda x: a / x
 
 def __mod(a):
     return lambda x: a % x
@@ -60,13 +63,13 @@ def __match(scrutinee, outcomes, default):
         if ans is not None:
             args = [p for p in scrutinee.params]
             if args:
-                return __lazy(ans(*args))
+                return ans(*args)
             else:
-                return __lazy(ans)
+                return ans()
     else:
         ans = __match_literal(scrutinee, outcomes)
         if ans is not None:
-            return __lazy(ans)
+            return ans()
 
     return __lazy(default)
 
@@ -218,8 +221,10 @@ class PythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreLambda)
     def py_compile_lambda(self, node, indent):
         param = self.py_compile(node.param, indent)
-        expr = self.py_compile(node.expr, indent)
-        return "lambda {}: {}".format(param, expr)
+        self.emit("def lam({}):".format(param), d=indent)
+        expr = self.py_compile(node.expr, indent + 4)
+        self.emit("return {}".format(expr), d=indent+4)
+        return "lam"
 
     @py_compile.register(CoreLet)
     def py_compile_let(self, node, indent):
@@ -231,30 +236,32 @@ class PythonCodeGenerator(CodeGenerator):
     def py_compile_match(self, node, indent):
         scrutinee = self.py_compile(node.scrutinee, indent)
         d = {}
-        for alt in node.alts:
+        default = None
+        for i, alt in enumerate(node.alts):
             if not alt.expr: continue
-            k = self.py_compile(alt.altcon, indent)
-            v = self.py_compile(alt.expr, indent)
-            if isinstance(alt.altcon, CoreCons) and alt.altcon.parameters:
-                v = "lambda {}: lambda: {}".format(
-                    ", ".join(self.py_compile(x, indent) for x in alt.altcon.parameters),
-                    v,
-                )
+            fname = "m{}".format(i)
+
+            if isinstance(alt.altcon, CoreCons):
+                params = [v.identifier for v in alt.altcon.parameters]
+                self.emit("def {}({}):".format(fname, ", ".join(params)),
+                          d=indent)
             else:
-                v = "lambda: {}".format(v)
-            d[k] = v
+                self.emit("def {}():".format(fname), d=indent)
 
-        wildcard = None
-        if "_" in d:
-            wildcard = d["_"]
-            del d["_"]
+            k = self.py_compile(alt.altcon, indent+4)
+            v = self.py_compile(alt.expr, indent=indent+4)
 
-        match = "__match({}, {{{}}}, {})".format(scrutinee,
-                                                         ", ".join(
-            "{} : {}".format(k, v) for k, v in d.items()),
-            wildcard
+            if isinstance(alt.altcon, CoreVariable):
+                default = fname
+            else:
+                d[k] = fname
+            self.emit("return {}".format(v), d=indent+4)
+
+        return "__match({}, {{{}}}, {})".format(
+            scrutinee,
+            ", ".join("{} : {}".format(k, v) for k, v in d.items()),
+            default,
         )
-        return match
 
     @annotate_section
     def emit_main(self, main):

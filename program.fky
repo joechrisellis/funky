@@ -2,15 +2,39 @@ module test where
 
     newcons List = Cons Integer List | Nil
 
+    random i = ans
+               where j   = 7 * i % 101
+                     ans = (j - 1) % 10 + 1
+
     otherwise = True
+
+    nth 0 (Cons x xs) = x
+    nth n (Cons x xs) = nth (n - 1) xs
+
+    length Nil         = 0
+    length (Cons x xs) = 1 + length xs
+
+    mid xs = nth n xs
+             where n = (length xs) / 2
+
+    concatenate (Cons x xs) ys = Cons x (xs `concatenate` ys)
+    concatenate xs          Nil  =  xs
+    concatenate Nil         ys   =  ys
 
     filter f Nil         = Nil
     filter f (Cons x xs) | f x       = Cons x (filter f xs)
                          | otherwise = filter f xs
 
-    range x y | x == y    = Cons x Nil
-              | otherwise = Cons x (range (x + 1) y)
+    qsort Nil = Nil
+    qsort (Cons p xs)  = (qsort left) `concatenate` (Cons p Nil) `concatenate` (qsort right)
+                         where left  = filter (lambda x -> x <= p) xs
+                               right = filter (lambda x -> x >  p) xs
 
-    main = filter (lambda x -> x % 2 == 0) (range 1 10)
+    foldr f z Nil         = z
+    foldr f z (Cons x xs) = f x (foldr f z xs)
 
+    random_list seed 0 = Nil
+    random_list seed n = Cons (random new_seed) (random_list new_seed (n - 1))
+                         where new_seed = random seed
 
+    main = qsort (random_list 50 10)

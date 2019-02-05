@@ -158,6 +158,7 @@ def lambda_desugar(node):
             lam = CoreLambda(p, lam)
 
     lam.original_arity = len(node.parameters)
+    lam.is_raw_lambda = True
     return lam
 
 @desugar.register(Let)
@@ -257,7 +258,7 @@ def condense_function_binds(binds):
     new_desugared_statements = []
     for identifier, bindees in bind_dict.items():
         # if this is not implicit pattern matching, ignore it
-        if not isinstance(bindees[0], CoreLambda):
+        if not isinstance(bindees[0], CoreLambda) or bindees[0].is_raw_lambda:
             bind = CoreBind(identifier, bindees[0])
             new_desugared_statements.append(bind)
             continue

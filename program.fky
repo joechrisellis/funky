@@ -1,40 +1,50 @@
 module test where
 
-    newcons List = Cons Integer List | Nil
-
-    random i = ans
-               where j   = 7 * i % 101
-                     ans = (j - 1) % 10 + 1
-
     otherwise = True
 
-    nth 0 (Cons x xs) = x
-    nth n (Cons x xs) = nth (n - 1) xs
+    newcons List = Cons Integer List | Nil
+    newcons Pair = P Integer Integer
+
+    newcons PairList = PCons Pair PairList | PNil
+
+    concatenate (Cons x xs) ys = Cons x (xs `concatenate` ys)
+    concatenate xs Nil         = xs
+    concatenate Nil ys         = ys
+
+    last (Cons x Nil) = x
+    last (Cons x xs)  = last xs
+
+    last_but_one (Cons x (Cons y Nil)) = x
+    last_but_one (Cons x xs)           = last_but_one xs
+
+    kth 1 (Cons x xs) = x
+    kth n (Cons x xs) = kth (n - 1) xs
 
     length Nil         = 0
     length (Cons x xs) = 1 + length xs
 
-    mid xs = nth n xs
-             where n = (length xs) / 2
+    reverse Nil         = Nil
+    reverse (Cons x xs) = (reverse xs) `concatenate` (Cons x Nil)
 
-    concatenate (Cons x xs) ys = Cons x (xs `concatenate` ys)
-    concatenate xs          Nil  =  xs
-    concatenate Nil         ys   =  ys
+    is_palindrome list = list == reverse list
 
-    filter f Nil         = Nil
-    filter f (Cons x xs) | f x       = Cons x (filter f xs)
-                         | otherwise = filter f xs
+    compress (Cons x (Cons y ys)) | x == y    = compress (Cons y ys)
+                                  | otherwise = Cons x (compress (Cons y ys))
+    compress xs = xs
 
-    qsort Nil = Nil
-    qsort (Cons p xs)  = (qsort left) `concatenate` (Cons p Nil) `concatenate` (qsort right)
-                         where left  = filter (lambda x -> x <= p) xs
-                               right = filter (lambda x -> x >  p) xs
+    encode (Cons x xs) = PCons (P x (length run)) (encode rest)
+                         where pred1 = lambda y -> x == y
+                               pred2 = lambda y -> x != y
+                               run   = takeWhile pred1 (Cons x xs)
+                               rest  = dropWhile pred2 (Cons x xs)
 
-    foldr f z Nil         = z
-    foldr f z (Cons x xs) = f x (foldr f z xs)
+                               takeWhile p (Cons x xs) | p x       = Cons x (takeWhile p xs)
+                                                       | otherwise = takeWhile p xs
+                               takeWhile p Nil = Nil
 
-    random_list seed 0 = Nil
-    random_list seed n = Cons (random new_seed) (random_list new_seed (n - 1))
-                         where new_seed = random seed
+                               dropWhile p (Cons x xs) | p x       = dropWhile p xs
+                                                       | otherwise = xs
+                               dropWhile p Nil = Nil
 
-    main = qsort (random_list 50 10)
+    main = encode list
+           where list = (Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil)))))

@@ -91,8 +91,14 @@ class CoreLambda(CoreNode):
     
     def __init__(self, param, expr):
         super().__init__()
-        self.param  =  param
-        self.expr   =  expr
+        self.param          =  param
+        self.expr           =  expr
+
+        # was this lambda *explicitly* a lambda as declared in the syntax?
+        # i.e. was it (lambda x -> x), or was it f x = x but converted to a
+        # core lambda? We need to remember this so that we know not to attempt
+        # to condense raw lambdas like we do with implicit pattern matching.
+        self.is_raw_lambda  =  False
     
     def __str__(self):
         return "lambda {} -> {}".format(str(self.param),

@@ -105,7 +105,7 @@ class FunkyParser:
     def p_DECLARATION(self, p):
         """DECLARATION : GEN_DECLARATION
                        | FUNCTION_LHS RHS
-                       | PAT RHS
+                       | LPAT RHS
         """
         if len(p) == 2:
             p[0] = p[1]
@@ -151,9 +151,7 @@ class FunkyParser:
 
     def p_ATYPE(self, p):
         """ATYPE : TYPENAME
-                 | OPEN_PAREN TYPES_LIST CLOSE_PAREN
                  | OPEN_PAREN TYPE CLOSE_PAREN
-                 | OPEN_SQUARE TYPE CLOSE_SQUARE
         """
         if len(p) == 2:
             p[0] = p[1]
@@ -167,7 +165,7 @@ class FunkyParser:
 
     def p_FUNCTION_LHS(self, p):
         """FUNCTION_LHS : IDENTIFIER APAT APATS
-                        | PAT VAROP PAT
+                        | LPAT VAROP LPAT
                         | OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
         """
         if type(p[1]) == str:
@@ -196,24 +194,13 @@ class FunkyParser:
             p[0] = FunctionRHS(p[1], declarations=p[3])
 
     def p_GDRHS(self, p):
-        """GDRHS : GUARDS EQUALS EXP
-                 | GUARDS EQUALS EXP GDRHS
+        """GDRHS : PIPE EXP EQUALS EXP
+                 | PIPE EXP EQUALS EXP GDRHS
         """
-        if len(p) == 4:
-            p[0] = [GuardedExpression(p[1], p[3])]
+        if len(p) == 5:
+            p[0] = [GuardedExpression(p[2], p[4])]
         else:
-            p[0] = [GuardedExpression(p[1], p[3])] + p[4]
-
-    def p_GUARDS(self, p):
-        """GUARDS : PIPE GUARD
-        """
-        p[0] = p[2]
-
-    def p_GUARD(self, p):
-        """GUARD : INFIX_EXP
-        """ # we only allow for BOOLEAN guards.
-        p[0] = p[1]
-        p[0] = fixity.resolve_fixity(p[0])
+            p[0] = [GuardedExpression(p[2], p[4])] + p[5]
 
     def p_EXP(self, p):
         """EXP : INFIX_EXP
@@ -271,12 +258,9 @@ class FunkyParser:
 
     def p_AEXP(self, p):
         """AEXP : USED_VAR
-                | GCON
+                | TYPENAME
                 | LITERAL
                 | OPEN_PAREN EXP CLOSE_PAREN
-                | OPEN_PAREN EXP COMMA EXP_LIST CLOSE_PAREN
-                | OPEN_SQUARE EXP CLOSE_SQUARE
-                | OPEN_SQUARE EXP COMMA EXP_LIST CLOSE_SQUARE
         """
         if len(p) == 2:
             if p[1] == ():
@@ -317,25 +301,16 @@ class FunkyParser:
             p[0] = p[1]
 
     def p_ALT(self, p):
-        """ALT : PAT ARROW EXP
+        """ALT : LPAT ARROW EXP
                |
         """
         p[0] = [Alternative(p[1], p[3])] if len(p) == 4 else []
-
-    def p_PAT(self, p):
-        """PAT : LPAT LIST_CONSTRUCTOR PAT
-               | LPAT
-        """
-        if len(p) == 4:
-            p[0] = True
-        else:
-            p[0] = p[1]
 
     def p_LPAT(self, p):
         """LPAT : APAT
                 | MINUS OPEN_PAREN INTEGER CLOSE_PAREN
                 | MINUS OPEN_PAREN FLOAT CLOSE_PAREN
-                | GCON APAT APATS
+                | TYPENAME APAT APATS
         """
         if len(p) == 2:
             p[0] = p[1]
@@ -346,11 +321,9 @@ class FunkyParser:
 
     def p_APAT(self, p):
         """APAT : PARAM
-                | GCON
+                | TYPENAME
                 | LITERAL
-                | OPEN_PAREN PAT CLOSE_PAREN
-                | OPEN_PAREN PAT COMMA PAT_LIST CLOSE_PAREN
-                | OPEN_SQUARE PAT_LIST CLOSE_SQUARE
+                | OPEN_PAREN LPAT CLOSE_PAREN
         """
         if len(p) == 2:
             if p[1] == ():
@@ -365,18 +338,6 @@ class FunkyParser:
             p[0] = p[2]
         else:
             p[0] = CoreTuple((p[2], *p[4].items))
-
-    def p_GCON(self, p):
-        """GCON : OPEN_PAREN CLOSE_PAREN
-                | OPEN_SQUARE CLOSE_SQUARE
-                | TYPENAME
-        """
-        if p[1] == "(":
-            p[0] = ()
-        elif p[1] == "[":
-            p[0] = []
-        else:
-            p[0] = p[1]
 
     def p_VAROP(self, p):
         """VAROP : VARSYM
@@ -394,15 +355,6 @@ class FunkyParser:
         """
         p[0] = p[1]
 
-    def p_EXP_LIST(self, p):
-        """EXP_LIST : EXP_LIST COMMA EXP
-                    | EXP
-        """
-        if len(p) == 4:
-            p[0] = p[1] + [p[3]]
-        else:
-            p[0] = [p[1]]
-
     def p_APATS(self, p):
         """APATS : APAT APATS
                  |
@@ -411,16 +363,6 @@ class FunkyParser:
             p[0] = []
         else:
             p[0] = [p[1]] + p[2]
-
-    def p_PAT_LIST(self, p):
-        """PAT_LIST : PAT_LIST COMMA PAT
-                    | PAT
-        """
-        if len(p) == 4:
-            p[0] = p[1]
-            p[0].items.append(p[3])
-        else:
-            p[0] = CoreList([p[1]])
 
     def p_VARSYM(self, p):
         """VARSYM : PLUS
@@ -440,15 +382,6 @@ class FunkyParser:
                   | LIST_CONSTRUCTOR
         """
         p[0] = p[1]
-
-    def p_TYPES_LIST(self, p):
-        """TYPES_LIST : TYPES_LIST COMMA TYPE
-                      | TYPE
-        """
-        if len(p) == 4:
-            p[0] = p[1] + [p[3]]
-        else:
-            p[0] = [p[1]]
 
     def p_LITERAL(self, p):
         """LITERAL : FLOAT

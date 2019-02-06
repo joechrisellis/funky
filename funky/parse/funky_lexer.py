@@ -41,7 +41,8 @@ class FunkyLexer:
         "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO", "AND", "OR",
         "LIST_CONSTRUCTOR",
 
-        "OPEN_PAREN", "CLOSE_PAREN", "OPEN_SQUARE", "CLOSE_SQUARE",
+        "OPEN_PAREN", "CLOSE_PAREN",
+        "OPEN_SQUARE", "CLOSE_SQUARE",
         "OPEN_BRACE", "CLOSE_BRACE",
 
         "IDENTIFIER", "TYPENAME",

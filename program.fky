@@ -2,49 +2,6 @@ module test where
 
     otherwise = True
 
-    newcons List = Cons Integer List | Nil
-    newcons Pair = P Integer Integer
-
-    newcons PairList = PCons Pair PairList | PNil
-
-    concatenate (Cons x xs) ys = Cons x (xs `concatenate` ys)
-    concatenate xs Nil         = xs
-    concatenate Nil ys         = ys
-
-    last (Cons x Nil) = x
-    last (Cons x xs)  = last xs
-
-    last_but_one (Cons x (Cons y Nil)) = x
-    last_but_one (Cons x xs)           = last_but_one xs
-
-    kth 1 (Cons x xs) = x
-    kth n (Cons x xs) = kth (n - 1) xs
-
-    length Nil         = 0
-    length (Cons x xs) = 1 + length xs
-
-    reverse Nil         = Nil
-    reverse (Cons x xs) = (reverse xs) `concatenate` (Cons x Nil)
-
-    is_palindrome list = list == reverse list
-
-    compress (Cons x (Cons y ys)) | x == y    = compress (Cons y ys)
-                                  | otherwise = Cons x (compress (Cons y ys))
-    compress xs = xs
-
-    encode (Cons x xs) = PCons (P x (length run)) (encode rest)
-                         where pred1 = lambda y -> x == y
-                               pred2 = lambda y -> x != y
-                               run   = takeWhile pred1 (Cons x xs)
-                               rest  = dropWhile pred2 (Cons x xs)
-
-                               takeWhile p (Cons x xs) | p x       = Cons x (takeWhile p xs)
-                                                       | otherwise = takeWhile p xs
-                               takeWhile p Nil = Nil
-
-                               dropWhile p (Cons x xs) | p x       = dropWhile p xs
-                                                       | otherwise = xs
-                               dropWhile p Nil = Nil
-
-    main = encode list
-           where list = (Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil)))))
+    main = x + 4
+           where x = 2
+                 y = 8

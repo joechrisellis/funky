@@ -2,6 +2,14 @@ module test where
 
     otherwise = True
 
-    main = x + 4
-           where x = 2
-                 y = 8
+    newcons List = Cons Integer List | Nil
+
+    concatenate (Cons x xs) ys = Cons x (xs `concatenate` ys)
+    concatenate Nil         ys  = ys
+    concatenate xs          Nil = xs
+    concatenate Nil         Nil = Nil
+
+    range m n | m == n    = Cons m Nil
+              | otherwise = Cons m (range (m + 1) n)
+
+    main = Nil `concatenate` (Cons 1 Nil) # (range 10 20) `concatenate` (range 0 10)

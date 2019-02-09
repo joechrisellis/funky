@@ -9,6 +9,9 @@ python_runtime = """class ADT:
     def __init__(self, params):
         self.params = params
 
+class InexhaustivePatternMatchError(Exception):
+    pass
+
 def __eq(a):
     return lambda x: a == x
 
@@ -71,7 +74,11 @@ def __match(scrutinee, outcomes, default):
         if ans is not None:
             return ans()
 
-    return __lazy(default)
+    if default:
+        return default()
+    else:
+        raise InexhaustivePatternMatchError("Inexhaustive pattern match, cannot "
+                                            "continue.")
 
 def __match_adt(scrutinee, outcomes):
     return outcomes.get(scrutinee.__class__, None)
@@ -80,9 +87,6 @@ def __match_literal(scrutinee, outcomes):
     for alt, expr in outcomes.items():
         if scrutinee == alt:
             return expr
-
-def __lazy(f):
-    return f()
 """
 
 builtins = {

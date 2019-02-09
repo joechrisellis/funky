@@ -6,19 +6,26 @@ from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.rename import FunkyRenamingError
 from funky.desugar import FunkyDesugarError
 
+from funky.ds import Scope
+from funky.corelang.coretree import *
+
 from funky.parse.funky_parser import FunkyParser
-from funky.rename.rename import do_rename
-from funky.desugar.desugar import do_desugar
+from funky.rename.rename import rename
+from funky.desugar.desugar import desugar
 
 class FunkyShell(cmd.Cmd):
 
-    intro   =  "funky ({})  shell".format(__version__)
+    intro   =  "funky ({}) shell".format(__version__)
     prompt  =  "funky> "
 
     def __init__(self):
         cmd.Cmd.__init__(self)
-        self.parser = FunkyParser()
-        self.parser.build(start="TOP_DECLARATIONS", dump_lexed=True)
+        self.decl_parser = FunkyParser()
+        self.decl_parser.build(start="TOP_DECLARATIONS")
+        self.expr_parser = FunkyParser()
+        self.expr_parser.build(start="EXP")
+        self.scope = Scope()
+        self.binds = []
 
     def do_begin_block(self, arg):
         """Start a block of definitions."""
@@ -34,12 +41,23 @@ class FunkyShell(cmd.Cmd):
     def do_let(self, arg):
         """Bind a name on a single line."""
         self.run_lines([arg])
-    
+
+    def do_exec(self, arg):
+        parsed = self.expr_parser.do_parse(arg)
+        rename(parsed, self.scope)
+        expr = desugar(parsed)
+
+        print(CoreLet(self.binds, expr))
+
     def run_lines(self, lines):
-        parsed = self.parser.do_parse("func = 0 where\n{}".format(
+        parsed = self.decl_parser.do_parse("func = 0 where\n{}".format(
                                         "\n".join(lines)))
+
         declarations = parsed[0].expression.declarations
-        print(declarations)
+        for decl in declarations:
+            rename(decl, self.scope)
+            self.binds.append(desugar(decl))
+        do_type_inference(core_tree, typedefs)
 
     def do_EOF(self, line):
         """Exit safely."""

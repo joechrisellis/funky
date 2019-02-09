@@ -20,7 +20,7 @@ def _rmb(s):
 # The default fixity for an infix function (if it isn't defined explicitly with
 # the setfix directive) is assumed to be LEFT ASSOCIATIVE with MAXIMUM
 # PRECEDENCE.
-DEFAULT_FIXITY = ("left",  9)
+DEFAULT_FIXITY = ("leftassoc",  9)
 
 fixities = {
     # imaginary operator -- has a lower precedence than everything else, and is
@@ -31,37 +31,38 @@ fixities = {
     # Remove backslashes from the lexer regexes for operators. This gets the
     # 'raw' operator string. If the operator lexemes are changed in the lexer,
     # the change is automatically propagated to here.
-    _rmb(FunkyLexer.t_OR)                :  ("right",     3),
-    _rmb(FunkyLexer.t_AND)               :  ("right",     4),
+    _rmb(FunkyLexer.t_OR)                :  ("rightassoc",     3),
+    _rmb(FunkyLexer.t_AND)               :  ("rightassoc",     4),
     _rmb(FunkyLexer.t_EQUALITY)          :  ("nonassoc",  5),
     _rmb(FunkyLexer.t_GEQ)               :  ("nonassoc",  5),
     _rmb(FunkyLexer.t_GREATER)           :  ("nonassoc",  5),
     _rmb(FunkyLexer.t_INEQUALITY)        :  ("nonassoc",  5),
     _rmb(FunkyLexer.t_LEQ)               :  ("nonassoc",  5),
     _rmb(FunkyLexer.t_LESS)              :  ("nonassoc",  5),
-    _rmb(FunkyLexer.t_MINUS)             :  ("left",      6),
-    _rmb(FunkyLexer.t_PLUS)              :  ("left",      6),
-    _rmb(FunkyLexer.t_DIVIDE)            :  ("left",      7),
-    _rmb(FunkyLexer.t_MODULO)            :  ("left",      7),
-    _rmb(FunkyLexer.t_TIMES)             :  ("left",      7),
-    _rmb(FunkyLexer.t_POW)               :  ("right",     8),
+    _rmb(FunkyLexer.t_MINUS)             :  ("leftassoc",      6),
+    _rmb(FunkyLexer.t_PLUS)              :  ("leftassoc",      6),
+    _rmb(FunkyLexer.t_DIVIDE)            :  ("leftassoc",      7),
+    _rmb(FunkyLexer.t_MODULO)            :  ("leftassoc",      7),
+    _rmb(FunkyLexer.t_TIMES)             :  ("leftassoc",      7),
+    _rmb(FunkyLexer.t_POW)               :  ("rightassoc",     8),
 }
 
 def set_fixity(operator, associativity, precedence):
     """Sets the fixity of an operator.
     
     :param operator:      the operator for which you want to set a fixity
-    :param associativity: the associativity; either left, right, or nonassoc
+    :param associativity: the associativity; either leftassoc, rightassoc, or nonassoc
     :param precedence:    the precedence of the operator
     """
     fixities[operator] = (associativity, precedence)
+    print(fixities)
 
 def get_fixity(operator):
     """Gets the associativity and precedence of an operator.
     
     :param operator: the operator under consideration
     :return:         a tuple (associativity, precedence), where associativity
-                     is either "left", "right", or "nonassoc", and precedence
+                     is either "leftassoc", "rightassoc", or "nonassoc", and precedence
                      is an integer
     :rtype:          tuple
     """
@@ -112,7 +113,7 @@ def parse(op1, exp, tokens):
         raise FunkySyntaxError("Illegal expression.")
 
     # Case 2: op1 and op2 are left associative.
-    if prec1 > prec2 or (prec1 == prec2 and fix1 == "left"):
+    if prec1 > prec2 or (prec1 == prec2 and fix1 == "leftassoc"):
         return (exp, [op2] + tokens[1:])
 
     # Case 3: op1 and op2 are right associative.

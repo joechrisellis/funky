@@ -295,7 +295,6 @@ def do_desugar(source_tree):
                         representation of type definitions.
     :rtype:             tuple
     """
-    assert source_tree.parsed and source_tree.fixities_resolved
     log.info("Desugaring parse tree...")
     desugared, typedefs = desugar(source_tree)
     log.info("Completed desugaring parse tree.")

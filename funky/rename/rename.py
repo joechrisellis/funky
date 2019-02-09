@@ -299,7 +299,6 @@ def do_rename(source_tree):
 
     :param source_tree: the source tree from parsing
     """
-    assert source_tree.parsed and source_tree.fixities_resolved
     logging.info("Renaming and sanity checking parse tree...")
     scope = Scope()
     rename(source_tree, scope)
@@ -309,5 +308,4 @@ def do_rename(source_tree):
     if err_msg:
         raise FunkyRenamingError(err_msg)
 
-    source_tree.renamed = True
     logging.info("Renaming and sanity checking parse tree completed.")

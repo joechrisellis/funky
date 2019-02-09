@@ -279,6 +279,14 @@ class PythonCodeGenerator(CodeGenerator):
         self.emit("    main()")
 
     def do_generate_code(self, core_tree, typedefs):
+        """Generates Python code from the core tree and type definitions.
+        
+        :param core_tree: the type-checked core tree from the desugarer
+        :param typedefs:  the typedefs from the desugarer
+        :return:          the generated Python code as a string
+        :rtype:           str
+        """
+
         log.info("Generating Python code...")
         self.program = ""
         self.code_header()

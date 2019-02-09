@@ -403,7 +403,5 @@ class FunkyParser:
         """
         log.info("Parsing source...")
         ast = self.parser.parse(source, self.lexer)
-        ast.parsed = True
-        ast.fixities_resolved = True
         log.info("Done parsing source, AST created.")
         return ast

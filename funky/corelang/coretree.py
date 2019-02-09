@@ -142,22 +142,3 @@ class CoreAlt(CoreNode):
     
     def __str__(self):
         return "{} -> {}".format(str(self.altcon), str(self.expr))
-
-class CoreTuple(CoreNode):
-    
-    def __init__(self, items):
-        super().__init__()
-        self.items  =  tuple(items)
-        self.arity  =  len(items)
-    
-    def __str__(self):
-        return str(self.items)
-
-class CoreList(CoreNode):
-    
-    def __init__(self, items):
-        super().__init__()
-        self.items  =  items
-    
-    def __str__(self):
-        return str(self.items)

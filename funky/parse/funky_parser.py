@@ -8,7 +8,6 @@ import funky.parse.fixity as fixity
 from funky.corelang.sourcetree import *
 from funky.corelang.types import TypeVariable, TupleType, ListType, \
                                  FunctionType, ConstructorType
-from funky.corelang.coretree import CoreTuple, CoreList
 
 log = logging.getLogger(__name__)
 
@@ -263,24 +262,12 @@ class FunkyParser:
                 | OPEN_PAREN EXP CLOSE_PAREN
         """
         if len(p) == 2:
-            if p[1] == ():
-                p[0] = CoreTuple(p[1])
-            elif p[1] == []:
-                p[0] = CoreList(p[1])
-            elif type(p[1]) == str:
+            if type(p[1]) == str:
                 p[0] = UsedVar(p[1])
             else:
                 p[0] = p[1]
-        elif p[1] == "(":
-            if len(p) == 4:
-                p[0] = p[2]
-            else:
-                p[0] = CoreTuple((p[2], *p[4]))
         else:
-            if len(p) == 4:
-                p[0] = CoreList([p[2]])
-            else:
-                p[0] = CoreList([p[2], *p[4]])
+            p[0] = p[2]
 
     def p_CONSTRUCTION_PARAMS(self, p):
         """CONSTRUCTION_PARAMS : CONSTRUCTION_PARAMS AEXP
@@ -326,18 +313,12 @@ class FunkyParser:
                 | OPEN_PAREN LPAT CLOSE_PAREN
         """
         if len(p) == 2:
-            if p[1] == ():
-                p[0] = CoreTuple(p[1])
-            elif p[1] == []:
-                p[0] = CoreList(p[1])
-            elif type(p[1]) == str:
+            if type(p[1]) == str:
                 p[0] = Construction(p[1], [], pattern=True)
             else:
                 p[0] = p[1]
-        elif len(p) == 4:
-            p[0] = p[2]
         else:
-            p[0] = CoreTuple((p[2], *p[4].items))
+            p[0] = p[2]
 
     def p_VAROP(self, p):
         """VAROP : VARSYM

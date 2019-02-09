@@ -209,8 +209,6 @@ def builtin_desugar(node):
 
 @desugar.register(ConstructorType)
 @desugar.register(CoreCons)
-@desugar.register(CoreList)
-@desugar.register(CoreTuple)
 @desugar.register(FunctionType)
 @desugar.register(ListType)
 @desugar.register(TupleType)

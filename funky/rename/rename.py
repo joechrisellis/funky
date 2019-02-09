@@ -10,7 +10,6 @@ from itertools import count
 import logging
 
 from funky.corelang.builtins import BUILTIN_PRIMITIVES
-from funky.corelang.coretree import CoreTuple, CoreList
 from funky.corelang.sourcetree import *
 from funky.corelang.types import *
 
@@ -241,16 +240,6 @@ def match_rename(node, scope):
 def function_application_rename(node, scope):
     rename(node.func, scope)
     rename(node.expression, scope)
-
-@rename.register(CoreTuple)
-def tuple_rename(node, scope):
-    for item in node.items:
-        rename(item, scope)
-
-@rename.register(CoreList)
-def list_rename(node, scope):
-    for item in node.items:
-        rename(item, scope)
 
 @rename.register(Parameter)
 def parameter_rename(node, scope, fname=None, index=None, localizer=None,

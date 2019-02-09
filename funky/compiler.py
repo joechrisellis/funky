@@ -52,7 +52,7 @@ def compile(source, dump_lexed=False,
     # lex and parse code
     try:
         parser = FunkyParser()
-        parser.build()
+        parser.build(dump_lexed=dump_lexed)
         # lexing is done in the same step as parsing -- so we have to tell the
         # parser whether we want the lexer's output to be displayed
         parsed = parser.do_parse(source, dump_lexed=dump_lexed)

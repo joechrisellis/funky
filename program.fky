@@ -11,4 +11,6 @@ module test where
     range m n | m == n    = Cons m Nil
               | otherwise = Cons m (range (m + 1) n)
 
-    main = Nil `concatenate` Nil
+    main = range m n
+           where m = 1
+                 n = 100

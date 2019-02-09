@@ -385,11 +385,11 @@ class FunkyParser:
         print(p.lineno)
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
-    def build(self, **kwargs):
+    def build(self, dump_lexed=False, **kwargs):
         """Build the parser."""
         self.lexer = FunkyLexer()
         self.lexer.build()
-        self.lexer = IndentationLexer(self.lexer)
+        self.lexer = IndentationLexer(self.lexer, dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self, **kwargs)
         log.debug("Parser built.")
@@ -401,9 +401,7 @@ class FunkyParser:
         :return:           a parse tree representing the source code
         :rtype:            SourceTree
         """
-        self.lexer.input(source, dump_lexed=dump_lexed)
-
-        log.info("Parsing lexed source...")
+        log.info("Parsing source...")
         ast = self.parser.parse(source, self.lexer)
         ast.parsed = True
         ast.fixities_resolved = True

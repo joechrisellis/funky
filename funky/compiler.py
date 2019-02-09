@@ -27,18 +27,26 @@ targets = {
     "python"  :  PythonCodeGenerator,
 }
 
-def compile_to_c(source, dump_lexed=False,
-                         dump_parsed=False,
-                         dump_renamed=False,
-                         dump_desugared=False,
-                         dump_types=False,
-                         dump_generated=False,
-                         target=None):
+def compile(source, dump_lexed=False,
+                    dump_parsed=False,
+                    dump_renamed=False,
+                    dump_desugared=False,
+                    dump_types=False,
+                    dump_generated=False,
+                    target=None):
     """Compiles funky source code.
 
-    :param source str: the source code for the program as a raw string.
-    :return:           the target source code, ready to be written to a file.
-    :rtype:            str
+    :param source str:          the source code for the program as a raw string
+    :param dump_lexed bool:     dump the output of the lexer to stdout
+    :param dump_parsed bool:    dump the output of the parser to stdout
+    :param dump_renamed bool:   dump the output of the renamer to stdout
+    :param dump_desugared bool: dump the output of the desugarer to stdout
+    :param dump_types bool:     dump the output of the type checker to stdout
+    :param dump_generated bool: dump the generated code to stdout
+    :param target str:          the target to compile to
+    :return:                    the target source code, ready to be written to
+                                a file
+    :rtype:                     str
     """
 
     # lex and parse code

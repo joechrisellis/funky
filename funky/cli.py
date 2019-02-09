@@ -55,7 +55,7 @@ def main():
     lines = args.input.readlines()
     log.info("Will compile {}, with {} lines.".format(args.input.name,
                                                           len(lines)))
-    source = "\n".join(lines)
+    source = "".join(lines)
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))

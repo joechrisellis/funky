@@ -77,6 +77,7 @@ class FunkyLexer:
     def t_NEWLINE(self, t):
         r"\n+"
         self.at_line_start = True
+        t.lineno += len(t.value)
 
     # Regexes for the control characters.
     t_BACKTICK      =  r"`"

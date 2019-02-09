@@ -401,6 +401,7 @@ class FunkyParser:
         p[0] = Parameter(p[1])
     
     def p_error(self, p):
+        print(p.lineno)
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
     def build(self, **kwargs):

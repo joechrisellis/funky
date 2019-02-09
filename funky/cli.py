@@ -2,6 +2,7 @@ import argparse
 import logging
 import time
 
+from funky._version import __version__
 import funky.compiler as compiler
 
 logging.basicConfig(level=logging.DEBUG)
@@ -14,6 +15,9 @@ def main():
                         help="File to write compiled program to.")
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="How much noise should the compiler make?")
+    parser.add_argument('-V', '--version', action="version",
+                        version='%(prog)s {version}'.format(version=__version__),
+                        help="Output the compiler version and quit.")
     parser.add_argument("--dump-lexed", default=False, required=False,
                         action="store_true",
                         help="Dump the lexed source code to stdout.")

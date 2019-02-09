@@ -63,13 +63,13 @@ def main():
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))
-    output = compiler.compile_to_c(source, dump_lexed=args.dump_lexed,
-                                           dump_parsed=args.dump_parsed,
-                                           dump_renamed=args.dump_renamed,
-                                           dump_desugared=args.dump_desugared,
-                                           dump_types=args.dump_types,
-                                           dump_generated=args.dump_generated,
-                                           target=args.target)
+    output = compiler.compile(source, dump_lexed=args.dump_lexed,
+                                      dump_parsed=args.dump_parsed,
+                                      dump_renamed=args.dump_renamed,
+                                      dump_desugared=args.dump_desugared,
+                                      dump_types=args.dump_types,
+                                      dump_generated=args.dump_generated,
+                                      target=args.target)
     finish = time.time()
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {} seconds.".format(finish - start))

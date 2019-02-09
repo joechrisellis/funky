@@ -1,7 +1,10 @@
+import logging
+
 from funky.corelang.coretree import *
 from funky.generate.gen import CodeGenerator, annotate_section
 from funky.util import get_registry_function
-import datetime
+
+log = logging.getLogger(__name__)
 
 python_runtime = """class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
@@ -276,11 +279,21 @@ class PythonCodeGenerator(CodeGenerator):
         self.emit("    main()")
 
     def do_generate_code(self, core_tree, typedefs):
+        log.info("Generating Python code...")
         self.program = ""
         self.code_header()
         self.code_runtime()
-        self.create_adts(typedefs)
-        main = self.py_compile(core_tree, 0)
 
+        log.info("Creating user-defined data structres...")
+        self.create_adts(typedefs)
+        log.info("Done.")
+        log.info("Compiling core tree...")
+        main = self.py_compile(core_tree, 0)
+        log.info("Done.")
+
+        log.info("Creating main method...")
         self.emit_main(main)
+        log.info("Done.")
+
+        log.info("Done generating Python code.")
         return self.program[:]

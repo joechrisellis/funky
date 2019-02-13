@@ -1,7 +1,8 @@
-module test where
+module turing_machine where
 
-    x = 2 ** 2 ** 3
-    setfix leftassoc 8 **
-    y = 2 ** 2 ** 3
+    y = z + a
+    z = x + y
+    x = a + a
+    a = 2
 
     main = x

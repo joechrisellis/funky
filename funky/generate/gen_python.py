@@ -200,12 +200,6 @@ class PythonCodeGenerator(CodeGenerator):
 
     @py_compile.register(CoreCons)
     def py_compile_cons(self, node, indent):
-        vs = []
-        for parameter in node.parameters:
-            if isinstance(parameter, CoreVariable):
-                vs.append("FreeVariable({})".format(parameter.identifier))
-            else:
-                pass
         return "ADT{}".format(node.constructor)
 
     @py_compile.register(CoreVariable)
@@ -249,7 +243,12 @@ class PythonCodeGenerator(CodeGenerator):
             fname = "m{}".format(i)
 
             if isinstance(alt.altcon, CoreCons):
-                params = [v.identifier for v in alt.altcon.parameters]
+                params = []
+                for i, v in enumerate(alt.altcon.parameters):
+                    name = v.identifier
+                    if name == "_":
+                        name += str(i)
+                    params.append(name)
                 self.emit("def {}({}):".format(fname, ", ".join(params)),
                           d=indent)
             else:

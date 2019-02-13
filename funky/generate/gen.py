@@ -22,6 +22,10 @@ class CodeGenerator:
     """
 
     def __init__(self):
+        self.reset()
+
+    def reset(self):
+        """Resets the state of the code generator so it can be used again."""
         self.program = ""
 
     def emit(self, s, d=0):

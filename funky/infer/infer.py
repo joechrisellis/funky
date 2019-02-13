@@ -344,7 +344,6 @@ def do_type_inference(core_tree, typedefs):
     """
 
     log.info("Performing type inference...")
-    graph = create_dependency_graph(core_tree.binds)
 
     ctx, non_generic = DEFAULT_ENVIRONMENT, set()
     for typedef in typedefs:

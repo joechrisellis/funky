@@ -242,7 +242,6 @@ def condense_function_binds(binds):
     :param binds: a list of let-bindings to condense
     :return:      the new desugared bindings after condensing
     """
-    seen = set()
 
     # collate CoreBinds with the same identifier in a dictionary mapping
     # identifiers to bindees
@@ -279,6 +278,7 @@ def condense_function_binds(binds):
         new_lambda = tree
         for v in reversed(variables):
             new_lambda = CoreLambda(v, new_lambda)
+        new_lambda.original_arity = bindees[0].original_arity
 
         new_desugared_statements.append(CoreBind(identifier, new_lambda))
 
@@ -296,7 +296,11 @@ def do_desugar(source_tree):
     :rtype:             tuple
     """
     log.info("Desugaring parse tree...")
-    desugared, typedefs = desugar(source_tree)
+    d = desugar(source_tree)
+    try:
+        desugared, typedefs = d
+    except TypeError:
+        desugared, typedefs = d, []
     log.info("Completed desugaring parse tree.")
 
     return desugared, typedefs

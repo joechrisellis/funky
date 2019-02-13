@@ -11,7 +11,9 @@ from funky.corelang.coretree import *
 
 from funky.parse.funky_parser import FunkyParser
 from funky.rename.rename import rename
-from funky.desugar.desugar import desugar
+from funky.desugar.desugar import do_desugar, desugar, condense_function_binds
+from funky.infer.infer import infer
+from funky.generate.gen_python import PythonCodeGenerator
 
 class FunkyShell(cmd.Cmd):
 
@@ -25,6 +27,7 @@ class FunkyShell(cmd.Cmd):
         self.expr_parser = FunkyParser()
         self.expr_parser.build(start="EXP")
         self.scope = Scope()
+        self.py_generator = PythonCodeGenerator()
         self.binds = []
 
     def do_begin_block(self, arg):
@@ -38,6 +41,10 @@ class FunkyShell(cmd.Cmd):
             lines.append(" " + inp)
         self.run_lines(lines)
 
+    def do_show(self, arg):
+        """Show the current bindings."""
+        print("\n".join(str(b) for b in self.binds))
+
     def do_let(self, arg):
         """Bind a name on a single line."""
         self.run_lines([arg])
@@ -45,9 +52,12 @@ class FunkyShell(cmd.Cmd):
     def do_exec(self, arg):
         parsed = self.expr_parser.do_parse(arg)
         rename(parsed, self.scope)
-        expr = desugar(parsed)
+        expr, typedefs = do_desugar(parsed)
 
-        print(CoreLet(self.binds, expr))
+        expr_with_bindings = CoreLet(self.binds, expr)
+        target_source = self.py_generator.do_generate_code(expr_with_bindings,
+                                                           [])
+        exec(target_source, {"__name__" : "__main__"})
 
     def run_lines(self, lines):
         parsed = self.decl_parser.do_parse("func = 0 where\n{}".format(
@@ -56,8 +66,10 @@ class FunkyShell(cmd.Cmd):
         declarations = parsed[0].expression.declarations
         for decl in declarations:
             rename(decl, self.scope)
-            self.binds.append(desugar(decl))
-        do_type_inference(core_tree, typedefs)
+            core_tree, typedefs = do_desugar(decl)
+            self.binds.append(core_tree)
+
+        self.binds = condense_function_binds(self.binds)
 
     def do_EOF(self, line):
         """Exit safely."""
@@ -65,7 +77,11 @@ class FunkyShell(cmd.Cmd):
         exit(0)
 
 def main():
-    FunkyShell().cmdloop()
+    try:
+        FunkyShell().cmdloop()
+    except KeyboardInterrupt:
+        print("\nInterrupt caught, exiting.")
+        exit(0)
 
 def start():
     """Exists only for setuptools."""

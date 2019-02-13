@@ -1,8 +1,6 @@
 module turing_machine where
 
-    y = z + a
-    z = x + y
-    x = a + a
-    a = 2
+    and True True = True
+    and _    _    = False
 
-    main = x
+    main = and

@@ -10,14 +10,18 @@ log = logging.getLogger(__name__)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", "-o", type=argparse.FileType("w"),
-                        required=True,
-                        help="File to write compiled program to.")
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="How much noise should the compiler make?")
     parser.add_argument('-V', '--version', action="version",
                         version='%(prog)s {version}'.format(version=__version__),
                         help="Output the compiler version and quit.")
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--output", "-o", type=argparse.FileType("w"),
+                        help="File to write compiled program to.")
+    group.add_argument("--execute", "-x", action="store_true",
+                        help="Do not create an output file, execute directly.")
+
     parser.add_argument("--dump-lexed", default=False, required=False,
                         action="store_true",
                         help="Dump the lexed source code to stdout.")
@@ -38,12 +42,17 @@ def main():
                         action="store_true",
                         help="Dump the generated code to stdout.")
     parser.add_argument("--target", choices=compiler.targets.keys(),
-                        required=True,
                         help="The target language for compilation.")
     parser.add_argument("input", type=argparse.FileType("r"),
                         help="Input program (funky source).")
 
     args = parser.parse_args()
+
+    if not (args.execute or args.target):
+        print("Please specify a target, e.g. --target=python")
+        exit(1)
+
+    args.target = args.target if args.target else "python"
 
     verbosity_2_loglevel = {
         0  :  logging.WARNING,
@@ -74,11 +83,15 @@ def main():
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {} seconds.".format(finish - start))
 
-    args.output.write(output)
-
-    log.info("Written target code to {}.".format(args.output.name))
-
-    print("Success!")
+    # if the user wants to write to an output file, do that.
+    # otherwise, just execute the code we were given.
+    if args.output:
+        args.output.write(output)
+        log.info("Written target code to {}.".format(args.output.name))
+        print("Success, compiled program written to "
+              "{}.".format(args.output.name))
+    else:
+        exec(output, {"__name__" : "__main__"})
 
 def start():
     """Exists only for setuptools."""

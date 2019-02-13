@@ -1,6 +1,9 @@
 module turing_machine where
 
-    and True True = True
-    and _    _    = False
+    newcons List = Cons Integer List | Nil
 
-    main = and
+    map f Nil = Nil
+    map f (Cons x xs) = Cons (f x) (map f xs)
+
+    main = map (lambda x -> x * 2) list
+           where list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

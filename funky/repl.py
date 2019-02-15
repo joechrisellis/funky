@@ -13,7 +13,7 @@ from funky.corelang.coretree import *
 
 from funky.parse.funky_parser import FunkyParser
 from funky.rename.rename import rename
-from funky.desugar.desugar import do_desugar, condense_function_binds
+from funky.desugar.desugar import do_desugar, desugar, condense_function_binds
 from funky.infer.infer import do_type_inference, infer
 from funky.generate.gen_python import PythonCodeGenerator
 
@@ -74,8 +74,8 @@ class CustomCmd(cmd.Cmd):
 
 class FunkyShell(CustomCmd):
 
-    intro   =  "funky ({}) shell".format(__version__)
-    prompt  =  "funky> "
+    intro   =  "funkyi ({}) repl".format(__version__)
+    prompt  =  "funkyi> "
 
     def __init__(self):
         super().__init__()
@@ -83,9 +83,12 @@ class FunkyShell(CustomCmd):
         self.decl_parser.build(start="TOP_DECLARATIONS")
         self.expr_parser = FunkyParser()
         self.expr_parser.build(start="EXP")
+        self.newcons_parser = FunkyParser()
+        self.newcons_parser.build(start="NEW_CONS")
         self.scope = Scope()
         self.py_generator = PythonCodeGenerator()
 
+        self.global_types = []
         self.global_let = CoreLet([], CoreLiteral(0))
 
     def do_begin_block(self, arg):
@@ -102,10 +105,10 @@ class FunkyShell(CustomCmd):
 
     def do_type(self, arg):
         """Show the type of an expression."""
-        expr, typedefs = self.get_core(arg)
+        expr = self.get_core(arg)
         self.global_let.expr = expr
         try:
-            do_type_inference(self.global_let, typedefs)
+            do_type_inference(self.global_let, self.global_types)
             print("{} :: {}".format(arg, self.global_let.inferred_type))
         except FunkyTypeError:
             print("Expression is not type correct.")
@@ -117,6 +120,13 @@ class FunkyShell(CustomCmd):
     def do_let(self, arg):
         """Bind a name on a single line."""
         self.run_lines([arg])
+    
+    def do_newcons(self, arg):
+        """Create an ADT."""
+        stmt = self.newcons_parser.do_parse("newcons {}".format(arg))
+        rename(stmt, self.scope)
+        typedef = desugar(stmt)
+        self.global_types.append(typedef)
 
     def do_show(self, arg):
         code = self.get_compiled(arg)
@@ -125,15 +135,15 @@ class FunkyShell(CustomCmd):
     def get_core(self, code):
         parsed = self.expr_parser.do_parse(code)
         rename(parsed, self.scope)
-        expr, typedefs = do_desugar(parsed)
-        return expr, typedefs
+        expr, _ = do_desugar(parsed)
+        return expr
 
     def get_compiled(self, code):
-        expr, typedefs = self.get_core(code)
-
+        expr = self.get_core(code)
         self.global_let.expr = expr
         self.py_generator.reset()
-        target_source = self.py_generator.do_generate_code(self.global_let, [])
+        target_source = self.py_generator.do_generate_code(self.global_let,
+                                                           self.global_types)
         return target_source
 
     def run_lines(self, lines):
@@ -145,13 +155,13 @@ class FunkyShell(CustomCmd):
         declarations = parsed[0].expression.declarations
         for decl in declarations:
             rename(decl, self.scope)
-            core_tree, typedefs = do_desugar(decl)
+            core_tree, _ = do_desugar(decl)
             self.global_let.binds.append(core_tree)
 
         self.global_let.binds = condense_function_binds(self.global_let.binds)
 
         try:
-            do_type_inference(self.global_let, typedefs)
+            do_type_inference(self.global_let, self.global_types)
         except FunkyTypeError as e:
             print("Code is not type-correct.")
             print(str(e))

@@ -59,16 +59,14 @@ class FunkyParser:
             p[0] =[p[1]]
 
     def p_TOP_DECLARATION(self, p):
-        """TOP_DECLARATION : NEWTYPE TYPENAME EQUALS TYPE
-                           | NEWCONS TYPENAME EQUALS CONSTRUCTORS
+        """TOP_DECLARATION : NEW_CONS
                            | DECLARATION
         """
-        if p[1] == "newtype":
-            p[0] = NewTypeStatement(p[2], p[4])
-        elif p[1] == "newcons":
-            p[0] = NewConsStatement(p[2], [], p[4])
-        else:
-            p[0] = p[1]
+        p[0] = p[1]
+
+    def p_NEW_CONS(self, p):
+        """NEW_CONS : NEWCONS TYPENAME EQUALS CONSTRUCTORS"""
+        p[0] = NewConsStatement(p[2], [], p[4])
 
     def p_CONSTRUCTORS(self, p):
         """CONSTRUCTORS : CONSTRUCTORS PIPE CONSTRUCTOR

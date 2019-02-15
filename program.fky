@@ -2,8 +2,4 @@ module turing_machine where
 
     newcons List = Cons Integer List | Nil
 
-    map f Nil = Nil
-    map f (Cons x xs) = Cons (f x) (map f xs)
-
-    main = map (lambda x -> x * 2) list
-           where list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+    main = 1

@@ -1,5 +1,9 @@
 module turing_machine where
 
-    newcons List = Cons Integer List | Nil
+    newcons FList = Cons (Integer -> Integer) FList | Nil
 
-    main = 1
+    exec_list (Cons f fs) x = exec_list fs (f x)
+    exec_list Nil         x = x
+
+    main = exec_list list 1
+           where list = Cons (lambda x -> x + 1) (Cons (lambda x -> x * 2) Nil)

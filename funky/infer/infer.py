@@ -270,14 +270,31 @@ def operator_prefix(s):
     :return:      the prefixed string
     :rtype:       str
     """
-    OP_PREFIX = "OP"
-    return "{}_{}".format(OP_PREFIX, s)
+    OP_PREFIX = "OP_"
+    return "{}{}".format(OP_PREFIX, s)
 
 # Used to map constructors to their parent class. For instance:
 # newcons List =Cons Integer List | Nil
 # Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
 # prefix.
 typeclass_mapping = {}
+
+def replace_strings(f, ctx):
+    print("!!!", f)
+    if isinstance(f.input_type, FunctionType):
+        replace_strings(f.input_type, ctx)
+    elif isinstance(f.input_type, str):
+        f.input_type = ctx[f.input_type]
+
+    if isinstance(f.output_type, FunctionType):
+        replace_strings(f.output_type, ctx)
+    elif isinstance(f.output_type, str):
+        f.output_type = ctx[f.output_type]
+
+    if isinstance(f, FunctionType):
+        for i, typ in enumerate(f.types):
+            if not isinstance(typ, str): continue
+            f.types[i] = ctx[typ]
 
 def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
@@ -317,6 +334,10 @@ def create_algebraic_data_structure(adt, ctx):
 
             if p in ctx:
                 unify(t, ctx[p])
+            elif isinstance(p, FunctionType):
+                replace_strings(p, ctx)
+                print("!!!!!!!!", repr(p))
+                unify(t, p)
             elif p not in typeclass_mapping:
                 raise FunkyTypeError("Type {} not defined.".format(p))
             f = FunctionType(get_fresh(t, ctx), f)

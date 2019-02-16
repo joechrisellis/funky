@@ -49,8 +49,12 @@ class CustomCmd(cmd.Cmd):
         if cmd is None:
             return self.default(line)
         self.lastcmd = line
+
         if line == 'EOF' :
             self.lastcmd = ''
+            self.do_EOF(arg)
+            return
+
         if cmd == '':
             return self.default(line)
         else:
@@ -81,6 +85,8 @@ class CustomCmd(cmd.Cmd):
             while i < n and line[i] in self.identchars: i = i+1
             cmd, arg = line[:i], line[i:].strip()
             return cmd, arg, line
+        elif line == "EOF":
+            return "EOF", None, line
         else:
             return None, None, line
 
@@ -136,11 +142,15 @@ class FunkyShell(CustomCmd):
         block_prompt = cyellow("block > ")
         end_block = ":end_block"
         lines = []
-        while True:
-            inp = input(block_prompt)
-            if inp == end_block:
-                break
-            lines.append(" " + inp)
+        try:
+            while True:
+                inp = input(block_prompt)
+                if inp == end_block:
+                    break
+                lines.append(" " + inp)
+        except KeyboardInterrupt:
+            print(cred("Cancelled block."))
+            return
         self.add_declarations(lines)
 
     @report_errors

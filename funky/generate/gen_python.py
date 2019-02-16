@@ -2,7 +2,7 @@ import logging
 
 from funky.corelang.coretree import *
 from funky.generate.gen import CodeGenerator, annotate_section
-from funky.util import get_registry_function
+from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
 
@@ -222,10 +222,12 @@ class PythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreLambda)
     def py_compile_lambda(self, node, indent):
         param = self.py_compile(node.param, indent)
-        self.emit("def lam({}):".format(param), d=indent)
+        differentiator = str(global_counter())
+        lam_name = "lam{}".format(differentiator)
+        self.emit("def {}({}):".format(lam_name, param), d=indent)
         expr = self.py_compile(node.expr, indent + 4)
         self.emit("return {}".format(expr), d=indent+4)
-        return "lam"
+        return lam_name
 
     @py_compile.register(CoreLet)
     def py_compile_let(self, node, indent):

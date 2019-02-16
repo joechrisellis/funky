@@ -309,6 +309,6 @@ def do_rename(source_tree):
     scope = Scope()
     rename(source_tree, scope)
 
-    check_scope_for_errors()
+    check_scope_for_errors(scope)
     
     logging.info("Renaming and sanity checking parse tree completed.")

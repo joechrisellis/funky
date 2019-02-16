@@ -170,7 +170,6 @@ def unify(type1, type2):
             if occurs_in_type(a, b):
                 raise FunkyTypeError("Recursive unification detected, stopping.")
             if not a.accepts(b):
-                print(repr(a), repr(b))
                 raise FunkyTypeError("Constraints on {} do not permit "
                                      "{}.".format(a, b))
             a.instance = b

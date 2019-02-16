@@ -292,6 +292,12 @@ def infix_expression_rename(node, scope):
     # resolution performed earlier. Throw an exception if we enocunter one.
     raise RuntimeError("Fixity resolution should be performed before renaming!")
 
+def check_scope_for_errors(scope):
+    err_msg = "\n".join("Referenced item '{}' was never defined.".format(ident)
+                        for ident in scope.pending_definition)
+    if err_msg:
+        raise FunkyRenamingError(err_msg)
+
 def do_rename(source_tree):
     """Renames items in the source tree so that they all have a unique name
     Also performs sanity checks such as making sure that duplicate declarations
@@ -302,10 +308,7 @@ def do_rename(source_tree):
     logging.info("Renaming and sanity checking parse tree...")
     scope = Scope()
     rename(source_tree, scope)
-    
-    err_msg = "\n".join("Referenced item '{}' was never defined.".format(ident)
-                        for ident in scope.pending_definition)
-    if err_msg:
-        raise FunkyRenamingError(err_msg)
 
+    check_scope_for_errors()
+    
     logging.info("Renaming and sanity checking parse tree completed.")

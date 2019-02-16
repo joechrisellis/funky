@@ -11,7 +11,7 @@ Unused terminals:
 
 Grammar
 
-Rule 0     S' -> NEW_CONS
+Rule 0     S' -> FIXITY_DECLARATION
 Rule 1     MODULE_DEFINITION -> MODULE IDENTIFIER WHERE BODY
 Rule 2     BODY -> OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE
 Rule 3     BODY -> OPEN_BRACE TOP_DECLARATIONS CLOSE_BRACE
@@ -34,366 +34,427 @@ Rule 19    DECLARATION -> GEN_DECLARATION
 Rule 20    DECLARATION -> FUNCTION_LHS RHS
 Rule 21    DECLARATION -> LPAT RHS
 Rule 22    GEN_DECLARATION -> IDENTIFIER TYPESIG TYPE
-Rule 23    GEN_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER OP
+Rule 23    GEN_DECLARATION -> FIXITY_DECLARATION
 Rule 24    GEN_DECLARATION -> <empty>
-Rule 25    ASSOCIATIVITY -> LEFTASSOC
-Rule 26    ASSOCIATIVITY -> RIGHTASSOC
-Rule 27    ASSOCIATIVITY -> NONASSOC
-Rule 28    TYPE -> ATYPE
-Rule 29    TYPE -> ATYPE ARROW TYPE
-Rule 30    ATYPES -> ATYPES ATYPE
-Rule 31    ATYPES -> <empty>
-Rule 32    ATYPE -> TYPENAME
-Rule 33    ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN
-Rule 34    FUNCTION_LHS -> IDENTIFIER APAT APATS
-Rule 35    FUNCTION_LHS -> LPAT VAROP LPAT
-Rule 36    FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
-Rule 37    RHS -> EQUALS EXP
-Rule 38    RHS -> EQUALS EXP WHERE DECLARATIONS
-Rule 39    RHS -> GDRHS
-Rule 40    RHS -> GDRHS WHERE DECLARATIONS
-Rule 41    GDRHS -> PIPE EXP EQUALS EXP
-Rule 42    GDRHS -> PIPE EXP EQUALS EXP GDRHS
-Rule 43    EXP -> INFIX_EXP
-Rule 44    INFIX_EXP -> LEXP OP INFIX_EXP
-Rule 45    INFIX_EXP -> MINUS INFIX_EXP
-Rule 46    INFIX_EXP -> LEXP
-Rule 47    LEXP -> LAMBDA APAT APATS ARROW EXP
-Rule 48    LEXP -> LET DECLARATIONS IN EXP
-Rule 49    LEXP -> IF EXP THEN EXP ELSE EXP
-Rule 50    LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
-Rule 51    LEXP -> FEXP
-Rule 52    FEXP -> FEXP AEXP
-Rule 53    FEXP -> AEXP
-Rule 54    AEXP -> USED_VAR
-Rule 55    AEXP -> TYPENAME
-Rule 56    AEXP -> LITERAL
-Rule 57    AEXP -> OPEN_PAREN EXP CLOSE_PAREN
-Rule 58    CONSTRUCTION_PARAMS -> CONSTRUCTION_PARAMS AEXP
-Rule 59    CONSTRUCTION_PARAMS -> AEXP
-Rule 60    ALTS -> ALT ENDSTATEMENT ALTS
-Rule 61    ALTS -> ALT
-Rule 62    ALT -> LPAT ARROW EXP
-Rule 63    ALT -> <empty>
-Rule 64    LPAT -> APAT
-Rule 65    LPAT -> MINUS OPEN_PAREN INTEGER CLOSE_PAREN
-Rule 66    LPAT -> MINUS OPEN_PAREN FLOAT CLOSE_PAREN
-Rule 67    LPAT -> TYPENAME APAT APATS
-Rule 68    APAT -> PARAM
-Rule 69    APAT -> TYPENAME
-Rule 70    APAT -> LITERAL
-Rule 71    APAT -> OPEN_PAREN LPAT CLOSE_PAREN
-Rule 72    VAROP -> VARSYM
-Rule 73    VAROP -> BACKTICK IDENTIFIER BACKTICK
-Rule 74    OP -> VAROP
-Rule 75    APATS -> APAT APATS
-Rule 76    APATS -> <empty>
-Rule 77    VARSYM -> PLUS
-Rule 78    VARSYM -> MINUS
-Rule 79    VARSYM -> TIMES
-Rule 80    VARSYM -> DIVIDE
-Rule 81    VARSYM -> MODULO
-Rule 82    VARSYM -> POW
-Rule 83    VARSYM -> EQUALITY
-Rule 84    VARSYM -> INEQUALITY
-Rule 85    VARSYM -> LESS
-Rule 86    VARSYM -> LEQ
-Rule 87    VARSYM -> GREATER
-Rule 88    VARSYM -> GEQ
-Rule 89    VARSYM -> AND
-Rule 90    VARSYM -> OR
-Rule 91    VARSYM -> LIST_CONSTRUCTOR
-Rule 92    LITERAL -> FLOAT
-Rule 93    LITERAL -> INTEGER
-Rule 94    LITERAL -> BOOL
-Rule 95    LITERAL -> CHAR
-Rule 96    LITERAL -> STRING
-Rule 97    USED_VAR -> IDENTIFIER
-Rule 98    PARAM -> IDENTIFIER
+Rule 25    FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER OP
+Rule 26    ASSOCIATIVITY -> LEFTASSOC
+Rule 27    ASSOCIATIVITY -> RIGHTASSOC
+Rule 28    ASSOCIATIVITY -> NONASSOC
+Rule 29    TYPE -> ATYPE
+Rule 30    TYPE -> ATYPE ARROW TYPE
+Rule 31    ATYPES -> ATYPES ATYPE
+Rule 32    ATYPES -> <empty>
+Rule 33    ATYPE -> TYPENAME
+Rule 34    ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN
+Rule 35    FUNCTION_LHS -> IDENTIFIER APAT APATS
+Rule 36    FUNCTION_LHS -> LPAT VAROP LPAT
+Rule 37    FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
+Rule 38    RHS -> EQUALS EXP
+Rule 39    RHS -> EQUALS EXP WHERE DECLARATIONS
+Rule 40    RHS -> GDRHS
+Rule 41    RHS -> GDRHS WHERE DECLARATIONS
+Rule 42    GDRHS -> PIPE EXP EQUALS EXP
+Rule 43    GDRHS -> PIPE EXP EQUALS EXP GDRHS
+Rule 44    EXP -> INFIX_EXP
+Rule 45    INFIX_EXP -> LEXP OP INFIX_EXP
+Rule 46    INFIX_EXP -> MINUS INFIX_EXP
+Rule 47    INFIX_EXP -> LEXP
+Rule 48    LEXP -> LAMBDA APAT APATS ARROW EXP
+Rule 49    LEXP -> LET DECLARATIONS IN EXP
+Rule 50    LEXP -> IF EXP THEN EXP ELSE EXP
+Rule 51    LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+Rule 52    LEXP -> FEXP
+Rule 53    FEXP -> FEXP AEXP
+Rule 54    FEXP -> AEXP
+Rule 55    AEXP -> USED_VAR
+Rule 56    AEXP -> TYPENAME
+Rule 57    AEXP -> LITERAL
+Rule 58    AEXP -> OPEN_PAREN EXP CLOSE_PAREN
+Rule 59    CONSTRUCTION_PARAMS -> CONSTRUCTION_PARAMS AEXP
+Rule 60    CONSTRUCTION_PARAMS -> AEXP
+Rule 61    ALTS -> ALT ENDSTATEMENT ALTS
+Rule 62    ALTS -> ALT
+Rule 63    ALT -> LPAT ARROW EXP
+Rule 64    ALT -> <empty>
+Rule 65    LPAT -> APAT
+Rule 66    LPAT -> MINUS OPEN_PAREN INTEGER CLOSE_PAREN
+Rule 67    LPAT -> MINUS OPEN_PAREN FLOAT CLOSE_PAREN
+Rule 68    LPAT -> TYPENAME APAT APATS
+Rule 69    APAT -> PARAM
+Rule 70    APAT -> TYPENAME
+Rule 71    APAT -> LITERAL
+Rule 72    APAT -> OPEN_PAREN LPAT CLOSE_PAREN
+Rule 73    VAROP -> VARSYM
+Rule 74    VAROP -> BACKTICK IDENTIFIER BACKTICK
+Rule 75    OP -> VAROP
+Rule 76    APATS -> APAT APATS
+Rule 77    APATS -> <empty>
+Rule 78    VARSYM -> PLUS
+Rule 79    VARSYM -> MINUS
+Rule 80    VARSYM -> TIMES
+Rule 81    VARSYM -> DIVIDE
+Rule 82    VARSYM -> MODULO
+Rule 83    VARSYM -> POW
+Rule 84    VARSYM -> EQUALITY
+Rule 85    VARSYM -> INEQUALITY
+Rule 86    VARSYM -> LESS
+Rule 87    VARSYM -> LEQ
+Rule 88    VARSYM -> GREATER
+Rule 89    VARSYM -> GEQ
+Rule 90    VARSYM -> AND
+Rule 91    VARSYM -> OR
+Rule 92    VARSYM -> LIST_CONSTRUCTOR
+Rule 93    LITERAL -> FLOAT
+Rule 94    LITERAL -> INTEGER
+Rule 95    LITERAL -> BOOL
+Rule 96    LITERAL -> CHAR
+Rule 97    LITERAL -> STRING
+Rule 98    USED_VAR -> IDENTIFIER
+Rule 99    PARAM -> IDENTIFIER
 
 Terminals, with rules where they appear
 
-AND                  : 89
-ARROW                : 29 47 62
+AND                  : 90
+ARROW                : 30 48 63
 AS                   : 
-BACKTICK             : 73 73
-BOOL                 : 94
-CHAR                 : 95
-CLOSE_BRACE          : 2 3 15 16 50
-CLOSE_PAREN          : 33 36 57 65 66 71
+BACKTICK             : 74 74
+BOOL                 : 95
+CHAR                 : 96
+CLOSE_BRACE          : 2 3 15 16 51
+CLOSE_PAREN          : 34 37 58 66 67 72
 CLOSE_SQUARE         : 
 COMMA                : 
-DIVIDE               : 80
-ELSE                 : 49
-ENDSTATEMENT         : 2 4 7 17 60
-EQUALITY             : 83
-EQUALS               : 11 37 38 41 42
-FLOAT                : 66 92
-GEQ                  : 88
-GREATER              : 87
-IDENTIFIER           : 1 6 22 34 73 97 98
-IF                   : 49
+DIVIDE               : 81
+ELSE                 : 50
+ENDSTATEMENT         : 2 4 7 17 61
+EQUALITY             : 84
+EQUALS               : 11 38 39 42 43
+FLOAT                : 67 93
+GEQ                  : 89
+GREATER              : 88
+IDENTIFIER           : 1 6 22 35 74 98 99
+IF                   : 50
 IMPORT               : 6
-IN                   : 48
-INEQUALITY           : 84
-INTEGER              : 23 65 93
-LAMBDA               : 47
-LEFTASSOC            : 25
-LEQ                  : 86
-LESS                 : 85
-LET                  : 48
-LIST_CONSTRUCTOR     : 91
-MATCH                : 50
-MINUS                : 45 65 66 78
+IN                   : 49
+INEQUALITY           : 85
+INTEGER              : 25 66 94
+LAMBDA               : 48
+LEFTASSOC            : 26
+LEQ                  : 87
+LESS                 : 86
+LET                  : 49
+LIST_CONSTRUCTOR     : 92
+MATCH                : 51
+MINUS                : 46 66 67 79
 MODULE               : 1
-MODULO               : 81
+MODULO               : 82
 NEWCONS              : 11
 NEWTYPE              : 
-NONASSOC             : 27
-OF                   : 50
-OPEN_BRACE           : 2 3 15 16 50
-OPEN_PAREN           : 33 36 57 65 66 71
+NONASSOC             : 28
+OF                   : 51
+OPEN_BRACE           : 2 3 15 16 51
+OPEN_PAREN           : 34 37 58 66 67 72
 OPEN_SQUARE          : 
-OR                   : 90
-PIPE                 : 12 41 42
-PLUS                 : 77
-POW                  : 82
-RIGHTASSOC           : 26
-SETFIX               : 23
-STRING               : 96
-THEN                 : 49
-TIMES                : 79
-TYPENAME             : 11 14 32 55 67 69
+OR                   : 91
+PIPE                 : 12 42 43
+PLUS                 : 78
+POW                  : 83
+RIGHTASSOC           : 27
+SETFIX               : 25
+STRING               : 97
+THEN                 : 50
+TIMES                : 80
+TYPENAME             : 11 14 33 56 68 70
 TYPESIG              : 22
-WHERE                : 1 38 40
+WHERE                : 1 39 41
 WHITESPACE           : 
 error                : 
 
 Nonterminals, with rules where they appear
 
-AEXP                 : 52 53 58 59
-ALT                  : 60 61
-ALTS                 : 50 60
-APAT                 : 34 36 47 64 67 75
-APATS                : 34 36 47 67 75
-ASSOCIATIVITY        : 23
-ATYPE                : 28 29 30
-ATYPES               : 14 30
+AEXP                 : 53 54 59 60
+ALT                  : 61 62
+ALTS                 : 51 61
+APAT                 : 35 37 48 65 68 76
+APATS                : 35 37 48 68 76
+ASSOCIATIVITY        : 25
+ATYPE                : 29 30 31
+ATYPES               : 14 31
 BODY                 : 1
-CONSTRUCTION_PARAMS  : 58
+CONSTRUCTION_PARAMS  : 59
 CONSTRUCTOR          : 12 13
 CONSTRUCTORS         : 11 12
 DECLARATION          : 10 17 18
-DECLARATIONS         : 38 40 48
+DECLARATIONS         : 39 41 49
 DECLARATIONS_LIST    : 15 17
-EXP                  : 37 38 41 41 42 42 47 48 49 49 49 50 57 62
-FEXP                 : 51 52
-FUNCTION_LHS         : 20 36
-GDRHS                : 39 40 42
+EXP                  : 38 39 42 42 43 43 48 49 50 50 50 51 58 63
+FEXP                 : 52 53
+FIXITY_DECLARATION   : 23 0
+FUNCTION_LHS         : 20 37
+GDRHS                : 40 41 43
 GEN_DECLARATION      : 19
 IMPORT_DECLARATION   : 4 5
 IMPORT_DECLARATIONS  : 2 4
-INFIX_EXP            : 43 44 45
-LEXP                 : 44 46
-LITERAL              : 56 70
-LPAT                 : 21 35 35 62 71
+INFIX_EXP            : 44 45 46
+LEXP                 : 45 47
+LITERAL              : 57 71
+LPAT                 : 21 36 36 63 72
 MODULE_DEFINITION    : 
-NEW_CONS             : 9 0
-OP                   : 23 44
-PARAM                : 68
+NEW_CONS             : 9
+OP                   : 25 45
+PARAM                : 69
 RHS                  : 20 21
 TOP_DECLARATION      : 7 8
 TOP_DECLARATIONS     : 2 3 7
-TYPE                 : 22 29 33
-USED_VAR             : 54
-VAROP                : 35 74
-VARSYM               : 72
+TYPE                 : 22 30 34
+USED_VAR             : 55
+VAROP                : 36 75
+VARSYM               : 73
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . NEW_CONS
-    (11) NEW_CONS -> . NEWCONS TYPENAME EQUALS CONSTRUCTORS
+    (0) S' -> . FIXITY_DECLARATION
+    (25) FIXITY_DECLARATION -> . SETFIX ASSOCIATIVITY INTEGER OP
 
-    NEWCONS         shift and go to state 2
+    SETFIX          shift and go to state 2
 
-    NEW_CONS                       shift and go to state 1
+    FIXITY_DECLARATION             shift and go to state 1
 
 state 1
 
-    (0) S' -> NEW_CONS .
+    (0) S' -> FIXITY_DECLARATION .
 
 
 
 state 2
 
-    (11) NEW_CONS -> NEWCONS . TYPENAME EQUALS CONSTRUCTORS
+    (25) FIXITY_DECLARATION -> SETFIX . ASSOCIATIVITY INTEGER OP
+    (26) ASSOCIATIVITY -> . LEFTASSOC
+    (27) ASSOCIATIVITY -> . RIGHTASSOC
+    (28) ASSOCIATIVITY -> . NONASSOC
 
-    TYPENAME        shift and go to state 3
+    LEFTASSOC       shift and go to state 4
+    RIGHTASSOC      shift and go to state 5
+    NONASSOC        shift and go to state 6
 
+    ASSOCIATIVITY                  shift and go to state 3
 
 state 3
 
-    (11) NEW_CONS -> NEWCONS TYPENAME . EQUALS CONSTRUCTORS
+    (25) FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY . INTEGER OP
 
-    EQUALS          shift and go to state 4
+    INTEGER         shift and go to state 7
 
 
 state 4
 
-    (11) NEW_CONS -> NEWCONS TYPENAME EQUALS . CONSTRUCTORS
-    (12) CONSTRUCTORS -> . CONSTRUCTORS PIPE CONSTRUCTOR
-    (13) CONSTRUCTORS -> . CONSTRUCTOR
-    (14) CONSTRUCTOR -> . TYPENAME ATYPES
+    (26) ASSOCIATIVITY -> LEFTASSOC .
 
-    TYPENAME        shift and go to state 5
+    INTEGER         reduce using rule 26 (ASSOCIATIVITY -> LEFTASSOC .)
 
-    CONSTRUCTORS                   shift and go to state 6
-    CONSTRUCTOR                    shift and go to state 7
 
 state 5
 
-    (14) CONSTRUCTOR -> TYPENAME . ATYPES
-    (30) ATYPES -> . ATYPES ATYPE
-    (31) ATYPES -> .
+    (27) ASSOCIATIVITY -> RIGHTASSOC .
 
-    TYPENAME        reduce using rule 31 (ATYPES -> .)
-    OPEN_PAREN      reduce using rule 31 (ATYPES -> .)
-    PIPE            reduce using rule 31 (ATYPES -> .)
-    $end            reduce using rule 31 (ATYPES -> .)
+    INTEGER         reduce using rule 27 (ASSOCIATIVITY -> RIGHTASSOC .)
 
-    ATYPES                         shift and go to state 8
 
 state 6
 
-    (11) NEW_CONS -> NEWCONS TYPENAME EQUALS CONSTRUCTORS .
-    (12) CONSTRUCTORS -> CONSTRUCTORS . PIPE CONSTRUCTOR
+    (28) ASSOCIATIVITY -> NONASSOC .
 
-    $end            reduce using rule 11 (NEW_CONS -> NEWCONS TYPENAME EQUALS CONSTRUCTORS .)
-    PIPE            shift and go to state 9
+    INTEGER         reduce using rule 28 (ASSOCIATIVITY -> NONASSOC .)
 
 
 state 7
 
-    (13) CONSTRUCTORS -> CONSTRUCTOR .
+    (25) FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER . OP
+    (75) OP -> . VAROP
+    (73) VAROP -> . VARSYM
+    (74) VAROP -> . BACKTICK IDENTIFIER BACKTICK
+    (78) VARSYM -> . PLUS
+    (79) VARSYM -> . MINUS
+    (80) VARSYM -> . TIMES
+    (81) VARSYM -> . DIVIDE
+    (82) VARSYM -> . MODULO
+    (83) VARSYM -> . POW
+    (84) VARSYM -> . EQUALITY
+    (85) VARSYM -> . INEQUALITY
+    (86) VARSYM -> . LESS
+    (87) VARSYM -> . LEQ
+    (88) VARSYM -> . GREATER
+    (89) VARSYM -> . GEQ
+    (90) VARSYM -> . AND
+    (91) VARSYM -> . OR
+    (92) VARSYM -> . LIST_CONSTRUCTOR
 
-    PIPE            reduce using rule 13 (CONSTRUCTORS -> CONSTRUCTOR .)
-    $end            reduce using rule 13 (CONSTRUCTORS -> CONSTRUCTOR .)
+    BACKTICK        shift and go to state 11
+    PLUS            shift and go to state 12
+    MINUS           shift and go to state 13
+    TIMES           shift and go to state 14
+    DIVIDE          shift and go to state 15
+    MODULO          shift and go to state 16
+    POW             shift and go to state 17
+    EQUALITY        shift and go to state 18
+    INEQUALITY      shift and go to state 19
+    LESS            shift and go to state 20
+    LEQ             shift and go to state 21
+    GREATER         shift and go to state 22
+    GEQ             shift and go to state 23
+    AND             shift and go to state 24
+    OR              shift and go to state 25
+    LIST_CONSTRUCTOR shift and go to state 26
 
+    OP                             shift and go to state 8
+    VAROP                          shift and go to state 9
+    VARSYM                         shift and go to state 10
 
 state 8
 
-    (14) CONSTRUCTOR -> TYPENAME ATYPES .
-    (30) ATYPES -> ATYPES . ATYPE
-    (32) ATYPE -> . TYPENAME
-    (33) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
+    (25) FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER OP .
 
-    PIPE            reduce using rule 14 (CONSTRUCTOR -> TYPENAME ATYPES .)
-    $end            reduce using rule 14 (CONSTRUCTOR -> TYPENAME ATYPES .)
-    TYPENAME        shift and go to state 10
-    OPEN_PAREN      shift and go to state 12
+    $end            reduce using rule 25 (FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER OP .)
 
-    ATYPE                          shift and go to state 11
 
 state 9
 
-    (12) CONSTRUCTORS -> CONSTRUCTORS PIPE . CONSTRUCTOR
-    (14) CONSTRUCTOR -> . TYPENAME ATYPES
+    (75) OP -> VAROP .
 
-    TYPENAME        shift and go to state 5
+    $end            reduce using rule 75 (OP -> VAROP .)
 
-    CONSTRUCTOR                    shift and go to state 13
 
 state 10
 
-    (32) ATYPE -> TYPENAME .
+    (73) VAROP -> VARSYM .
 
-    TYPENAME        reduce using rule 32 (ATYPE -> TYPENAME .)
-    OPEN_PAREN      reduce using rule 32 (ATYPE -> TYPENAME .)
-    PIPE            reduce using rule 32 (ATYPE -> TYPENAME .)
-    $end            reduce using rule 32 (ATYPE -> TYPENAME .)
-    ARROW           reduce using rule 32 (ATYPE -> TYPENAME .)
-    CLOSE_PAREN     reduce using rule 32 (ATYPE -> TYPENAME .)
+    $end            reduce using rule 73 (VAROP -> VARSYM .)
 
 
 state 11
 
-    (30) ATYPES -> ATYPES ATYPE .
+    (74) VAROP -> BACKTICK . IDENTIFIER BACKTICK
 
-    TYPENAME        reduce using rule 30 (ATYPES -> ATYPES ATYPE .)
-    OPEN_PAREN      reduce using rule 30 (ATYPES -> ATYPES ATYPE .)
-    PIPE            reduce using rule 30 (ATYPES -> ATYPES ATYPE .)
-    $end            reduce using rule 30 (ATYPES -> ATYPES ATYPE .)
+    IDENTIFIER      shift and go to state 27
 
 
 state 12
 
-    (33) ATYPE -> OPEN_PAREN . TYPE CLOSE_PAREN
-    (28) TYPE -> . ATYPE
-    (29) TYPE -> . ATYPE ARROW TYPE
-    (32) ATYPE -> . TYPENAME
-    (33) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
+    (78) VARSYM -> PLUS .
 
-    TYPENAME        shift and go to state 10
-    OPEN_PAREN      shift and go to state 12
+    $end            reduce using rule 78 (VARSYM -> PLUS .)
 
-    TYPE                           shift and go to state 14
-    ATYPE                          shift and go to state 15
 
 state 13
 
-    (12) CONSTRUCTORS -> CONSTRUCTORS PIPE CONSTRUCTOR .
+    (79) VARSYM -> MINUS .
 
-    PIPE            reduce using rule 12 (CONSTRUCTORS -> CONSTRUCTORS PIPE CONSTRUCTOR .)
-    $end            reduce using rule 12 (CONSTRUCTORS -> CONSTRUCTORS PIPE CONSTRUCTOR .)
+    $end            reduce using rule 79 (VARSYM -> MINUS .)
 
 
 state 14
 
-    (33) ATYPE -> OPEN_PAREN TYPE . CLOSE_PAREN
+    (80) VARSYM -> TIMES .
 
-    CLOSE_PAREN     shift and go to state 16
+    $end            reduce using rule 80 (VARSYM -> TIMES .)
 
 
 state 15
 
-    (28) TYPE -> ATYPE .
-    (29) TYPE -> ATYPE . ARROW TYPE
+    (81) VARSYM -> DIVIDE .
 
-    CLOSE_PAREN     reduce using rule 28 (TYPE -> ATYPE .)
-    ARROW           shift and go to state 17
+    $end            reduce using rule 81 (VARSYM -> DIVIDE .)
 
 
 state 16
 
-    (33) ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .
+    (82) VARSYM -> MODULO .
 
-    TYPENAME        reduce using rule 33 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
-    OPEN_PAREN      reduce using rule 33 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
-    PIPE            reduce using rule 33 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
-    $end            reduce using rule 33 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
-    ARROW           reduce using rule 33 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
-    CLOSE_PAREN     reduce using rule 33 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
+    $end            reduce using rule 82 (VARSYM -> MODULO .)
 
 
 state 17
 
-    (29) TYPE -> ATYPE ARROW . TYPE
-    (28) TYPE -> . ATYPE
-    (29) TYPE -> . ATYPE ARROW TYPE
-    (32) ATYPE -> . TYPENAME
-    (33) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
+    (83) VARSYM -> POW .
 
-    TYPENAME        shift and go to state 10
-    OPEN_PAREN      shift and go to state 12
+    $end            reduce using rule 83 (VARSYM -> POW .)
 
-    ATYPE                          shift and go to state 15
-    TYPE                           shift and go to state 18
 
 state 18
 
-    (29) TYPE -> ATYPE ARROW TYPE .
+    (84) VARSYM -> EQUALITY .
 
-    CLOSE_PAREN     reduce using rule 29 (TYPE -> ATYPE ARROW TYPE .)
+    $end            reduce using rule 84 (VARSYM -> EQUALITY .)
+
+
+state 19
+
+    (85) VARSYM -> INEQUALITY .
+
+    $end            reduce using rule 85 (VARSYM -> INEQUALITY .)
+
+
+state 20
+
+    (86) VARSYM -> LESS .
+
+    $end            reduce using rule 86 (VARSYM -> LESS .)
+
+
+state 21
+
+    (87) VARSYM -> LEQ .
+
+    $end            reduce using rule 87 (VARSYM -> LEQ .)
+
+
+state 22
+
+    (88) VARSYM -> GREATER .
+
+    $end            reduce using rule 88 (VARSYM -> GREATER .)
+
+
+state 23
+
+    (89) VARSYM -> GEQ .
+
+    $end            reduce using rule 89 (VARSYM -> GEQ .)
+
+
+state 24
+
+    (90) VARSYM -> AND .
+
+    $end            reduce using rule 90 (VARSYM -> AND .)
+
+
+state 25
+
+    (91) VARSYM -> OR .
+
+    $end            reduce using rule 91 (VARSYM -> OR .)
+
+
+state 26
+
+    (92) VARSYM -> LIST_CONSTRUCTOR .
+
+    $end            reduce using rule 92 (VARSYM -> LIST_CONSTRUCTOR .)
+
+
+state 27
+
+    (74) VAROP -> BACKTICK IDENTIFIER . BACKTICK
+
+    BACKTICK        shift and go to state 28
+
+
+state 28
+
+    (74) VAROP -> BACKTICK IDENTIFIER BACKTICK .
+
+    $end            reduce using rule 74 (VAROP -> BACKTICK IDENTIFIER BACKTICK .)
 

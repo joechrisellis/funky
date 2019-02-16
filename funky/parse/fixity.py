@@ -55,7 +55,6 @@ def set_fixity(operator, associativity, precedence):
     :param precedence:    the precedence of the operator
     """
     fixities[operator] = (associativity, precedence)
-    print(fixities)
 
 def get_fixity(operator):
     """Gets the associativity and precedence of an operator.

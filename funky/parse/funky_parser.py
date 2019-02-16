@@ -113,13 +113,15 @@ class FunkyParser:
 
     def p_GEN_DECLARATION(self, p):
         """GEN_DECLARATION : IDENTIFIER TYPESIG TYPE
-                           | SETFIX ASSOCIATIVITY INTEGER OP
+                           | FIXITY_DECLARATION
                            |
         """
         if len(p) == 4:
             p[0] = TypeDeclaration(p[1], p[3])
-        elif len(p) == 5:
-            fixity.set_fixity(p[4], p[2], p[3])
+
+    def p_FIXITY_DECLARATION(self, p):
+        """FIXITY_DECLARATION : SETFIX ASSOCIATIVITY INTEGER OP"""
+        fixity.set_fixity(p[4], p[2], p[3])
 
     def p_ASSOCIATIVITY(self, p):
         """ASSOCIATIVITY : LEFTASSOC
@@ -380,7 +382,6 @@ class FunkyParser:
         p[0] = Parameter(p[1])
     
     def p_error(self, p):
-        print(p.lineno)
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
     def build(self, dump_lexed=False, **kwargs):
@@ -389,7 +390,9 @@ class FunkyParser:
         self.lexer.build()
         self.lexer = IndentationLexer(self.lexer, dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
-        self.parser = yacc.yacc(module=self, **kwargs)
+        self.parser = yacc.yacc(module=self,
+                                errorlog=yacc.NullLogger(),
+                                **kwargs)
         log.debug("Parser built.")
 
     def do_parse(self, source, dump_lexed=False):

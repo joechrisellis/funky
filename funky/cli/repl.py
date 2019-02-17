@@ -94,12 +94,26 @@ class CustomCmd(cmd.Cmd):
         else:
             return None, None, line
 
+    def cmdloop(self, intro=None):
+        # override the cmdloop function to handle ^C sensibly
+        print(self.intro)
+        while True:
+            try:
+                super().cmdloop(intro="")
+                break
+            except KeyboardInterrupt:
+                print("^C")
+
 def report_errors(f):
+    """This decorator is used to wrap do_* functions in the command prompt
+    below with error-catching and reporting code. Instead of having to repeat
+    the same code for each function, we just tag each one where an error might
+    occur with this decorator.
+    """
     def wrapper(*args, **kwargs):
         err, e = None, None
         try:
-            f(*args, **kwargs)
-            return
+            return f(*args, **kwargs)
         except FunkyParsingError as ex:
             e, err = ex, "Failed to parse"
         except FunkyRenamingError as ex:
@@ -110,7 +124,9 @@ def report_errors(f):
             e, err = ex, "Desugarer error"
         except FunkyTypeError as ex:
             e, err = ex, "Code is not type-correct"
-        
+        except Exception as ex:
+            e, err = ex, "Unexpected error"
+
         err_msg = "{}: '{}'".format(err, str(e))
         print(cred(err_msg))
 
@@ -121,11 +137,14 @@ def report_errors(f):
 
 class FunkyShell(CustomCmd):
 
-    intro   =  cgreen("funkyi ({}) repl".format(__version__))
+    intro   =  cgreen("funkyi ({}) repl".format(__version__)) + \
+               "\nFor help, use the ':help' command.\n"
     prompt  =  cyellow("funkyi> ")
 
     def __init__(self):
         super().__init__()
+
+        # create the various parsers:
         self.decl_parser = FunkyParser()
         self.decl_parser.build(start="TOP_DECLARATIONS")
         self.expr_parser = FunkyParser()
@@ -137,14 +156,19 @@ class FunkyShell(CustomCmd):
         self.scope = Scope()
         self.py_generator = PythonCodeGenerator()
 
+        # global_types is the collection of user-defined type declarations.
         self.global_types = []
+        # global_let is a core let whose bindings are just the bindings the
+        # user has introduced, and whose expression is 'dynamic' -- it is
+        # changed each time the user asks for an expression to be evaluated and
+        # recompiled as a new program to give the new result.
         self.global_let = CoreLet([], CoreLiteral(0))
 
     @report_errors
     def do_begin_block(self, arg):
         """Start a block of definitions."""
         block_prompt = cyellow("block > ")
-        end_block = ":end_block"
+        end_block = ":end_block" # <- type this to end the block
         lines = []
         try:
             while True:
@@ -159,7 +183,7 @@ class FunkyShell(CustomCmd):
 
     @report_errors
     def do_type(self, arg):
-        """Show the type of an expression."""
+        """Show the type of an expression. E.g.: :type 5"""
         expr = self.get_core(arg)
         self.global_let.expr = expr
         do_type_inference(self.global_let, self.global_types)
@@ -167,13 +191,13 @@ class FunkyShell(CustomCmd):
 
     @report_errors
     def do_list(self, arg):
-        """List the current bindings."""
+        """List the current bindings in desuguared intermediate code."""
         print("\n".join(str(b) for b in self.global_types))
         print("\n".join(str(b) for b in self.global_let.binds))
     
     @report_errors
     def do_newcons(self, arg):
-        """Create an ADT."""
+        """Create an ADT. E.g.: :newcons List = Cons Integer List | Nil"""
         stmt = self.newcons_parser.do_parse("newcons {}".format(arg))
         rename(stmt, self.scope)
         typedef = desugar(stmt)
@@ -181,63 +205,97 @@ class FunkyShell(CustomCmd):
 
     @report_errors
     def do_show(self, arg):
+        """Show the compiled code for an expression. E.g.: :show 1 + 1"""
         code = self.get_compiled(arg)
         print(code)
 
     @report_errors
     def do_setfix(self, arg):
+        """Change the fixity of an operator. E.g.: :setfix leftassoc 8 **"""
         self.setfix_parser.do_parse("setfix {}".format(arg))
 
-    def get_core(self, code):
+    def get_core(self, source):
+        """Converts a string of Funky code into the intermediate language.
+        
+        :param source: the source code to convert to the intermediate language
+        :return:       the core code
+        """
         try:
-            parsed = self.expr_parser.do_parse(code)
+            # try to parse as an expression
+            parsed = self.expr_parser.do_parse(source)
         except FunkyParsingError:
-            try:
-                parsed = self.decl_parser.do_parse(code)[0]
-            except FunkyParsingError:
-                print("Cannot parse!")
-                exit(1)
+            # if we failed to parse as an expression, try to parse as a
+            # declaration. If this fails, the exception will be delegated
+            # further up
+            parsed = self.decl_parser.do_parse(source)[0]
 
         rename(parsed, self.scope)
         check_scope_for_errors(self.scope)
-        expr, _ = do_desugar(parsed)
-        return expr
+        core_tree, _ = do_desugar(parsed)
+        return core_tree
 
-    def get_compiled(self, code):
-        expr = self.get_core(code)
-        self.global_let.expr = expr
+    def get_compiled(self, source):
+        """Converts a string of funky code into teh target source language.
+        
+        :param source: the source code to convert to the target source language
+        :return:       the compiled code in the target source language
+        """
+        core_expr = self.get_core(source)
+        self.global_let.expr = core_expr
         self.py_generator.reset()
         target_source = self.py_generator.do_generate_code(self.global_let,
                                                            self.global_types)
         return target_source
 
     def add_declarations(self, lines):
+        """Add a new block of declarations to global_let.
+        
+        :param lines: the Funky source code lines in the new block of
+                      declarations
+        """
+
+        # copy the global let -- we work with this until we can be confident
+        # that the given lines don't have syntax/type errors, etc.
         new_global_let = copy.deepcopy(self.global_let)
 
+        # shoehorn the lines into a 'fake' where clause so that they can
+        # be parsed correctly.
         parsed = self.decl_parser.do_parse("func = 0 where\n{}".format(
                                         "\n".join(lines)))
 
+        # extract the parsed declarations back out from our 'fake' where
+        # clause.
         declarations = parsed[0].expression.declarations
 
+        # rename and desugar each declaration one-by-one, and append each to
+        # the (new_) global_let binds
         for decl in declarations:
             rename(decl, self.scope)
             core_tree, _ = do_desugar(decl)
             new_global_let.binds.append(core_tree)
 
         check_scope_for_errors(self.scope)
-
         new_global_let.binds = condense_function_binds(new_global_let.binds)
 
+        # type infer the new global let to check for inconsistencies
         do_type_inference(new_global_let, self.global_types)
+
+        # if no errors were raised and delegated to the caller, we can safely
+        # replace our global_let with the new (modified) one.
         self.global_let = new_global_let
 
     def do_EOF(self, line):
         """Exit safely."""
-        print("EOF, exiting.")
+        print("^D\nEOF, exiting.")
         exit(0)
 
     @report_errors
     def default(self, arg):
+        """This is called when the user does not type in any command in
+        particular. Since this is a REPL, we should interpret the given
+        text as an expression or a declaration
+        """
+
         # if there are comments, drop them
         try:
             arg = arg[:arg.index("#")]
@@ -246,31 +304,26 @@ class FunkyShell(CustomCmd):
         except ValueError:
             pass
 
-        # try parsing as an expression...
         try:
+            # try parsing as an expression...
             parsed = self.expr_parser.do_parse(arg)
             code = self.get_compiled(arg)
             print(cblue("= "), end="")
             exec(code, {"__name__" : "__main__"})
-            return
         except FunkyParsingError:
-            pass
-
-        # if that didn't work, try parsing as a declaration
-        try:
+            # if that didn't work, try parsing as a declaration
             parsed = self.decl_parser.do_parse(arg)[0]
             self.add_declarations([arg])
-            return
-        except FunkyParsingError:
-            # if it can't be parsed as either, ignore the line
-            # and report an error.
-            print("Invalid syntax in supplied line.")
 
     def emptyline(self):
+        """Empty lines in the REPL do nothing."""
         pass
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-V', '--version', action="version",
+                        version='%(prog)s {version}'.format(version=__version__),
+                        help="Output %(prog)s's version and quit.")
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="Be verbose. You can stack this flag, i.e. -vvv.")
     parser.add_argument('-q', '--quiet', action='count', default=1,
@@ -283,12 +336,8 @@ def main():
     verbosity = args.verbose - args.quiet
     set_loglevel(verbosity)
 
-    try:
-        shell = FunkyShell()
-        shell.cmdloop()
-    except KeyboardInterrupt:
-        print("\nInterrupt caught, exiting.")
-        exit(0)
+    shell = FunkyShell()
+    shell.cmdloop()
 
 def start():
     """Exists only for setuptools."""

@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '--version', action="version",
                         version='%(prog)s {version}'.format(version=__version__),
-                        help="Output the compiler version and quit.")
+                        help="Output %(prog)s's version and quit.")
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help="Be verbose. You can stack this flag, i.e. -vvv.")
     parser.add_argument('-q', '--quiet', action='count', default=0,

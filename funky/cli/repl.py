@@ -148,6 +148,7 @@ class FunkyShell(CustomCmd):
         super().__init__()
 
         # create the various parsers:
+        log.debug("Creating required parsers...")
         self.decl_parser = FunkyParser()
         self.decl_parser.build(start="TOP_DECLARATIONS")
         self.expr_parser = FunkyParser()
@@ -157,6 +158,7 @@ class FunkyShell(CustomCmd):
         self.setfix_parser = FunkyParser()
         self.setfix_parser.build(start="FIXITY_DECLARATION")
         self.py_generator = PythonCodeGenerator()
+        log.debug("Done creating parsers.")
 
         self.reset()
 
@@ -348,7 +350,11 @@ def main():
     verbosity = args.verbose - args.quiet
     set_loglevel(verbosity)
 
+    log.debug("Initialising REPL-shell...")
     shell = FunkyShell()
+    log.debug("Done initialising REPL-shell...")
+
+    log.debug("Entering REPL loop...")
     shell.cmdloop()
 
 def start():

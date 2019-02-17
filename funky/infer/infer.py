@@ -280,7 +280,6 @@ def operator_prefix(s):
 typeclass_mapping = {}
 
 def replace_strings(f, ctx):
-    print("!!!", f)
     if isinstance(f.input_type, FunctionType):
         replace_strings(f.input_type, ctx)
     elif isinstance(f.input_type, str):
@@ -336,7 +335,6 @@ def create_algebraic_data_structure(adt, ctx):
                 unify(t, ctx[p])
             elif isinstance(p, FunctionType):
                 replace_strings(p, ctx)
-                print("!!!!!!!!", repr(p))
                 unify(t, p)
             elif p not in typeclass_mapping:
                 raise FunkyTypeError("Type {} not defined.".format(p))

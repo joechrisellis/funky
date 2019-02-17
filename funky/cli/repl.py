@@ -1,8 +1,12 @@
+"""REPL (read-evaluate-print-loop) for Funky."""
+
+import argparse
 import cmd
 import copy
 
 from funky._version import __version__
-from funky.color import *
+from funky.cli.verbosity import set_loglevel
+from funky.util.color import *
 
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.rename import FunkyRenamingError
@@ -111,7 +115,7 @@ def report_errors(f):
         print(cred(err_msg))
 
     # ensure the wrapper function has the same docstring as the existing
-    # function so that the :help command still works!
+    # function so that the help command still works!
     wrapper.__doc__ = f.__doc__
     return wrapper
 
@@ -266,6 +270,19 @@ class FunkyShell(CustomCmd):
         pass
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+                        help="Be verbose. You can stack this flag, i.e. -vvv.")
+    parser.add_argument('-q', '--quiet', action='count', default=1,
+                        help="Be quiet. You can stack this flag, i.e. -qqq.")
+    parser.add_argument("files", type=argparse.FileType("r"),
+                        nargs="?",
+                        help="Load these programs into the REPL.")
+
+    args = parser.parse_args()
+    verbosity = args.verbose - args.quiet
+    set_loglevel(verbosity)
+
     try:
         shell = FunkyShell()
         shell.cmdloop()

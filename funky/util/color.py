@@ -15,6 +15,10 @@ colors = {
 ENDC = '\033[0m'
 
 def colorize(color, string):
+    """Produces a string that, when printed, appears in the given color.
+    
+    :param color:  the color, which must be in the colors dictionary
+    :param string: the string you want to colorize"""
     if color not in colors:
         raise ValueError("Undefined color '{}'.".format(color))
     return colors[color] + string + ENDC

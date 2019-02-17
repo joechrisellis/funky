@@ -156,7 +156,6 @@ class FunkyShell(CustomCmd):
         self.newcons_parser.build(start="NEW_CONS")
         self.setfix_parser = FunkyParser()
         self.setfix_parser.build(start="FIXITY_DECLARATION")
-        self.scope = Scope()
         self.py_generator = PythonCodeGenerator()
 
         self.reset()
@@ -174,7 +173,7 @@ class FunkyShell(CustomCmd):
                     break
                 lines.append(" " + inp)
         except KeyboardInterrupt:
-            print(cred("Cancelled block."))
+            print("^C\n{}".format(cred("Cancelled block.")))
             return
         self.add_declarations(lines)
 
@@ -216,6 +215,9 @@ class FunkyShell(CustomCmd):
         self.reset()
 
     def reset(self):
+        """Resets the scope and bindings."""
+        self.scope = Scope()
+
         # global_types is the collection of user-defined type declarations.
         self.global_types = []
         # global_let is a core let whose bindings are just the bindings the

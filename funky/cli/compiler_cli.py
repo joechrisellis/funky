@@ -8,7 +8,6 @@ from funky._version import __version__
 from funky.cli.verbosity import set_loglevel
 import funky.compiler as compiler
 
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 def main():

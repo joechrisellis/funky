@@ -1,3 +1,5 @@
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 class FunkyError(Exception):
     """Base class for all funky errors."""

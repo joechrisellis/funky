@@ -3,6 +3,7 @@
 import argparse
 import cmd
 import copy
+import logging
 
 from funky._version import __version__
 from funky.cli.verbosity import set_loglevel
@@ -22,6 +23,8 @@ from funky.rename.rename import rename, check_scope_for_errors
 from funky.desugar.desugar import do_desugar, desugar, condense_function_binds
 from funky.infer.infer import do_type_inference, infer
 from funky.generate.gen_python import PythonCodeGenerator
+
+log = logging.getLogger(__name__)
 
 class CustomCmd(cmd.Cmd):
     """This is a 'hack' around Python's cmd.py builtin library. It appears that
@@ -156,13 +159,7 @@ class FunkyShell(CustomCmd):
         self.scope = Scope()
         self.py_generator = PythonCodeGenerator()
 
-        # global_types is the collection of user-defined type declarations.
-        self.global_types = []
-        # global_let is a core let whose bindings are just the bindings the
-        # user has introduced, and whose expression is 'dynamic' -- it is
-        # changed each time the user asks for an expression to be evaluated and
-        # recompiled as a new program to give the new result.
-        self.global_let = CoreLet([], CoreLiteral(0))
+        self.reset()
 
     @report_errors
     def do_begin_block(self, arg):
@@ -213,6 +210,19 @@ class FunkyShell(CustomCmd):
     def do_setfix(self, arg):
         """Change the fixity of an operator. E.g.: :setfix leftassoc 8 **"""
         self.setfix_parser.do_parse("setfix {}".format(arg))
+
+    def do_reset(self, arg):
+        """Reset the environment (clear the current list of bindings)."""
+        self.reset()
+
+    def reset(self):
+        # global_types is the collection of user-defined type declarations.
+        self.global_types = []
+        # global_let is a core let whose bindings are just the bindings the
+        # user has introduced, and whose expression is 'dynamic' -- it is
+        # changed each time the user asks for an expression to be evaluated and
+        # recompiled as a new program to give the new result.
+        self.global_let = CoreLet([], CoreLiteral(0))
 
     def get_core(self, source):
         """Converts a string of Funky code into the intermediate language.

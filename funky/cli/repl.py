@@ -4,6 +4,7 @@ import argparse
 import cmd
 import copy
 import logging
+import traceback
 
 from funky._version import __version__
 from funky.cli.verbosity import set_loglevel
@@ -25,6 +26,8 @@ from funky.infer.infer import do_type_inference, infer
 from funky.generate.gen_python import PythonCodeGenerator
 
 log = logging.getLogger(__name__)
+
+SHOW_EXCEPTION_TRACES = True
 
 class CustomCmd(cmd.Cmd):
     """This is a 'hack' around Python's cmd.py builtin library. It appears that
@@ -129,9 +132,13 @@ def report_errors(f):
             e, err = ex, "Code is not type-correct"
         except Exception as ex:
             e, err = ex, "Unexpected error"
+            raise e
 
         err_msg = "{}: '{}'".format(err, str(e))
         print(cred(err_msg))
+        if SHOW_EXCEPTION_TRACES:
+            trace = "\n".join(traceback.format_tb(e.__traceback__))
+            print(cred(trace))
 
     # ensure the wrapper function has the same docstring as the existing
     # function so that the help command still works!
@@ -234,14 +241,7 @@ class FunkyShell(CustomCmd):
         :param source: the source code to convert to the intermediate language
         :return:       the core code
         """
-        try:
-            # try to parse as an expression
-            parsed = self.expr_parser.do_parse(source)
-        except FunkyParsingError:
-            # if we failed to parse as an expression, try to parse as a
-            # declaration. If this fails, the exception will be delegated
-            # further up
-            parsed = self.decl_parser.do_parse(source)[0]
+        parsed = self.expr_parser.do_parse(source)
 
         rename(parsed, self.scope)
         check_scope_for_errors(self.scope)
@@ -321,14 +321,12 @@ class FunkyShell(CustomCmd):
             pass
 
         try:
-            # try parsing as an expression...
-            parsed = self.expr_parser.do_parse(arg)
+            # try treating as an expression...
             code = self.get_compiled(arg)
             print(cblue("= "), end="")
             exec(code, {"__name__" : "__main__"})
         except FunkyParsingError:
-            # if that didn't work, try parsing as a declaration
-            parsed = self.decl_parser.do_parse(arg)[0]
+            # if that didn't work, try treating as a declaration
             self.add_declarations([arg])
 
     def emptyline(self):
@@ -344,6 +342,9 @@ def main():
                         help="Be verbose. You can stack this flag, i.e. -vvv.")
     parser.add_argument('-q', '--quiet', action='count', default=1,
                         help="Be quiet. You can stack this flag, i.e. -qqq.")
+    parser.add_argument('-e', '--show-exception-traces', action='store_true',
+                        default=False,
+                        help="Show full exception traces.")
     parser.add_argument("files", type=argparse.FileType("r"),
                         nargs="?",
                         help="Load these programs into the REPL.")
@@ -351,6 +352,9 @@ def main():
     args = parser.parse_args()
     verbosity = args.verbose - args.quiet
     set_loglevel(verbosity)
+
+    global SHOW_EXCEPTION_TRACE
+    SHOW_EXCEPTION_TRACE = args.show_exception_traces
 
     log.debug("Initialising REPL-shell...")
     shell = FunkyShell()

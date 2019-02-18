@@ -256,6 +256,8 @@ class FunkyShell(CustomCmd):
         """
         core_expr = self.get_core(source)
         self.global_let.expr = core_expr
+        do_type_inference(self.global_let, self.global_types)
+
         self.py_generator.reset()
         target_source = self.py_generator.do_generate_code(self.global_let,
                                                            self.global_types)

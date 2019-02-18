@@ -1,9 +1,21 @@
-module turing_machine where
+module fibonacci where
 
-    newcons FList = Cons (Integer -> Integer) FList | Nil
+    newcons List = Cons Integer List | Nil
 
-    exec_list (Cons f fs) x = exec_list fs (f x)
-    exec_list Nil         x = x
+    concatenate (Cons x xs) ys  = Cons x (xs `concatenate` ys)
+    concatenate xs          Nil = xs
+    concatenate Nil         ys  = ys
 
-    main = exec_list list 1
-           where list = Cons (lambda x -> x + 1) (Cons (lambda x -> x * 2) Nil)
+    filter p Nil                     = Nil
+    filter p (Cons x xs) | p x       = Cons x rest
+                         | otherwise = rest
+                         where rest      = filter p xs
+                               otherwise = True
+
+    quicksort Nil         = Nil
+    quicksort (Cons x xs) = lesser `concatenate` (Cons x Nil) `concatenate` greater
+                            where lesser  = filter (lambda n -> n <= x) xs
+                                  greater = filter (lambda n -> n > x)  xs
+
+    main = quicksort my_list
+           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

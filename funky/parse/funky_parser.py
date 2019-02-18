@@ -112,8 +112,7 @@ class FunkyParser:
             p[0] = PatternDefinition(p[1], p[2])
 
     def p_GEN_DECLARATION(self, p):
-        """GEN_DECLARATION : IDENTIFIER TYPESIG TYPE
-                           | FIXITY_DECLARATION
+        """GEN_DECLARATION : FIXITY_DECLARATION
                            |
         """
         if len(p) == 4:
@@ -360,7 +359,6 @@ class FunkyParser:
                   | GEQ
                   | AND
                   | OR
-                  | LIST_CONSTRUCTOR
         """
         p[0] = p[1]
 

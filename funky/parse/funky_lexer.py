@@ -23,9 +23,9 @@ class FunkyLexer:
 
     # Reserved keywords -- variables are not permitted to have these names.
     reserved = [
-        "as", "else", "if", "import", "in", "lambda", "leftassoc", "let",
-        "match", "module", "newcons", "newtype", "nonassoc", "of",
-        "rightassoc", "setfix", "then", "where",
+        "else", "if", "import", "in", "lambda", "leftassoc", "let", "match",
+        "module", "newcons", "newtype", "nonassoc", "of", "rightassoc",
+        "setfix", "then", "where",
     ]
     reserved = {k : k.upper() for k in reserved}
 
@@ -33,13 +33,12 @@ class FunkyLexer:
     tokens = [
         "WHITESPACE",
 
-        "BACKTICK", "COMMA", "TYPESIG", "PIPE", "ARROW", "ENDSTATEMENT",
+        "BACKTICK", "PIPE", "ARROW", "ENDSTATEMENT",
 
         "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
 
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
         "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO", "AND", "OR",
-        "LIST_CONSTRUCTOR",
 
         "OPEN_PAREN", "CLOSE_PAREN",
         "OPEN_SQUARE", "CLOSE_SQUARE",
@@ -81,8 +80,6 @@ class FunkyLexer:
 
     # Regexes for the control characters.
     t_BACKTICK      =  r"`"
-    t_COMMA         =  r","
-    t_TYPESIG       =  r"::"
     t_PIPE          =  r"\|"
     t_ARROW         =  r"->"
     t_ENDSTATEMENT  =  r";"
@@ -129,7 +126,6 @@ class FunkyLexer:
     t_MODULO            =  r"%"
     t_AND               =  r"&&"
     t_OR                =  r"\|\|"
-    t_LIST_CONSTRUCTOR  =  r":"
 
     # Brackets.
     t_OPEN_PAREN    =  r"\("

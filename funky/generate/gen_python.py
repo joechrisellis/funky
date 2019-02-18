@@ -106,8 +106,8 @@ builtins = {
     "*"       :  "__mul",
     "/"       :  "__div",
     "%"       :  "__mod",
-    "&&"      :  "__logical_and",
-    "||"      :  "__logical_or",
+    "and"     :  "__logical_and",
+    "or"      :  "__logical_or",
 }
 
 class PythonCodeGenerator(CodeGenerator):

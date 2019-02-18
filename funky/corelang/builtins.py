@@ -44,9 +44,8 @@ BUILTIN_FUNCTIONS = {
     "*"       :  FunctionType(Num, FunctionType(Num, Num)),
     "/"       :  FunctionType(Num, FunctionType(Num, Num)),
     "%"       :  FunctionType(Num, FunctionType(Num, Num)),
-    "&&"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
-    "||"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
-    # ":"       :  FunctionType(t, FunctionType(Cons, Cons)),
+    "and"     :  FunctionType(Bool, FunctionType(Bool, Bool)),
+    "or"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
 }
 
 # All of the builtins form the default environment.

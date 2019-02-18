@@ -13,10 +13,6 @@ from funky.parse.funky_lexer import FunkyLexer
 
 log = logging.getLogger(__name__)
 
-def _rmb(s):
-    """Removes backslashes from a string."""
-    return s.replace("\\", "")
-
 # The default fixity for an infix function (if it isn't defined explicitly with
 # the setfix directive) is assumed to be LEFT ASSOCIATIVE with MAXIMUM
 # PRECEDENCE.
@@ -28,23 +24,20 @@ fixities = {
     # This is not a legal operator in Funky code.
     "!!!" : ("nonassoc",  0),
 
-    # Remove backslashes from the lexer regexes for operators. This gets the
-    # 'raw' operator string. If the operator lexemes are changed in the lexer,
-    # the change is automatically propagated to here.
-    _rmb(FunkyLexer.t_OR)                :  ("rightassoc",  3),
-    _rmb(FunkyLexer.t_AND)               :  ("rightassoc",  4),
-    _rmb(FunkyLexer.t_EQUALITY)          :  ("nonassoc",    5),
-    _rmb(FunkyLexer.t_GEQ)               :  ("nonassoc",    5),
-    _rmb(FunkyLexer.t_GREATER)           :  ("nonassoc",    5),
-    _rmb(FunkyLexer.t_INEQUALITY)        :  ("nonassoc",    5),
-    _rmb(FunkyLexer.t_LEQ)               :  ("nonassoc",    5),
-    _rmb(FunkyLexer.t_LESS)              :  ("nonassoc",    5),
-    _rmb(FunkyLexer.t_MINUS)             :  ("leftassoc",   6),
-    _rmb(FunkyLexer.t_PLUS)              :  ("leftassoc",   6),
-    _rmb(FunkyLexer.t_DIVIDE)            :  ("leftassoc",   7),
-    _rmb(FunkyLexer.t_MODULO)            :  ("leftassoc",   7),
-    _rmb(FunkyLexer.t_TIMES)             :  ("leftassoc",   7),
-    _rmb(FunkyLexer.t_POW)               :  ("rightassoc",  8),
+    "or"   :  ("rightassoc",  3),
+    "and"  :  ("rightassoc",  4),
+    "=="   :  ("nonassoc",    5),
+    ">="   :  ("nonassoc",    5),
+    ">"    :  ("nonassoc",    5),
+    "!="   :  ("nonassoc",    5),
+    "<="   :  ("nonassoc",    5),
+    "<"    :  ("nonassoc",    5),
+    "-"    :  ("leftassoc",   6),
+    "+"    :  ("leftassoc",   6),
+    "/"    :  ("leftassoc",   7),
+    "%"    :  ("leftassoc",   7),
+    "*"    :  ("leftassoc",   7),
+    "**"   :  ("rightassoc",  8),
 }
 
 def set_fixity(operator, associativity, precedence):

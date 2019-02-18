@@ -229,19 +229,20 @@ class FunkyParser:
     def p_LEXP(self, p):
         """LEXP : LAMBDA APAT APATS ARROW EXP
                 | LET DECLARATIONS IN EXP
-                | IF EXP THEN EXP ELSE EXP
+                | EXP IF EXP ELSE EXP
                 | MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
                 | FEXP
         """
         if len(p) == 6:
-            p[0] = Lambda([p[2], *p[3]], p[5])
-        elif len(p) == 5:
-            p[0] = Let(p[2], p[4])
-        elif len(p) == 7:
-            if p[1] == "if":
-                p[0] = If(p[2], p[4], p[6])
+            if p[1] == "lambda":
+                p[0] = Lambda([p[2], *p[3]], p[5])
             else:
-                p[0] = Match(p[2], p[5])
+                p[0] = If(p[3], p[1], p[5])
+        elif len(p) == 5:
+            if p[1] == "let":
+                p[0] = Let(p[2], p[4])
+        elif len(p) == 7:
+            p[0] = Match(p[2], p[5])
         else:
             p[0] = p[1]
 

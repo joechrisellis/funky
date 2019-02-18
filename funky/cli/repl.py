@@ -249,7 +249,7 @@ class FunkyShell(CustomCmd):
         return core_tree
 
     def get_compiled(self, source):
-        """Converts a string of funky code into teh target source language.
+        """Converts a string of funky code into the target source language.
         
         :param source: the source code to convert to the target source language
         :return:       the compiled code in the target source language

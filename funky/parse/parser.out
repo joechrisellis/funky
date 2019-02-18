@@ -5,6 +5,7 @@ Unused terminals:
     CLOSE_SQUARE
     NEWTYPE
     OPEN_SQUARE
+    THEN
     WHITESPACE
 
 Grammar
@@ -58,7 +59,7 @@ Rule 45    INFIX_EXP -> MINUS INFIX_EXP
 Rule 46    INFIX_EXP -> LEXP
 Rule 47    LEXP -> LAMBDA APAT APATS ARROW EXP
 Rule 48    LEXP -> LET DECLARATIONS IN EXP
-Rule 49    LEXP -> IF EXP THEN EXP ELSE EXP
+Rule 49    LEXP -> EXP IF EXP ELSE EXP
 Rule 50    LEXP -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
 Rule 51    LEXP -> FEXP
 Rule 52    FEXP -> FEXP AEXP
@@ -155,7 +156,7 @@ POW                  : 82
 RIGHTASSOC           : 26
 SETFIX               : 24
 STRING               : 95
-THEN                 : 49
+THEN                 : 
 TIMES                : 79
 TYPENAME             : 11 14 32 55 67 69
 WHERE                : 1 38 40

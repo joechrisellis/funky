@@ -1,3 +1,4 @@
+from keyword import kwlist
 import logging
 
 from funky.corelang.coretree import *
@@ -173,10 +174,15 @@ class PythonCodeGenerator(CodeGenerator):
                 s = ""
                 for var in varnames:
                     s += "lambda {}: ".format(var)
-                self.emit("{} = {}{}({})".format(constructor.identifier,
-                                                        s,
-                                                        constructor_name,
-                                                        ", ".join(varnames)))
+
+                if constructor.identifier in kwlist:
+                    py_name = "__{}".format(constructor.identifier)
+                else:
+                    py_name = constructor.identifier
+                self.emit("{} = {}{}({})".format(py_name,
+                                                 s,
+                                                 constructor_name,
+                                                 ", ".join(varnames)))
                 self.newline()
 
     py_compile = get_registry_function(registered_index=1) # 1 to skip self
@@ -204,6 +210,8 @@ class PythonCodeGenerator(CodeGenerator):
 
     @py_compile.register(CoreVariable)
     def py_compile_variable(self, node, indent):
+        if node.identifier in kwlist:
+            return "__{}".format(node.identifier)
         return node.identifier
 
     @py_compile.register(CoreLiteral)

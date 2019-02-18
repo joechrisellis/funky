@@ -2,10 +2,7 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    CLOSE_SQUARE
     NEWTYPE
-    OPEN_SQUARE
-    THEN
     WHITESPACE
 
 Grammar
@@ -118,7 +115,6 @@ BOOL                 : 93
 CHAR                 : 94
 CLOSE_BRACE          : 2 3 15 16 50
 CLOSE_PAREN          : 33 36 57 65 66 71
-CLOSE_SQUARE         : 
 DIVIDE               : 80
 ELSE                 : 49
 ENDSTATEMENT         : 2 4 7 17 60
@@ -148,7 +144,6 @@ NONASSOC             : 27
 OF                   : 50
 OPEN_BRACE           : 2 3 15 16 50
 OPEN_PAREN           : 33 36 57 65 66 71
-OPEN_SQUARE          : 
 OR                   : 90
 PIPE                 : 12 41 42
 PLUS                 : 77
@@ -156,7 +151,6 @@ POW                  : 82
 RIGHTASSOC           : 26
 SETFIX               : 24
 STRING               : 95
-THEN                 : 
 TIMES                : 79
 TYPENAME             : 11 14 32 55 67 69
 WHERE                : 1 38 40

@@ -58,16 +58,6 @@ class ImportStatement(ASTNode):
         self.module_id  =  module_id
 
 class NewTypeStatement(ASTNode):
-    """Node representing a type alias. Consists of a new identifier and an
-    'alias' -- the name of the old type. e.g.
-        'newtype Currency = Float' becomes NewTypeStatement('Currency', 'Float')
-    """
-
-    def __init__(self, identifier, typ):
-        self.identifier  =  identifier
-        self.typ         =  typ
-
-class NewConsStatement(ASTNode):
     """Definition of a new constructor."""
 
     def __init__(self, identifier, type_parameters, constructors):

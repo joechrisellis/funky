@@ -274,7 +274,7 @@ def operator_prefix(s):
     return "{}{}".format(OP_PREFIX, s)
 
 # Used to map constructors to their parent class. For instance:
-# newcons List =Cons Integer List | Nil
+# newtype List = Cons Integer List | Nil
 # Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
 # prefix.
 typeclass_mapping = {}
@@ -299,7 +299,7 @@ def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
     Specifically, creates a TypeOperator and function returning that type
     operator for each of the alternatives. I.e.
-    newcons List = Cons Integer List | Nil yields:
+    newtype List = Cons Integer List | Nil yields:
 
         OP_Cons as binary TypeOperator
         OP_NIL as a nullary TypeOperator

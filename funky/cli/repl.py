@@ -27,7 +27,7 @@ from funky.generate.gen_python import PythonCodeGenerator
 
 log = logging.getLogger(__name__)
 
-SHOW_EXCEPTION_TRACES = True
+SHOW_EXCEPTION_TRACES = False
 
 class CustomCmd(cmd.Cmd):
     """This is a 'hack' around Python's cmd.py builtin library. It appears that
@@ -160,8 +160,8 @@ class FunkyShell(CustomCmd):
         self.decl_parser.build(start="TOP_DECLARATIONS")
         self.expr_parser = FunkyParser()
         self.expr_parser.build(start="EXP")
-        self.newcons_parser = FunkyParser()
-        self.newcons_parser.build(start="NEW_CONS")
+        self.newtype_parser = FunkyParser()
+        self.newtype_parser.build(start="TYPE_DECLARATION")
         self.setfix_parser = FunkyParser()
         self.setfix_parser.build(start="FIXITY_DECLARATION")
         self.py_generator = PythonCodeGenerator()
@@ -201,9 +201,9 @@ class FunkyShell(CustomCmd):
         print("\n".join(str(b) for b in self.global_let.binds))
     
     @report_errors
-    def do_newcons(self, arg):
-        """Create an ADT. E.g.: :newcons List = Cons Integer List | Nil"""
-        stmt = self.newcons_parser.do_parse("newcons {}".format(arg))
+    def do_newtype(self, arg):
+        """Create an ADT. E.g.: :newtype List = Cons Integer List | Nil"""
+        stmt = self.newtype_parser.do_parse("newtype {}".format(arg))
         rename(stmt, self.scope)
         typedef = desugar(stmt)
         self.global_types.append(typedef)
@@ -353,7 +353,7 @@ def main():
     verbosity = args.verbose - args.quiet
     set_loglevel(verbosity)
 
-    global SHOW_EXCEPTION_TRACE
+    global SHOW_EXCEPTION_TRACES
     SHOW_EXCEPTION_TRACE = args.show_exception_traces
 
     log.debug("Initialising REPL-shell...")

@@ -59,14 +59,23 @@ class FunkyParser:
             p[0] =[p[1]]
 
     def p_TOP_DECLARATION(self, p):
-        """TOP_DECLARATION : NEW_CONS
+        """TOP_DECLARATION : TYPE_DECLARATION
                            | DECLARATION
         """
         p[0] = p[1]
 
-    def p_NEW_CONS(self, p):
-        """NEW_CONS : NEWCONS TYPENAME EQUALS CONSTRUCTORS"""
-        p[0] = NewConsStatement(p[2], [], p[4])
+    def p_TYPE_DECLARATION(self, p):
+        """TYPE_DECLARATION : NEWTYPE TYPENAME TYVARS EQUALS CONSTRUCTORS"""
+        p[0] = NewTypeStatement(p[2], p[3], p[5])
+
+    def p_TYVARS(self, p):
+        """TYVARS : TYVARS IDENTIFIER
+                  |
+        """
+        if len(p) == 3:
+            p[0] = p[1] + [p[2]]
+        else:
+            p[0] = []
 
     def p_CONSTRUCTORS(self, p):
         """CONSTRUCTORS : CONSTRUCTORS PIPE CONSTRUCTOR
@@ -149,17 +158,13 @@ class FunkyParser:
 
     def p_ATYPE(self, p):
         """ATYPE : TYPENAME
+                 | IDENTIFIER
                  | OPEN_PAREN TYPE CLOSE_PAREN
         """
         if len(p) == 2:
             p[0] = p[1]
-        elif p[1] == "(":
-            if type(p[2]) == list:
-                p[0] = TupleType(tuple(p[2]))
-            else:
-                p[0] = p[2]
         else:
-            p[0] = ListType(p[2])
+            p[0] = p[2]
 
     def p_FUNCTION_LHS(self, p):
         """FUNCTION_LHS : IDENTIFIER APAT APATS
@@ -192,8 +197,8 @@ class FunkyParser:
             p[0] = FunctionRHS(p[1], declarations=p[3])
 
     def p_GDRHS(self, p):
-        """GDRHS : PIPE EXP EQUALS EXP
-                 | PIPE EXP EQUALS EXP GDRHS
+        """GDRHS : GIVEN EXP EQUALS EXP
+                 | GIVEN EXP EQUALS EXP GDRHS
         """
         if len(p) == 5:
             p[0] = [GuardedExpression(p[2], p[4])]

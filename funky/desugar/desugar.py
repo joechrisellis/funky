@@ -39,11 +39,9 @@ def program_body_desugar(node):
     
     # separate type definitions from code
     typedefs = [t for t in node.toplevel_declarations
-                if isinstance(t, NewConsStatement) or \
-                   isinstance(t, NewTypeStatement)]
-    code = [t for t in node.toplevel_declarations
-              if not (isinstance(t, NewConsStatement) or \
-                      isinstance(t, NewTypeStatement))]
+                if isinstance(t, NewTypeStatement)]
+    code     = [t for t in node.toplevel_declarations
+                if not (isinstance(t, NewTypeStatement))]
 
     typedefs = [desugar(t) for t in typedefs]
     toplevel_declarations = [desugar(t) for t in code]
@@ -61,17 +59,12 @@ def program_body_desugar(node):
     toplevel_let.binds = condense_function_binds(toplevel_let.binds)
     return toplevel_let, typedefs
 
-@desugar.register(NewConsStatement)
-def new_cons_statement_desugar(node):
+@desugar.register(NewTypeStatement)
+def new_type_statement_desugar(node):
     constructors = [desugar(d) for d in node.constructors]
     the_adt = AlgebraicDataType(node.identifier, node.type_parameters,
                                 constructors)
     return CoreTypeDefinition(node.identifier, the_adt)
-
-@desugar.register(NewTypeStatement)
-def new_type_statement_desugar(node):
-    typ = desugar(node.typ)
-    return CoreTypeDefinition(node.identifier, typ)
 
 @desugar.register(ImportStatement)
 def import_statement_desugar(node):

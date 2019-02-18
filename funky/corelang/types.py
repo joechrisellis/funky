@@ -108,7 +108,7 @@ class ListType:
         self.typ  =  typ
 
 class AlgebraicDataType:
-    """An algebraic data type defined with the 'newcons' keyword. These are
+    """An algebraic data type defined with the 'newtype' keyword. These are
     used in pattern matching.
     """
 

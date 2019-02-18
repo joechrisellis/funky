@@ -46,14 +46,6 @@ def import_statement_rename(node, scope):
     pass
 
 @rename.register(NewTypeStatement)
-def new_type_statement_rename(node, scope):
-    if node.identifier in scope or node.identifier in BUILTIN_PRIMITIVES:
-        raise FunkyRenamingError("Duplicate type '{}'.".format(node.identifier))
-    rename(node.typ, scope)
-
-    scope[node.identifier] = node.identifier
-
-@rename.register(NewConsStatement)
 def new_cons_statement_rename(node, scope):
     if node.identifier in scope:
         raise FunkyRenamingError("Duplicate definition of constructor type " \
@@ -65,17 +57,15 @@ def new_cons_statement_rename(node, scope):
     # we don't rename the type, only the variables
     scope[node.identifier] = node.identifier
     
-    tmp_scope = Scope(parent=scope)
+    tmp_scope_1 = Scope(parent=scope)
     for i, param in enumerate(node.type_parameters):
-        tmp_scope[param] = get_parameter_name(node.identifier, i)
+        tmp_scope_1[param] = get_parameter_name(node.identifier, i)
+
+    tmp_scope_2 = Scope(parent=tmp_scope_1)
     for cons in node.constructors:
-        rename(cons, tmp_scope)
+        rename(cons, tmp_scope_2)
 
-    # BIG HACK -- please please please fix me
-    for i, param in enumerate(node.type_parameters):
-        del tmp_scope.local[param]
-
-    scope.local.update(tmp_scope.local)
+    scope.local.update(tmp_scope_2.local)
     
 @rename.register(Construction)
 def construction_rename(node, scope, fname=None, index=None):

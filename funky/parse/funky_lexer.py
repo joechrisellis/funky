@@ -23,9 +23,9 @@ class FunkyLexer:
 
     # Reserved keywords -- variables are not permitted to have these names.
     reserved = [
-        "else", "if", "import", "in", "lambda", "leftassoc", "let", "match",
-        "module", "newcons", "newtype", "nonassoc", "of", "rightassoc",
-        "setfix", "where", "and", "or",
+        "and", "else", "given", "if", "import", "in", "lambda", "leftassoc",
+        "let", "match", "module", "newtype", "newtype", "nonassoc", "of", "or",
+        "rightassoc", "setfix", "where",
     ]
     reserved = {k : k.upper() for k in reserved}
 

@@ -80,6 +80,7 @@ def resolve_fixity(infix_expr):
 
 def parse_neg(operator, tokens):
     """Function is required to handle negatives."""
+    print("parse_neg({}, {})".format(operator, tokens))
     _, minus_precedence = get_fixity("-")
     if tokens[0] == "-":
         fix1, prec1 = get_fixity(operator)
@@ -92,7 +93,9 @@ def parse_neg(operator, tokens):
         return parse(operator, tokens[0], tokens[1:])
 
 def parse(op1, exp, tokens):
+    print("parse({}, {}, {})".format(op1, exp, tokens))
     if not tokens:
+        print("returning {}".format(exp))
         return (exp, [])
 
     op2 = tokens[0]

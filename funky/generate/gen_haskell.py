@@ -29,7 +29,7 @@ class HaskellCodeGenerator(CodeGenerator):
     comment = "-- {}".format
 
     def __init__(self):
-        super().__init__("Haskell", )
+        super().__init__("Haskell")
 
         # this set contains the names that are known to be constructors so that
         # we do not convert them to lowercase when compiling CoreVariables.

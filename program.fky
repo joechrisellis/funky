@@ -1,25 +1,7 @@
 module test where
 
-    newtype List = Cons Integer List | Nil
-    newtype Tree = Branch Tree Integer Tree | Empty
+    signum x given x < 0  = -1
+             given x > 0  = 1
+             given x == 0 = 0
 
-    concatenate (Cons x xs) ys  = Cons x (xs `concatenate` ys)
-    concatenate xs          Nil = xs
-    concatenate Nil         ys  = ys
-
-    fold f z Nil         = z
-    fold f z (Cons x xs) = f x (fold f z xs)
-
-    insert e Empty                   = Branch Empty e Empty
-    insert e (Branch l v r) given e <= v = Branch (insert e l) v r
-                            given e >  v = Branch l v (insert e r)
-
-    inorder Empty          = Nil
-    inorder (Branch l v r) = inorder l    `concatenate`
-                             (Cons v Nil) `concatenate`
-                             inorder r
-
-    treesort list = inorder (fold insert Empty list)
-
-    main = treesort my_list
-           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+    main = signum 20

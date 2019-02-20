@@ -324,7 +324,10 @@ class FunkyShell(CustomCmd):
             # try treating as an expression...
             code = self.get_compiled(arg)
             print(cblue("= "), end="")
-            exec(code, {"__name__" : "__main__"})
+            try:
+                exec(code, {"__name__" : "__main__"})
+            except Exception as e:
+                print(cred(str(e)))
         except FunkyParsingError:
             # if that didn't work, try treating as a declaration
             self.add_declarations([arg])

@@ -1,4 +1,3 @@
-from keyword import kwlist
 import logging
 
 from funky.corelang.coretree import *
@@ -30,7 +29,7 @@ class HaskellCodeGenerator(CodeGenerator):
     comment = "-- {}".format
 
     def __init__(self):
-        super().__init__("Haskell")
+        super().__init__("Haskell", )
 
         # this set contains the names that are known to be constructors so that
         # we do not convert them to lowercase when compiling CoreVariables.
@@ -73,13 +72,9 @@ class HaskellCodeGenerator(CodeGenerator):
 
     @hs_compile.register(CoreVariable)
     def hs_compile_variable(self, node, indent):
+        ident = node.identifier
         if node.identifier not in self.constructor_names:
-            ident = node.identifier.lower()
-        else:
-            ident = node.identifier
-
-        if ident in kwlist:
-            return "__{}".format(ident)
+            ident = ident.lower()
         return ident
 
     @hs_compile.register(CoreLiteral)

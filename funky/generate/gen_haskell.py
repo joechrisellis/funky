@@ -149,6 +149,7 @@ class HaskellCodeGenerator(CodeGenerator):
         for bind in core_tree.binds:
             compiled_bind = self.hs_compile(bind, 0)
             self.emit(compiled_bind)
+        self.newline()
 
         log.info("Done.")
 

@@ -14,6 +14,7 @@ from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.rename import FunkyRenamingError
 from funky.desugar import FunkyDesugarError
 from funky.infer import FunkyTypeError
+from funky.generate import FunkyCodeGenerationError
 
 from funky.ds import Scope
 from funky.corelang.coretree import *
@@ -116,20 +117,21 @@ def report_errors(f):
     the same code for each function, we just tag each one where an error might
     occur with this decorator.
     """
-    def wrapper(*args, **kwargs):
+    def wrapper(self, *args, **kwargs):
         err, e = None, None
         try:
-            return f(*args, **kwargs)
+            return f(self, *args, **kwargs)
         except FunkyParsingError as ex:
             e, err = ex, "Failed to parse"
         except FunkyRenamingError as ex:
             e, err = ex, "Renaming error"
-        except FunkyDesugarError as ex:
-            e, err = ex, "Desugarer error"
+            self.scope.pending_definition = {}
         except FunkyDesugarError as ex:
             e, err = ex, "Desugarer error"
         except FunkyTypeError as ex:
             e, err = ex, "Code is not type-correct"
+        except FunkyCodeGenerationError as ex:
+            e, err = ex, "Code generation failed"
         except Exception as ex:
             e, err = ex, "Unexpected error"
             raise e

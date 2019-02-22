@@ -199,8 +199,15 @@ class FunkyShell(CustomCmd):
     @report_errors
     def do_list(self, arg):
         """List the current bindings in desuguared intermediate code."""
-        print("\n".join(str(b) for b in self.global_types))
-        print("\n".join(str(b) for b in self.global_let.binds))
+        if not (self.global_types or self.global_let.binds):
+            print(cgreen("Nothing currently registered."))
+            return
+
+        print(cgreen("Currently registered bindings:"))
+        if self.global_types:
+            print("\n".join(str(b) for b in self.global_types))
+        if self.global_let.binds:
+            print("\n".join(str(b) for b in self.global_let.binds))
     
     @report_errors
     def do_newtype(self, arg):
@@ -224,6 +231,7 @@ class FunkyShell(CustomCmd):
     def do_reset(self, arg):
         """Reset the environment (clear the current list of bindings)."""
         self.reset()
+        print(cgreen("All bindings reset."))
 
     def reset(self):
         """Resets the scope and bindings."""

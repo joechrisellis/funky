@@ -88,25 +88,6 @@ class FunctionType(TypeOperator):
     def __str__(self):
         return "({} -> {})".format(str(self.input_type), str(self.output_type))
 
-### GET RID OF RUBBISH BELOW SOON
-
-class TupleType:
-    """A tuple-type -- e.g. (Integer, Integer)."""
-
-    def __init__(self, types):
-        self.types  =  types
-        self.arity  =  len(types)
-
-    def __str__(self):
-        return str(self.types)
-
-class ListType:
-    """A list-type --  e.g. [Integer]."""
-    # TODO: refactor this out to an instance of algebraic data type.
-
-    def __init__(self, typ):
-        self.typ  =  typ
-
 class AlgebraicDataType:
     """An algebraic data type defined with the 'newtype' keyword. These are
     used in pattern matching.

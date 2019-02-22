@@ -118,15 +118,6 @@ def type_rename(node, scope):
     if node.type_name not in scope and node.type_name not in BUILTIN_PRIMITIVES:
         raise FunkyRenamingError("Undefined type '{}'.".format(node.type_name))
 
-@rename.register(TupleType)
-def tuple_type_rename(node, scope):
-    for typ in node.types:
-        rename(typ, scope)
-
-@rename.register(ListType)
-def list_type_rename(node, scope):
-    rename(node.typ, scope)
-
 @rename.register(FunctionType)
 def function_type_rename(node, scope):
     rename(node.input_type, scope)

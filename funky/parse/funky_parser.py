@@ -6,8 +6,7 @@ from funky.parse import FunkySyntaxError
 import funky.parse.fixity as fixity
 
 from funky.corelang.sourcetree import *
-from funky.corelang.types import TypeVariable, TupleType, ListType, \
-                                 FunctionType, ConstructorType
+from funky.corelang.types import TypeVariable, FunctionType, ConstructorType
 
 log = logging.getLogger(__name__)
 
@@ -168,17 +167,21 @@ class FunkyParser:
 
     def p_FUNCTION_LHS(self, p):
         """FUNCTION_LHS : IDENTIFIER APAT APATS
-                        | LPAT VAROP LPAT
                         | OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
+                        | INFIX_FUNCTION_DEFINITION
         """
-        if type(p[1]) == str:
-            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
-        elif p[1] == "(":
+        if len(p) == 6:
             p[0] = p[2]
             p[0].parameters.append(p[4])
             p[0].parameters.extend(p[5])
+        elif len(p) == 4:
+            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
         else:
-            p[0] = FunctionLHS(p[2], [p[1], p[3]])
+            p[0] = p[1]
+
+    def p_INFIX_FUNCTION_DEFINITION(self, p):
+        """INFIX_FUNCTION_DEFINITION : LPAT INFIX_FUNCTION LPAT"""
+        p[0] = FunctionLHS(p[2], [p[1], p[3]])
 
     def p_RHS(self, p):
         """RHS : EQUALS EXP
@@ -329,14 +332,15 @@ class FunkyParser:
 
     def p_VAROP(self, p):
         """VAROP : VARSYM
-                 | BACKTICK IDENTIFIER BACKTICK
+                 | INFIX_FUNCTION
         """
-        if len(p) == 2:
-            p[0] = p[1]
-        else:
-            if p[2] not in fixity.fixities:
-                fixity.set_fixity(p[2], *fixity.DEFAULT_FIXITY)
-            p[0] = p[2]
+        p[0] = p[1]
+
+    def p_INFIX_FUNCTION(self, p):
+        """INFIX_FUNCTION : BACKTICK IDENTIFIER BACKTICK"""
+        if p[2] not in fixity.fixities:
+            fixity.set_fixity(p[2], *fixity.DEFAULT_FIXITY)
+        p[0] = p[2]
 
     def p_OP(self, p):
         """OP : VAROP

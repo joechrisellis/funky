@@ -61,17 +61,17 @@ class HaskellCodeGenerator(CodeGenerator):
     hs_compile = get_registry_function(registered_index=1) # 1 to skip self
 
     @hs_compile.register(CoreBind)
-    def hs_compile_bind(self, node, indent):
+    def hs_compile_bind(self, node):
         return "{} = {}".format(node.identifier,
-                                self.hs_compile(node.bindee, indent))
+                                self.hs_compile(node.bindee))
 
     @hs_compile.register(CoreCons)
-    def hs_compile_cons(self, node, indent):
-        params = " ".join(self.hs_compile(p, indent) for p in node.parameters)
+    def hs_compile_cons(self, node):
+        params = " ".join(self.hs_compile(p) for p in node.parameters)
         return "{} {}".format(node.constructor, params)
 
     @hs_compile.register(CoreVariable)
-    def hs_compile_variable(self, node, indent):
+    def hs_compile_variable(self, node):
         ident = node.identifier
         try:
             return builtins[ident]
@@ -81,36 +81,36 @@ class HaskellCodeGenerator(CodeGenerator):
             return ident
 
     @hs_compile.register(CoreLiteral)
-    def hs_compile_literal(self, node, indent):
+    def hs_compile_literal(self, node):
         return str(node.value)
 
     @hs_compile.register(CoreApplication)
-    def hs_compile_application(self, node, indent):
-        f = self.hs_compile(node.expr, indent)
-        return "({})({})".format(f, self.hs_compile(node.arg, indent))
+    def hs_compile_application(self, node):
+        f = self.hs_compile(node.expr)
+        return "({})({})".format(f, self.hs_compile(node.arg))
 
     @hs_compile.register(CoreLambda)
-    def hs_compile_lambda(self, node, indent):
+    def hs_compile_lambda(self, node):
         return "\{} -> {}".format(node.param.identifier,
-                                  self.hs_compile(node.expr, indent))
+                                  self.hs_compile(node.expr))
 
     @hs_compile.register(CoreLet)
-    def hs_compile_let(self, node, indent):
-        binds = "; ".join(self.hs_compile(bind, indent) for bind in node.binds)
-        expr = self.hs_compile(node.expr, indent)
+    def hs_compile_let(self, node):
+        binds = "; ".join(self.hs_compile(bind) for bind in node.binds)
+        expr = self.hs_compile(node.expr)
         return "let {{ {} }} in {}".format(binds, expr)
 
     @hs_compile.register(CoreMatch)
-    def hs_compile_match(self, node, indent):
-        scrutinee = self.hs_compile(node.scrutinee, indent)
+    def hs_compile_match(self, node):
+        scrutinee = self.hs_compile(node.scrutinee)
 
         alts = []
         for alt in node.alts:
-            compiled_altcon = self.hs_compile(alt.altcon, indent)
+            compiled_altcon = self.hs_compile(alt.altcon)
             if not alt.expr:
                 alts.append("{} -> undefined".format(compiled_altcon))
                 continue
-            compiled_expr = self.hs_compile(alt.expr, indent)
+            compiled_expr = self.hs_compile(alt.expr)
             alts.append("{} -> {}".format(compiled_altcon, compiled_expr))
 
         return "case {} of {{ {} }}".format(scrutinee, "; ".join(alts))
@@ -118,7 +118,7 @@ class HaskellCodeGenerator(CodeGenerator):
     @annotate_section
     def emit_main(self, expr):
         self.emit("main = do")
-        self.emit("       print ({})".format(self.hs_compile(expr, 0)))
+        self.emit("       print ({})".format(self.hs_compile(expr)))
 
     def do_generate_code(self, core_tree, typedefs):
         """Generates Haskell code from the core tree and type definitions.
@@ -139,7 +139,7 @@ class HaskellCodeGenerator(CodeGenerator):
         log.info("Compiling core tree...")
         
         for bind in core_tree.binds:
-            compiled_bind = self.hs_compile(bind, 0)
+            compiled_bind = self.hs_compile(bind)
             self.emit(compiled_bind)
         self.newline()
 

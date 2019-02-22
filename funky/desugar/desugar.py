@@ -203,8 +203,6 @@ def builtin_desugar(node):
 @desugar.register(ConstructorType)
 @desugar.register(CoreCons)
 @desugar.register(FunctionType)
-@desugar.register(ListType)
-@desugar.register(TupleType)
 @desugar.register(TypeVariable)
 def noop_desugar(node):
     # default functions -- we must acknowledge these when we translate to C. No

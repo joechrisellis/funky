@@ -64,119 +64,122 @@ Rule 54    LEXP -> FEXP
 Rule 55    FEXP -> FEXP AEXP
 Rule 56    FEXP -> AEXP
 Rule 57    AEXP -> USED_VAR
-Rule 58    AEXP -> TYPENAME
+Rule 58    AEXP -> USED_TYPENAME
 Rule 59    AEXP -> LITERAL
-Rule 60    AEXP -> OPEN_PAREN EXP CLOSE_PAREN
-Rule 61    CONSTRUCTION_PARAMS -> CONSTRUCTION_PARAMS AEXP
-Rule 62    CONSTRUCTION_PARAMS -> AEXP
-Rule 63    ALTS -> ALT ENDSTATEMENT ALTS
-Rule 64    ALTS -> ALT
-Rule 65    ALT -> LPAT ARROW EXP
-Rule 66    ALT -> <empty>
-Rule 67    LPAT -> APAT
-Rule 68    LPAT -> MINUS OPEN_PAREN INTEGER CLOSE_PAREN
-Rule 69    LPAT -> MINUS OPEN_PAREN FLOAT CLOSE_PAREN
-Rule 70    LPAT -> TYPENAME APAT APATS
-Rule 71    APAT -> PARAM
-Rule 72    APAT -> TYPENAME
-Rule 73    APAT -> LITERAL
-Rule 74    APAT -> OPEN_PAREN LPAT CLOSE_PAREN
-Rule 75    VAROP -> VARSYM
-Rule 76    VAROP -> BACKTICK IDENTIFIER BACKTICK
-Rule 77    OP -> VAROP
-Rule 78    APATS -> APAT APATS
-Rule 79    APATS -> <empty>
-Rule 80    VARSYM -> PLUS
-Rule 81    VARSYM -> MINUS
-Rule 82    VARSYM -> TIMES
-Rule 83    VARSYM -> DIVIDE
-Rule 84    VARSYM -> MODULO
-Rule 85    VARSYM -> POW
-Rule 86    VARSYM -> EQUALITY
-Rule 87    VARSYM -> INEQUALITY
-Rule 88    VARSYM -> LESS
-Rule 89    VARSYM -> LEQ
-Rule 90    VARSYM -> GREATER
-Rule 91    VARSYM -> GEQ
-Rule 92    VARSYM -> AND
-Rule 93    VARSYM -> OR
-Rule 94    LITERAL -> FLOAT
-Rule 95    LITERAL -> INTEGER
-Rule 96    LITERAL -> BOOL
-Rule 97    LITERAL -> CHAR
-Rule 98    LITERAL -> STRING
-Rule 99    USED_VAR -> IDENTIFIER
-Rule 100   PARAM -> IDENTIFIER
+Rule 60    AEXP -> OPERATOR_FUNC
+Rule 61    AEXP -> OPEN_PAREN EXP CLOSE_PAREN
+Rule 62    OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN
+Rule 63    CONSTRUCTION_PARAMS -> CONSTRUCTION_PARAMS AEXP
+Rule 64    CONSTRUCTION_PARAMS -> AEXP
+Rule 65    ALTS -> ALT ENDSTATEMENT ALTS
+Rule 66    ALTS -> ALT
+Rule 67    ALT -> LPAT ARROW EXP
+Rule 68    ALT -> <empty>
+Rule 69    LPAT -> APAT
+Rule 70    LPAT -> MINUS OPEN_PAREN INTEGER CLOSE_PAREN
+Rule 71    LPAT -> MINUS OPEN_PAREN FLOAT CLOSE_PAREN
+Rule 72    LPAT -> TYPENAME APAT APATS
+Rule 73    APAT -> PARAM
+Rule 74    APAT -> TYPENAME
+Rule 75    APAT -> LITERAL
+Rule 76    APAT -> OPEN_PAREN LPAT CLOSE_PAREN
+Rule 77    VAROP -> VARSYM
+Rule 78    VAROP -> BACKTICK IDENTIFIER BACKTICK
+Rule 79    OP -> VAROP
+Rule 80    APATS -> APAT APATS
+Rule 81    APATS -> <empty>
+Rule 82    VARSYM -> PLUS
+Rule 83    VARSYM -> MINUS
+Rule 84    VARSYM -> TIMES
+Rule 85    VARSYM -> DIVIDE
+Rule 86    VARSYM -> MODULO
+Rule 87    VARSYM -> POW
+Rule 88    VARSYM -> EQUALITY
+Rule 89    VARSYM -> INEQUALITY
+Rule 90    VARSYM -> LESS
+Rule 91    VARSYM -> LEQ
+Rule 92    VARSYM -> GREATER
+Rule 93    VARSYM -> GEQ
+Rule 94    VARSYM -> AND
+Rule 95    VARSYM -> OR
+Rule 96    LITERAL -> FLOAT
+Rule 97    LITERAL -> INTEGER
+Rule 98    LITERAL -> BOOL
+Rule 99    LITERAL -> CHAR
+Rule 100   LITERAL -> STRING
+Rule 101   USED_VAR -> IDENTIFIER
+Rule 102   USED_TYPENAME -> TYPENAME
+Rule 103   PARAM -> IDENTIFIER
 
 Terminals, with rules where they appear
 
-AND                  : 92
-ARROW                : 31 50 65
-BACKTICK             : 76 76
-BOOL                 : 96
-CHAR                 : 97
+AND                  : 94
+ARROW                : 31 50 67
+BACKTICK             : 78 78
+BOOL                 : 98
+CHAR                 : 99
 CLOSE_BRACE          : 2 3 17 18 53
-CLOSE_PAREN          : 36 39 60 68 69 74
-DIVIDE               : 83
+CLOSE_PAREN          : 36 39 61 62 70 71 76
+DIVIDE               : 85
 ELSE                 : 52
-ENDSTATEMENT         : 2 4 7 19 63
-EQUALITY             : 86
+ENDSTATEMENT         : 2 4 7 19 65
+EQUALITY             : 88
 EQUALS               : 11 40 41 44 45
-FLOAT                : 69 94
-GEQ                  : 91
+FLOAT                : 71 96
+GEQ                  : 93
 GIVEN                : 44 45
-GREATER              : 90
-IDENTIFIER           : 1 6 12 35 37 76 99 100
+GREATER              : 92
+IDENTIFIER           : 1 6 12 35 37 78 101 103
 IF                   : 52
 IMPORT               : 6
 IN                   : 51
-INEQUALITY           : 87
-INTEGER              : 26 68 95
+INEQUALITY           : 89
+INTEGER              : 26 70 97
 LAMBDA               : 50
 LEFTASSOC            : 27
-LEQ                  : 89
-LESS                 : 88
+LEQ                  : 91
+LESS                 : 90
 LET                  : 51
 MATCH                : 53
-MINUS                : 48 68 69 81
+MINUS                : 48 70 71 83
 MODULE               : 1
-MODULO               : 84
+MODULO               : 86
 NEWTYPE              : 11
 NONASSOC             : 29
 OF                   : 53
 OPEN_BRACE           : 2 3 17 18 53
-OPEN_PAREN           : 36 39 60 68 69 74
-OR                   : 93
+OPEN_PAREN           : 36 39 61 62 70 71 76
+OR                   : 95
 PIPE                 : 14
-PLUS                 : 80
-POW                  : 85
+PLUS                 : 82
+POW                  : 87
 RIGHTASSOC           : 28
 SETFIX               : 26
-STRING               : 98
-TIMES                : 82
-TYPENAME             : 11 16 34 58 70 72
+STRING               : 100
+TIMES                : 84
+TYPENAME             : 11 16 34 72 74 102
 WHERE                : 1 41 43
 WHITESPACE           : 
 error                : 
 
 Nonterminals, with rules where they appear
 
-AEXP                 : 55 56 61 62
-ALT                  : 63 64
-ALTS                 : 53 63
-APAT                 : 37 39 50 67 70 78
-APATS                : 37 39 50 70 78
+AEXP                 : 55 56 63 64
+ALT                  : 65 66
+ALTS                 : 53 65
+APAT                 : 37 39 50 69 72 80
+APATS                : 37 39 50 72 80
 ASSOCIATIVITY        : 26
 ATYPE                : 30 31 32
 ATYPES               : 16 32
 BODY                 : 1
-CONSTRUCTION_PARAMS  : 61
+CONSTRUCTION_PARAMS  : 63
 CONSTRUCTOR          : 14 15
 CONSTRUCTORS         : 11 14
 DECLARATION          : 10 19 20
 DECLARATIONS         : 41 43 51
 DECLARATIONS_LIST    : 17 19
-EXP                  : 40 41 44 44 45 45 50 51 52 52 52 53 60 65
+EXP                  : 40 41 44 44 45 45 50 51 52 52 52 53 61 67
 FEXP                 : 54 55
 FIXITY_DECLARATION   : 24 0
 FUNCTION_LHS         : 22 39
@@ -186,20 +189,22 @@ IMPORT_DECLARATION   : 4 5
 IMPORT_DECLARATIONS  : 2 4
 INFIX_EXP            : 46 47 48
 LEXP                 : 47 49
-LITERAL              : 59 73
-LPAT                 : 23 38 38 65 74
+LITERAL              : 59 75
+LPAT                 : 23 38 38 67 76
 MODULE_DEFINITION    : 
-OP                   : 26 47
-PARAM                : 71
+OP                   : 26 47 62
+OPERATOR_FUNC        : 60
+PARAM                : 73
 RHS                  : 22 23
 TOP_DECLARATION      : 7 8
 TOP_DECLARATIONS     : 2 3 7
 TYPE                 : 31 36
 TYPE_DECLARATION     : 9
 TYVARS               : 11 12
+USED_TYPENAME        : 58
 USED_VAR             : 57
-VAROP                : 38 77
-VARSYM               : 75
+VAROP                : 38 79
+VARSYM               : 77
 
 Parsing method: LALR
 
@@ -262,23 +267,23 @@ state 6
 state 7
 
     (26) FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER . OP
-    (77) OP -> . VAROP
-    (75) VAROP -> . VARSYM
-    (76) VAROP -> . BACKTICK IDENTIFIER BACKTICK
-    (80) VARSYM -> . PLUS
-    (81) VARSYM -> . MINUS
-    (82) VARSYM -> . TIMES
-    (83) VARSYM -> . DIVIDE
-    (84) VARSYM -> . MODULO
-    (85) VARSYM -> . POW
-    (86) VARSYM -> . EQUALITY
-    (87) VARSYM -> . INEQUALITY
-    (88) VARSYM -> . LESS
-    (89) VARSYM -> . LEQ
-    (90) VARSYM -> . GREATER
-    (91) VARSYM -> . GEQ
-    (92) VARSYM -> . AND
-    (93) VARSYM -> . OR
+    (79) OP -> . VAROP
+    (77) VAROP -> . VARSYM
+    (78) VAROP -> . BACKTICK IDENTIFIER BACKTICK
+    (82) VARSYM -> . PLUS
+    (83) VARSYM -> . MINUS
+    (84) VARSYM -> . TIMES
+    (85) VARSYM -> . DIVIDE
+    (86) VARSYM -> . MODULO
+    (87) VARSYM -> . POW
+    (88) VARSYM -> . EQUALITY
+    (89) VARSYM -> . INEQUALITY
+    (90) VARSYM -> . LESS
+    (91) VARSYM -> . LEQ
+    (92) VARSYM -> . GREATER
+    (93) VARSYM -> . GEQ
+    (94) VARSYM -> . AND
+    (95) VARSYM -> . OR
 
     BACKTICK        shift and go to state 11
     PLUS            shift and go to state 12
@@ -309,133 +314,133 @@ state 8
 
 state 9
 
-    (77) OP -> VAROP .
+    (79) OP -> VAROP .
 
-    $end            reduce using rule 77 (OP -> VAROP .)
+    $end            reduce using rule 79 (OP -> VAROP .)
 
 
 state 10
 
-    (75) VAROP -> VARSYM .
+    (77) VAROP -> VARSYM .
 
-    $end            reduce using rule 75 (VAROP -> VARSYM .)
+    $end            reduce using rule 77 (VAROP -> VARSYM .)
 
 
 state 11
 
-    (76) VAROP -> BACKTICK . IDENTIFIER BACKTICK
+    (78) VAROP -> BACKTICK . IDENTIFIER BACKTICK
 
     IDENTIFIER      shift and go to state 26
 
 
 state 12
 
-    (80) VARSYM -> PLUS .
+    (82) VARSYM -> PLUS .
 
-    $end            reduce using rule 80 (VARSYM -> PLUS .)
+    $end            reduce using rule 82 (VARSYM -> PLUS .)
 
 
 state 13
 
-    (81) VARSYM -> MINUS .
+    (83) VARSYM -> MINUS .
 
-    $end            reduce using rule 81 (VARSYM -> MINUS .)
+    $end            reduce using rule 83 (VARSYM -> MINUS .)
 
 
 state 14
 
-    (82) VARSYM -> TIMES .
+    (84) VARSYM -> TIMES .
 
-    $end            reduce using rule 82 (VARSYM -> TIMES .)
+    $end            reduce using rule 84 (VARSYM -> TIMES .)
 
 
 state 15
 
-    (83) VARSYM -> DIVIDE .
+    (85) VARSYM -> DIVIDE .
 
-    $end            reduce using rule 83 (VARSYM -> DIVIDE .)
+    $end            reduce using rule 85 (VARSYM -> DIVIDE .)
 
 
 state 16
 
-    (84) VARSYM -> MODULO .
+    (86) VARSYM -> MODULO .
 
-    $end            reduce using rule 84 (VARSYM -> MODULO .)
+    $end            reduce using rule 86 (VARSYM -> MODULO .)
 
 
 state 17
 
-    (85) VARSYM -> POW .
+    (87) VARSYM -> POW .
 
-    $end            reduce using rule 85 (VARSYM -> POW .)
+    $end            reduce using rule 87 (VARSYM -> POW .)
 
 
 state 18
 
-    (86) VARSYM -> EQUALITY .
+    (88) VARSYM -> EQUALITY .
 
-    $end            reduce using rule 86 (VARSYM -> EQUALITY .)
+    $end            reduce using rule 88 (VARSYM -> EQUALITY .)
 
 
 state 19
 
-    (87) VARSYM -> INEQUALITY .
+    (89) VARSYM -> INEQUALITY .
 
-    $end            reduce using rule 87 (VARSYM -> INEQUALITY .)
+    $end            reduce using rule 89 (VARSYM -> INEQUALITY .)
 
 
 state 20
 
-    (88) VARSYM -> LESS .
+    (90) VARSYM -> LESS .
 
-    $end            reduce using rule 88 (VARSYM -> LESS .)
+    $end            reduce using rule 90 (VARSYM -> LESS .)
 
 
 state 21
 
-    (89) VARSYM -> LEQ .
+    (91) VARSYM -> LEQ .
 
-    $end            reduce using rule 89 (VARSYM -> LEQ .)
+    $end            reduce using rule 91 (VARSYM -> LEQ .)
 
 
 state 22
 
-    (90) VARSYM -> GREATER .
+    (92) VARSYM -> GREATER .
 
-    $end            reduce using rule 90 (VARSYM -> GREATER .)
+    $end            reduce using rule 92 (VARSYM -> GREATER .)
 
 
 state 23
 
-    (91) VARSYM -> GEQ .
+    (93) VARSYM -> GEQ .
 
-    $end            reduce using rule 91 (VARSYM -> GEQ .)
+    $end            reduce using rule 93 (VARSYM -> GEQ .)
 
 
 state 24
 
-    (92) VARSYM -> AND .
+    (94) VARSYM -> AND .
 
-    $end            reduce using rule 92 (VARSYM -> AND .)
+    $end            reduce using rule 94 (VARSYM -> AND .)
 
 
 state 25
 
-    (93) VARSYM -> OR .
+    (95) VARSYM -> OR .
 
-    $end            reduce using rule 93 (VARSYM -> OR .)
+    $end            reduce using rule 95 (VARSYM -> OR .)
 
 
 state 26
 
-    (76) VAROP -> BACKTICK IDENTIFIER . BACKTICK
+    (78) VAROP -> BACKTICK IDENTIFIER . BACKTICK
 
     BACKTICK        shift and go to state 27
 
 
 state 27
 
-    (76) VAROP -> BACKTICK IDENTIFIER BACKTICK .
+    (78) VAROP -> BACKTICK IDENTIFIER BACKTICK .
 
-    $end            reduce using rule 76 (VAROP -> BACKTICK IDENTIFIER BACKTICK .)
+    $end            reduce using rule 78 (VAROP -> BACKTICK IDENTIFIER BACKTICK .)
 

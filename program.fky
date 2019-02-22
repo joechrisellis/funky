@@ -1,6 +1,9 @@
 module test where
 
-    factorial 0 = 1
-    factorial n = n * factorial (n - 1)
+    newtype List = Cons Integer List | Nil
 
-    main = factorial 5
+    map f Nil = Nil
+    map f (Cons x xs) = Cons (f x) (map f xs)
+
+    main = map ((+) 2) my_list
+           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

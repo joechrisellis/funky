@@ -262,17 +262,19 @@ class FunkyParser:
 
     def p_AEXP(self, p):
         """AEXP : USED_VAR
-                | TYPENAME
+                | USED_TYPENAME
                 | LITERAL
+                | OPERATOR_FUNC
                 | OPEN_PAREN EXP CLOSE_PAREN
         """
         if len(p) == 2:
-            if type(p[1]) == str:
-                p[0] = UsedVar(p[1])
-            else:
-                p[0] = p[1]
+            p[0] = p[1]
         else:
             p[0] = p[2]
+
+    def p_OPERATOR_FUNC(self, p):
+        """OPERATOR_FUNC : OPEN_PAREN OP CLOSE_PAREN"""
+        p[0] = p[2]
 
     def p_CONSTRUCTION_PARAMS(self, p):
         """CONSTRUCTION_PARAMS : CONSTRUCTION_PARAMS AEXP
@@ -379,6 +381,10 @@ class FunkyParser:
 
     def p_USED_VAR(self, p):
         """USED_VAR : IDENTIFIER"""
+        p[0] = UsedVar(p[1])
+
+    def p_USED_TYPENAME(self, p):
+        """USED_TYPENAME : TYPENAME"""
         p[0] = UsedVar(p[1])
 
     def p_PARAM(self, p):

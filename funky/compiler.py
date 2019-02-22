@@ -25,12 +25,20 @@ from funky.generate.gen_python import PythonCodeGenerator
 log = logging.getLogger(__name__)
 
 targets = {
-    "c"        :  CCodeGenerator,
-    "haskell"  :  HaskellCodeGenerator,
-    "python"   :  PythonCodeGenerator,
+    "c"             :  CCodeGenerator,
+    "haskell"       :  HaskellCodeGenerator,
+    "python"        :  PythonCodeGenerator,
+
+    "intermediate"  :  None, # <-- handled by separate method!
 }
 
-def compiler_parse_and_lex(source, dump_lexed, dump_parsed):
+def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
+    """Lexes and parses the source code to get the syntax tree.
+    
+    :param source str:       the Funky source code
+    :param dump_lexed bool:  if true, dump the lexed code to stdout
+    :param dump_parsed bool: if true, dump the syntax tree to stdout
+    """
     # lex and parse code
     try:
         parser = FunkyParser()
@@ -55,6 +63,13 @@ def compiler_parse_and_lex(source, dump_lexed, dump_parsed):
     return parsed
 
 def compiler_rename(parsed, dump_renamed):
+    """Renames the syntax tree to avoid name shadowing and ensure that all
+    items in the code are labelled uniquely. Modifies the syntax tree in
+    place.
+    
+    :param parsed:            the syntax tree
+    :param dump_renamed bool: if true, dump the renamed tree to stdout
+    """
     # rename variables
     try:
         do_rename(parsed)
@@ -68,6 +83,12 @@ def compiler_rename(parsed, dump_renamed):
     log.info("Renaming source code completed.")
 
 def compiler_desugar(parsed, dump_desugared):
+    """Desugars the renamed syntax tree to create the core tree.
+    
+    :param parsed:              the renamed syntax tree
+    :param dump_desugared bool: if true, dump the core tree to stdout
+    :return:                    the core tree
+    """
     try:
         core_tree, typedefs = do_desugar(parsed)
         if dump_desugared:
@@ -83,6 +104,13 @@ def compiler_desugar(parsed, dump_desugared):
     return core_tree, typedefs
 
 def compiler_inference(core_tree, typedefs, dump_types):
+    """Performs type inference on the core tree given a set of type
+    definitions. Annotates the tree with types in place.
+    
+    :param core_tree:       the core tree (Funky intermediate language)
+    :param typedefs:        the core type definitions
+    :param dump_types bool: if true, dump the typed tree to stdout
+    """
     try:
         do_type_inference(core_tree, typedefs)
         if dump_types:
@@ -96,6 +124,16 @@ def compiler_inference(core_tree, typedefs, dump_types):
     log.info("Type inference completed.")
 
 def compiler_generate(core_tree, typedefs, target, dump_generated):
+    """Generate target code given the intermediate language code and type
+    definitions.
+
+    :param core_tree:           the core tree (Funky intermediate language)
+    :param typedefs:            the core type definitions
+    ;param target str:          the target language to compile to
+    ;param dump_generated bool: if true, dump the generated code to stdout
+    :return:                    the compiled target code as a string
+    :rtype:                     str
+    """
     try:
         target_generator = targets[target]()
         target_source = target_generator.do_generate_code(core_tree, typedefs)
@@ -107,6 +145,14 @@ def compiler_generate(core_tree, typedefs, target, dump_generated):
         err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)
 
     return target_source
+
+def just_dump_desugared(core_tree, typedefs):
+    """Instead of generating code, just return the desugared code in a serial
+    format.
+    """
+    import pickle
+    data = (core_tree, typedefs)
+    return pickle.dumps(data)
 
 def compile(source, dump_lexed=False,
                     dump_parsed=False,
@@ -130,10 +176,16 @@ def compile(source, dump_lexed=False,
     :rtype:                     str
     """
 
-    parsed = compiler_parse_and_lex(source, dump_lexed, dump_parsed)
+    parsed = compiler_lex_and_parse(source, dump_lexed, dump_parsed)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
+
     compiler_inference(core_tree, typedefs, dump_types)
-    target_source = compiler_generate(core_tree, typedefs, target, dump_generated)
+
+    if target == "intermediate":
+        target_source = just_dump_desugared(core_tree, typedefs)
+    else:
+        target_source = compiler_generate(core_tree, typedefs, target,
+                                          dump_generated)
 
     return target_source

@@ -21,8 +21,9 @@ def main():
                         help="Be quiet. You can stack this flag, i.e. -qqq.")
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--output", "-o", type=argparse.FileType("w"),
-                        help="File to write compiled program to.")
+    group.add_argument("--output", "-o", metavar="output_file",
+                       type=argparse.FileType("w"),
+                       help="File to write compiled program to.")
     group.add_argument("--execute", "-x", action="store_true",
                         help="Do not create an output file, execute directly.")
 
@@ -45,6 +46,11 @@ def main():
     parser.add_argument("--dump-generated", default=False, required=False,
                         action="store_true",
                         help="Dump the generated code to stdout.")
+
+    parser.add_argument("--write-desugared", metavar="desugared_file",
+                        type=argparse.FileType("w"),
+                        help="Serialise the desugared code and write it to a "
+                             "file.")
     parser.add_argument("--target", choices=compiler.targets.keys(),
                         help="The target language for compilation.")
     parser.add_argument("input", type=argparse.FileType("r"),

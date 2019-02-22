@@ -30,6 +30,84 @@ targets = {
     "python"   :  PythonCodeGenerator,
 }
 
+def compiler_parse_and_lex(source, dump_lexed, dump_parsed):
+    # lex and parse code
+    try:
+        parser = FunkyParser()
+        parser.build(dump_lexed=dump_lexed)
+        # lexing is done in the same step as parsing -- so we have to tell the
+        # parser whether we want the lexer's output to be displayed
+        parsed = parser.do_parse(source, dump_lexed=dump_lexed)
+        if dump_parsed:
+            print("## DUMPED PARSE TREE")
+            print(parsed)
+            print("")
+    except FunkyLexingError as e:
+        err_and_exit("Failed to lex source code.", e, LEXING_ERROR)
+    except FunkySyntaxError as e:
+        err_and_exit("Syntax error in given program.", e, SYNTAX_ERROR)
+    except FunkyParsingError as e:
+        err_and_exit("Parsing error occurred during syntax analysis.", e,
+                     GENERIC_PARSING_ERROR)
+
+    log.info("Parsing source code completed.")
+
+    return parsed
+
+def compiler_rename(parsed, dump_renamed):
+    # rename variables
+    try:
+        do_rename(parsed)
+        if dump_renamed:
+            print("## DUMPED RENAMED PARSE TREE")
+            print(parsed)
+            print("")
+    except FunkyRenamingError as e:
+        err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
+
+    log.info("Renaming source code completed.")
+
+def compiler_desugar(parsed, dump_desugared):
+    try:
+        core_tree, typedefs = do_desugar(parsed)
+        if dump_desugared:
+            print("## TYPE DEFINITIONS")
+            print("\n".join(str(t) for t in typedefs))
+            print("\n## CORE (DESUGARED) CODE")
+            print(core_tree)
+            print("")
+    except FunkyDesugarError as e:
+        err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
+    
+    log.info("Desugaring source code completed.")
+    return core_tree, typedefs
+
+def compiler_inference(core_tree, typedefs, dump_types):
+    try:
+        do_type_inference(core_tree, typedefs)
+        if dump_types:
+            print("## CORE TYPES")
+            print(core_tree)
+            print("")
+    except FunkyTypeError as e:
+        err_and_exit("Your program failed type checks, will not compile.",
+                     e, TYPE_ERROR)
+
+    log.info("Type inference completed.")
+
+def compiler_generate(core_tree, typedefs, target, dump_generated):
+    try:
+        target_generator = targets[target]()
+        target_source = target_generator.do_generate_code(core_tree, typedefs)
+        if dump_generated:
+            print("## GENERATED {} CODE".format(target.upper()))
+            print(target_source)
+            print("")
+    except FunkyCodeGenerationError:
+        err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)
+
+    return target_source
+
 def compile(source, dump_lexed=False,
                     dump_parsed=False,
                     dump_renamed=False,
@@ -52,72 +130,10 @@ def compile(source, dump_lexed=False,
     :rtype:                     str
     """
 
-    # lex and parse code
-    try:
-        parser = FunkyParser()
-        parser.build(dump_lexed=dump_lexed)
-        # lexing is done in the same step as parsing -- so we have to tell the
-        # parser whether we want the lexer's output to be displayed
-        parsed = parser.do_parse(source, dump_lexed=dump_lexed)
-        if dump_parsed:
-            print("## DUMPED PARSE TREE")
-            print(parsed)
-            print("")
-    except FunkyLexingError as e:
-        err_and_exit("Failed to lex source code.", e, LEXING_ERROR)
-    except FunkySyntaxError as e:
-        err_and_exit("Syntax error in given program.", e, SYNTAX_ERROR)
-    except FunkyParsingError as e:
-        err_and_exit("Parsing error occurred during syntax analysis.", e,
-                     GENERIC_PARSING_ERROR)
-
-    log.info("Parsing source code completed.")
-
-    # rename variables
-    try:
-        do_rename(parsed)
-        if dump_renamed:
-            print("## DUMPED RENAMED PARSE TREE")
-            print(parsed)
-            print("")
-    except FunkyRenamingError as e:
-        err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
-
-    log.info("Renaming source code completed.")
-    
-    try:
-        core_tree, typedefs = do_desugar(parsed)
-        if dump_desugared:
-            print("## TYPE DEFINITIONS")
-            print("\n".join(str(t) for t in typedefs))
-            print("\n## CORE (DESUGARED) CODE")
-            print(core_tree)
-            print("")
-    except FunkyDesugarError as e:
-        err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
-
-    log.info("Desugaring source code completed.")
-
-    try:
-        do_type_inference(core_tree, typedefs)
-        if dump_types:
-            print("## CORE TYPES")
-            print(core_tree)
-            print("")
-    except FunkyTypeError as e:
-        err_and_exit("Your program failed type checks, will not compile.",
-                     e, TYPE_ERROR)
-
-    log.info("Type inference completed.")
-
-    try:
-        target_generator = targets[target]()
-        target_source = target_generator.do_generate_code(core_tree, typedefs)
-        if dump_generated:
-            print("## GENERATED {} CODE".format(target.upper()))
-            print(target_source)
-            print("")
-    except FunkyCodeGenerationError:
-        err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)
+    parsed = compiler_parse_and_lex(source, dump_lexed, dump_parsed)
+    compiler_rename(parsed, dump_renamed)
+    core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
+    compiler_inference(core_tree, typedefs, dump_types)
+    target_source = compiler_generate(core_tree, typedefs, target, dump_generated)
 
     return target_source

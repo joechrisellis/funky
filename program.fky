@@ -1,7 +1,6 @@
 module test where
 
-    signum x given x < 0  = -1
-             given x > 0  = 1
-             given x == 0 = 0
+    factorial 0 = 1
+    factorial n = n * factorial (n - 1) + 1.1
 
-    main = signum 20
+    main = factorial 5

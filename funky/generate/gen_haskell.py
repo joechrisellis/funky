@@ -73,9 +73,12 @@ class HaskellCodeGenerator(CodeGenerator):
     @hs_compile.register(CoreVariable)
     def hs_compile_variable(self, node, indent):
         ident = node.identifier
-        if node.identifier not in self.constructor_names:
-            ident = ident.lower()
-        return ident
+        try:
+            return builtins[ident]
+        except KeyError:
+            if node.identifier not in self.constructor_names:
+                ident = ident.lower()
+            return ident
 
     @hs_compile.register(CoreLiteral)
     def hs_compile_literal(self, node, indent):
@@ -83,11 +86,7 @@ class HaskellCodeGenerator(CodeGenerator):
 
     @hs_compile.register(CoreApplication)
     def hs_compile_application(self, node, indent):
-        if isinstance(node.expr, CoreVariable) and \
-           node.expr.identifier in builtins:
-            f = builtins[node.expr.identifier]
-        else:
-            f = self.hs_compile(node.expr, indent)
+        f = self.hs_compile(node.expr, indent)
         return "({})({})".format(f, self.hs_compile(node.arg, indent))
 
     @hs_compile.register(CoreLambda)

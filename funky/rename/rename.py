@@ -9,7 +9,7 @@ transformed without changing its meaning.
 from itertools import count
 import logging
 
-from funky.corelang.builtins import BUILTIN_PRIMITIVES
+from funky.corelang.builtins import BUILTIN_PRIMITIVES, BUILTIN_FUNCTIONS
 from funky.corelang.sourcetree import *
 from funky.corelang.types import *
 
@@ -256,6 +256,9 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 
 @rename.register(UsedVar)
 def used_var_rename(node, scope):
+    if node.name in BUILTIN_FUNCTIONS:
+        return
+
     if node.name not in scope:
         if scope.is_pending_definition(node.name):
             new_name = scope.get_pending_name(node.name)

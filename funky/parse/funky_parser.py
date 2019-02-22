@@ -274,7 +274,7 @@ class FunkyParser:
 
     def p_OPERATOR_FUNC(self, p):
         """OPERATOR_FUNC : OPEN_PAREN OP CLOSE_PAREN"""
-        p[0] = p[2]
+        p[0] = UsedVar(p[2])
 
     def p_CONSTRUCTION_PARAMS(self, p):
         """CONSTRUCTION_PARAMS : CONSTRUCTION_PARAMS AEXP

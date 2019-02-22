@@ -205,9 +205,12 @@ class PythonCodeGenerator(CodeGenerator):
 
     @py_compile.register(CoreVariable)
     def py_compile_variable(self, node, indent):
-        if node.identifier in kwlist:
-            return "__{}".format(node.identifier)
-        return node.identifier
+        try:
+            return builtins[node.identifier]
+        except KeyError:
+            if node.identifier in kwlist:
+                return "__{}".format(node.identifier)
+            return node.identifier
 
     @py_compile.register(CoreLiteral)
     def py_compile_literal(self, node, indent):
@@ -215,11 +218,7 @@ class PythonCodeGenerator(CodeGenerator):
 
     @py_compile.register(CoreApplication)
     def py_compile_application(self, node, indent):
-        if isinstance(node.expr, CoreVariable) and \
-           node.expr.identifier in builtins:
-            f = builtins[node.expr.identifier]
-        else:
-            f = self.py_compile(node.expr, indent)
+        f = self.py_compile(node.expr, indent)
         return "({})({})".format(f, self.py_compile(node.arg, indent))
 
     @py_compile.register(CoreLambda)

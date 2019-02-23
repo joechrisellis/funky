@@ -2,22 +2,8 @@ module test where
 
     import "stdlib.fky"
 
-    newtype List = Cons Integer List | Nil
+    f x = match x of
+            0 -> 0
+            n -> n + 1
 
-    length Nil         = 0
-    length (Cons x xs) = 1 + length xs
-
-    filter p Nil                         = Nil
-    filter p (Cons x xs) given p x       = Cons x rest
-                         given otherwise = rest
-                         where rest = filter p xs
-
-    count e xs = length (filter ((==) e) xs)
-
-    map f Nil         = Nil
-    map f (Cons x xs) = Cons (f x) (map f xs)
-
-    m `to` n given m >  n = Nil
-             given m <= n = Cons m ((m + 1) `to` n)
-
-    main = map abs ((-10) `to` 10)
+    main = f 0

@@ -257,6 +257,10 @@ class PythonCodeGenerator(CodeGenerator):
                           d=indent)
             else:
                 self.emit("def {}():".format(fname), d=indent)
+                if isinstance(alt.altcon, CoreVariable) and \
+                   alt.altcon.identifier != "_":
+                    self.emit("{} = {}".format(alt.altcon.identifier, scrutinee),
+                              d=indent+4)
 
             k = self.py_compile(alt.altcon, indent+4)
             v = self.py_compile(alt.expr, indent=indent+4)

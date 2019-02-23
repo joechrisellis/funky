@@ -45,17 +45,9 @@ class ProgramBody(ASTNode):
     import statements, followed by one or more top-level definitions.
     """
 
-    def __init__(self, import_statements=[], toplevel_declarations=[]):
-        self.import_statements      =  import_statements
+    def __init__(self, imports=[], toplevel_declarations=[]):
+        self.imports                =  imports
         self.toplevel_declarations  =  toplevel_declarations
-
-class ImportStatement(ASTNode):
-    """Node representing an import statement -- an import statement includes
-    the name of the module to import and (optionally) an alias.
-    """
-
-    def __init__(self, module_id):
-        self.module_id  =  module_id
 
 class NewTypeStatement(ASTNode):
     """Definition of a new constructor."""

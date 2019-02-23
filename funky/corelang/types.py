@@ -25,10 +25,11 @@ class TypeVariable:
 
     def accepts(self, t):
         if self.constraints:
-            return self.instance is None or \
-                   t.instance is None or \
-                   t.type_name in self.constraints or \
-                   t.constraints == self.constraints
+            if isinstance(t, TypeOperator):
+                return t.type_name in self.constraints
+            elif t.instance:
+                print("!!!", t.type_name)
+                return t.type_name in self.constraints
         return True
 
     @property

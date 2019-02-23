@@ -172,10 +172,10 @@ def unify(type1, type2):
             if not a.accepts(b):
                 raise FunkyTypeError("Constraints on {} do not permit "
                                      "{}.".format(a, b))
+            if isinstance(b, TypeVariable) and a.constraints and not b.constraints:
+                unify(b, a)
+                return
             a.instance = b
-            if isinstance(b, TypeVariable):
-                a.constraints = b.constraints
-                a.parent_class = b.parent_class
     elif isinstance(a, TypeOperator) and isinstance(b, TypeVariable):
         unify(b, a)
     elif isinstance(a, TypeOperator) and isinstance(b, TypeOperator):

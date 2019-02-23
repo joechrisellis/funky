@@ -153,7 +153,7 @@ def get_match_tree(pattern_matrix, variables, outcomes):
                     row.insert(0, param)
             else:
                 for _ in scrutinee.parameters:
-                    row.insert(0, CoreVariable(get_unique_varname(), True))
+                    row.insert(0, CoreVariable(get_unique_varname()))
         
         cols = list(zip(*[row[:len(scrutinee.parameters)] for row in specialised]))
         for col in reversed(cols):
@@ -162,7 +162,7 @@ def get_match_tree(pattern_matrix, variables, outcomes):
                     specialised_variables.insert(0, item)
                     break
             else:
-                specialised_variables.insert(0, CoreVariable(get_unique_varname(), True))
+                specialised_variables.insert(0, CoreVariable(get_unique_varname()))
 
         altcon = CoreCons(scrutinee.constructor,
                           specialised_variables[:len(scrutinee.parameters)],
@@ -175,8 +175,8 @@ def get_match_tree(pattern_matrix, variables, outcomes):
     alts = [
         CoreAlt(altcon, get_match_tree(specialised, specialised_variables,
                                        specialised_outcomes)),
-        CoreAlt(CoreVariable("_", True), get_match_tree(default, variables[:],
-                                                        default_outcomes)),
+        CoreAlt(CoreVariable("_"), get_match_tree(default, variables[:],
+                                                  default_outcomes)),
     ]
 
     return CoreMatch(variables[0], alts)

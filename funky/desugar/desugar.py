@@ -185,11 +185,11 @@ def function_application_desugar(node):
 
 @desugar.register(Parameter)
 def parameter_desugar(node):
-    return CoreVariable(node.name, True)
+    return CoreVariable(node.name)
 
 @desugar.register(UsedVar)
 def usedvar_desugar(node):
-    return CoreVariable(node.name, False)
+    return CoreVariable(node.name)
 
 @desugar.register(Literal)
 def literal_desugar(node):
@@ -197,7 +197,7 @@ def literal_desugar(node):
 
 @desugar.register(str)
 def builtin_desugar(node):
-    return CoreVariable(node, False)
+    return CoreVariable(node)
 
 @desugar.register(ConstructorType)
 @desugar.register(CoreCons)
@@ -254,7 +254,7 @@ def condense_function_binds(binds):
         # into a match statement.
         pattern_matrix = []
         outcomes = []
-        variables = [CoreVariable(get_parameter_name(identifier, i), True)
+        variables = [CoreVariable(get_parameter_name(identifier, i))
                      for i in range(bindees[0].original_arity)]
 
         for bindee in bindees:

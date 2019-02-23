@@ -56,14 +56,12 @@ class CoreCons(CoreNode):
 class CoreVariable(CoreNode):
     """A reference to a defined variable."""
 
-    def __init__(self, identifier, is_parameter):
+    def __init__(self, identifier):
         super().__init__()
         self.identifier     =  identifier
-        self.free           =  None
-        self.is_parameter   =  is_parameter
 
     def __str__(self):
-        return ("param:" if self.is_parameter else "") + str(self.identifier)
+        return str(self.identifier)
 
 class CoreLiteral(CoreNode):
     """A literal."""

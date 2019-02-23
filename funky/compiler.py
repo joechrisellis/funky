@@ -8,12 +8,14 @@ from funky.util import get_registry_function
 import funky
 
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
+from funky.imports import FunkyImportError
 from funky.rename import FunkyRenamingError
 from funky.desugar import FunkyDesugarError
 from funky.infer import FunkyTypeError
 from funky.generate import FunkyCodeGenerationError
 
 from funky.parse.funky_parser import FunkyParser
+from funky.imports.import_handler import create_imports_source
 from funky.rename.rename import do_rename
 from funky.desugar.desugar import do_desugar
 from funky.infer.infer import do_type_inference
@@ -61,6 +63,12 @@ def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
     log.info("Parsing source code completed.")
 
     return parsed
+
+def include_imports(parsed):
+    imports_source = create_imports_source(parsed.body.imports)
+
+    # weird syntax, but this is 'extending' from the start of the list
+    parsed.body.toplevel_declarations[:0] = imports_source
 
 def compiler_rename(parsed, dump_renamed):
     """Renames the syntax tree to avoid name shadowing and ensure that all
@@ -177,6 +185,7 @@ def compile(source, dump_lexed=False,
     """
 
     parsed = compiler_lex_and_parse(source, dump_lexed, dump_parsed)
+    include_imports(parsed)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
 

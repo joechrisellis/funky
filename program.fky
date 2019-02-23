@@ -1,8 +1,8 @@
 module test where
 
-    newtype List = Cons Integer List | Nil
+    import "stdlib.fky"
 
-    otherwise = True
+    newtype List = Cons Integer List | Nil
 
     length Nil         = 0
     length (Cons x xs) = 1 + length xs
@@ -14,5 +14,4 @@ module test where
 
     count e xs = length (filter ((==) e) xs)
 
-    main = count 5 my_list
-           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 5 (Cons 3 (Cons 5 Nil)))))
+    main = not True

@@ -98,6 +98,8 @@ def main():
 
 def start():
     """Exists only for setuptools."""
+    import funky.imports.import_handler
+    funky.imports.import_handler.search_for_import("stdlib.fky")
     main()
 
 if __name__ == "__main__":

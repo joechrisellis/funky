@@ -34,16 +34,8 @@ def module_rename(node, scope=Scope()):
 
 @rename.register(ProgramBody)
 def program_body_rename(node, scope):
-    for decl in node.import_statements:
-        rename(decl, scope)
-
     for decl in node.toplevel_declarations:
         rename(decl, scope)
-
-@rename.register(ImportStatement)
-def import_statement_rename(node, scope):
-    # TODO: import all variables from the module into the scope
-    pass
 
 @rename.register(NewTypeStatement)
 def new_cons_statement_rename(node, scope):

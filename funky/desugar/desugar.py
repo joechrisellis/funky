@@ -66,10 +66,6 @@ def new_type_statement_desugar(node):
                                 constructors)
     return CoreTypeDefinition(node.identifier, the_adt)
 
-@desugar.register(ImportStatement)
-def import_statement_desugar(node):
-    raise NotImplementedError
-
 @desugar.register(Construction)
 def construction_desugar(node):
     parameters = [desugar(param) for param in node.parameters]

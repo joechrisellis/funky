@@ -13,7 +13,6 @@ log = logging.getLogger(__name__)
 class FunkyParser:
 
     tokens  =  FunkyLexer.tokens
-    start   =  "MODULE_DEFINITION"
 
     def p_MODULE_DEFINITION(self, p):
         """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
@@ -44,9 +43,8 @@ class FunkyParser:
             p[0] = [p[1]]
 
     def p_IMPORT_DECLARATION(self, p):
-        """IMPORT_DECLARATION : IMPORT IDENTIFIER
-        """
-        p[0] = ImportStatement(p[2])
+        """IMPORT_DECLARATION : IMPORT STRING"""
+        p[0] = p[2]
 
     def p_TOP_DECLARATIONS(self, p):
         """TOP_DECLARATIONS : TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION

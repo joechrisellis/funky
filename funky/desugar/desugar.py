@@ -122,12 +122,11 @@ def guarded_expression_desugar(node):
     expr = desugar(node.expression)
     return cond, expr
 
-@desugar.register(PatternDefinition)
+@desugar.register(VariableDefinition)
 def pattern_definition_desugar(node):
-    # TODO: e.g. (x, y) = 1, 2
-    pat = desugar(node.pattern)
+    variable = desugar(node.variable)
     expr = desugar(node.expression)
-    return CoreBind(pat.identifier, expr)
+    return CoreBind(variable.identifier, expr)
 
 @desugar.register(Alternative)
 def alternative_desugar(node):

@@ -1,6 +1,18 @@
 module test where
 
-    x = 2
-    y = 5
+    newtype List = Cons Integer List | Nil
 
-    main = x + y
+    otherwise = True
+
+    length Nil         = 0
+    length (Cons x xs) = 1 + length xs
+
+    filter p Nil                         = Nil
+    filter p (Cons x xs) given p x       = Cons x rest
+                         given otherwise = rest
+                         where rest = filter p xs
+
+    count e xs = length (filter ((==) e) xs)
+
+    main = count 5 my_list
+           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 5 (Cons 3 (Cons 5 Nil)))))

@@ -122,11 +122,11 @@ class GuardedExpression(ASTNode):
         self.guard_condition  =  guard_condition
         self.expression       =  expression
 
-class PatternDefinition(ASTNode):
-    """Definition of a pattern -- i.e. pi = 3.14."""
+class VariableDefinition(ASTNode):
+    """Definition of a variable, i.e. x = 2."""
 
-    def __init__(self, pattern, expression):
-        self.pattern     =  pattern
+    def __init__(self, variable, expression):
+        self.variable    =  variable
         self.expression  =  expression
 
 class Alternative(ASTNode):

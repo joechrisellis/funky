@@ -174,10 +174,10 @@ def guarded_expression_rename(node, scope):
     rename(node.guard_condition, scope)
     rename(node.expression, scope)
 
-@rename.register(PatternDefinition)
+@rename.register(VariableDefinition)
 def pattern_definition_rename(node, scope):
-    rename(node.pattern, scope, is_main=isinstance(node.pattern, Parameter) and \
-           node.pattern.name == "main")
+    rename(node.variable, scope, is_main=isinstance(node.variable, Parameter) and \
+           node.variable.name == "main")
 
     tmp_scope = Scope(parent=scope)
     rename(node.expression, tmp_scope)

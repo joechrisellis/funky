@@ -120,7 +120,7 @@ class FunkyParser:
 
     def p_VARIABLE_DEFINITION(self, p):
         """VARIABLE_DEFINITION : PARAM RHS"""
-        p[0] = PatternDefinition(p[1], p[2])
+        p[0] = VariableDefinition(p[1], p[2])
 
     def p_GEN_DECLARATION(self, p):
         """GEN_DECLARATION : FIXITY_DECLARATION

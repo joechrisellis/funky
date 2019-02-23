@@ -109,22 +109,24 @@ class FunkyParser:
 
     def p_DECLARATION(self, p):
         """DECLARATION : GEN_DECLARATION
-                       | FUNCTION_LHS RHS
-                       | LPAT RHS
+                       | FUNCTION_DEFINITION
+                       | VARIABLE_DEFINITION
         """
-        if len(p) == 2:
-            p[0] = p[1]
-        elif type(p[1]) == FunctionLHS:
-            p[0] = FunctionDefinition(p[1], p[2])
-        else:
-            p[0] = PatternDefinition(p[1], p[2])
+        p[0] = p[1]
+
+    def p_FUNCTION_DEFINITION(self, p):
+        """FUNCTION_DEFINITION : FUNCTION_LHS RHS"""
+        p[0] = FunctionDefinition(p[1], p[2])
+
+    def p_VARIABLE_DEFINITION(self, p):
+        """VARIABLE_DEFINITION : PARAM RHS"""
+        p[0] = PatternDefinition(p[1], p[2])
 
     def p_GEN_DECLARATION(self, p):
         """GEN_DECLARATION : FIXITY_DECLARATION
                            |
         """
-        if len(p) == 4:
-            p[0] = TypeDeclaration(p[1], p[3])
+        pass
 
     def p_FIXITY_DECLARATION(self, p):
         """FIXITY_DECLARATION : SETFIX ASSOCIATIVITY INTEGER OP"""
@@ -279,15 +281,6 @@ class FunkyParser:
         """OPERATOR_FUNC : OPEN_PAREN OP CLOSE_PAREN"""
         p[0] = UsedVar(p[2])
 
-    def p_CONSTRUCTION_PARAMS(self, p):
-        """CONSTRUCTION_PARAMS : CONSTRUCTION_PARAMS AEXP
-                               | AEXP
-        """
-        if len(p) == 3:
-            p[0] = p[1] + [p[2]]
-        else:
-            p[0] = [p[1]]
-
     def p_ALTS(self, p):
         """ALTS : ALT ENDSTATEMENT ALTS
                 | ALT
@@ -405,7 +398,6 @@ class FunkyParser:
         self.lexer = IndentationLexer(self.lexer, dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self,
-                                errorlog=yacc.NullLogger(),
                                 **kwargs)
         log.debug("Parser built.")
 

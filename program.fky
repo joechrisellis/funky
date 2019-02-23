@@ -1,3 +1,6 @@
 module test where
 
-    main = 0
+    x = 2
+    y = 5
+
+    main = x + y

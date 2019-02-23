@@ -14,4 +14,10 @@ module test where
 
     count e xs = length (filter ((==) e) xs)
 
-    main = not True
+    map f Nil         = Nil
+    map f (Cons x xs) = Cons (f x) (map f xs)
+
+    m `to` n given m >  n = Nil
+             given m <= n = Cons m ((m + 1) `to` n)
+
+    main = map abs ((-10) `to` 10)

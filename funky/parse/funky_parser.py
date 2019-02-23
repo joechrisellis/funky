@@ -111,7 +111,8 @@ class FunkyParser:
                        | FIXITY_DECLARATION
                        |
         """
-        p[0] = p[1]
+        if len(p) >= 2:
+            p[0] = p[1]
 
     def p_FUNCTION_DEFINITION(self, p):
         """FUNCTION_DEFINITION : FUNCTION_LHS RHS"""

@@ -108,9 +108,10 @@ class FunkyParser:
             p[0] = [p[1]]
 
     def p_DECLARATION(self, p):
-        """DECLARATION : GEN_DECLARATION
-                       | FUNCTION_DEFINITION
+        """DECLARATION : FUNCTION_DEFINITION
                        | VARIABLE_DEFINITION
+                       | FIXITY_DECLARATION
+                       |
         """
         p[0] = p[1]
 
@@ -121,12 +122,6 @@ class FunkyParser:
     def p_VARIABLE_DEFINITION(self, p):
         """VARIABLE_DEFINITION : PARAM RHS"""
         p[0] = VariableDefinition(p[1], p[2])
-
-    def p_GEN_DECLARATION(self, p):
-        """GEN_DECLARATION : FIXITY_DECLARATION
-                           |
-        """
-        pass
 
     def p_FIXITY_DECLARATION(self, p):
         """FIXITY_DECLARATION : SETFIX ASSOCIATIVITY INTEGER OP"""
@@ -172,12 +167,12 @@ class FunkyParser:
                         | OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
                         | INFIX_FUNCTION_DEFINITION
         """
-        if len(p) == 6:
+        if len(p) == 4:
+            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
+        elif len(p) == 6:
             p[0] = p[2]
             p[0].parameters.append(p[4])
             p[0].parameters.extend(p[5])
-        elif len(p) == 4:
-            p[0] = FunctionLHS(p[1], [p[2], *p[3]])
         else:
             p[0] = p[1]
 
@@ -211,8 +206,7 @@ class FunkyParser:
             p[0] = [GuardedExpression(p[2], p[4])] + p[5]
 
     def p_EXP(self, p):
-        """EXP : INFIX_EXP
-        """
+        """EXP : INFIX_EXP"""
         p[0] = p[1]
         p[0] = fixity.resolve_fixity(p[0])
 
@@ -237,28 +231,33 @@ class FunkyParser:
         p[0] = InfixExpression(tokens)
 
     def p_LEXP(self, p):
-        """LEXP : LAMBDA APAT APATS ARROW EXP
-                | LET DECLARATIONS IN EXP
-                | EXP IF EXP ELSE EXP
-                | MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
-                | FEXP
+        """LEXP : LAMBDA_ABSTRACTION
+                | LET_EXPR
+                | IF_EXPR
+                | MATCH_EXPR
+                | FUNCTION_EXPR
         """
-        if len(p) == 6:
-            if p[1] == "lambda":
-                p[0] = Lambda([p[2], *p[3]], p[5])
-            else:
-                p[0] = If(p[3], p[1], p[5])
-        elif len(p) == 5:
-            if p[1] == "let":
-                p[0] = Let(p[2], p[4])
-        elif len(p) == 7:
-            p[0] = Match(p[2], p[5])
-        else:
-            p[0] = p[1]
+        p[0] = p[1]
 
-    def p_FEXP(self, p):
-        """FEXP : FEXP AEXP
-                | AEXP
+    def p_LAMBDA_ABSTRACTION(self, p):
+        """LAMBDA_ABSTRACTION : LAMBDA APAT APATS ARROW EXP"""
+        p[0] = Lambda([p[2], *p[3]], p[5])
+
+    def p_LET_EXPR(self, p):
+        """LET_EXPR : LET DECLARATIONS IN EXP"""
+        p[0] = Let(p[2], p[4])
+
+    def p_IF_EXPR(self, p):
+        """IF_EXPR : EXP IF EXP ELSE EXP"""
+        p[0] = If(p[3], p[1], p[5])
+    
+    def p_MATCH_EXPR(self, p):
+        """MATCH_EXPR : MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE"""
+        p[0] = Match(p[2], p[5])
+
+    def p_FUNCTION_EXPR(self, p):
+        """FUNCTION_EXPR : FUNCTION_EXPR AEXP
+                         | AEXP
         """
         if len(p) == 3:
             p[0] = FunctionApplication(p[1], p[2])
@@ -298,16 +297,20 @@ class FunkyParser:
 
     def p_LPAT(self, p):
         """LPAT : APAT
-                | MINUS OPEN_PAREN INTEGER CLOSE_PAREN
-                | MINUS OPEN_PAREN FLOAT CLOSE_PAREN
-                | TYPENAME APAT APATS
+                | CONSTRUCTOR_PATTERN
+                | NEGATIVE_LITERAL
         """
-        if len(p) == 2:
-            p[0] = p[1]
-        elif len(p) == 4:
-            p[0] = Construction(p[1], [p[2]] + p[3], pattern=True)
-        else:
-            p[0] = Literal(-p[3])
+        p[0] = p[1]
+
+    def p_CONSTRUCTOR_PATTERN(self, p):
+        """CONSTRUCTOR_PATTERN : TYPENAME APAT APATS"""
+        p[0] = Construction(p[1], [p[2]] + p[3], pattern=True)
+
+    def p_NEGATIVE_LITERAL(self, p):
+        """NEGATIVE_LITERAL : MINUS INTEGER
+                            | MINUS FLOAT
+        """
+        p[0] = Literal(-p[2])
 
     def p_APAT(self, p):
         """APAT : PARAM
@@ -323,9 +326,9 @@ class FunkyParser:
         else:
             p[0] = p[2]
 
-    def p_VAROP(self, p):
-        """VAROP : VARSYM
-                 | INFIX_FUNCTION
+    def p_OP(self, p):
+        """OP : VARSYM
+              | INFIX_FUNCTION
         """
         p[0] = p[1]
 
@@ -334,11 +337,6 @@ class FunkyParser:
         if p[2] not in fixity.fixities:
             fixity.set_fixity(p[2], *fixity.DEFAULT_FIXITY)
         p[0] = p[2]
-
-    def p_OP(self, p):
-        """OP : VAROP
-        """
-        p[0] = p[1]
 
     def p_APATS(self, p):
         """APATS : APAT APATS

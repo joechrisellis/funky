@@ -28,7 +28,6 @@ class TypeVariable:
             if isinstance(t, TypeOperator):
                 return t.type_name in self.constraints
             elif t.instance:
-                print("!!!", t.type_name)
                 return t.type_name in self.constraints
         return True
 

@@ -10,15 +10,22 @@ from funky.parse.funky_parser import FunkyParser
 SEARCH_PATHS = [libs_directory]
 
 def create_imports_source(imports):
-    print("!! creating import")
+    decls, imported = [], set()
     parser = FunkyParser()
     parser.build()
 
-    decls = []
-    for imp in imports:
+    def do_import(imp):
+        if imp in imported: return
+
+        imported.add(imp)
         source = get_import_source(imp)
         parsed = parser.do_parse(source)
+        for sub_imp in parsed.body.imports:
+            do_import(sub_imp)
         decls.extend(parsed.body.toplevel_declarations)
+
+    for imp in imports:
+        do_import(imp)
 
     return decls
 

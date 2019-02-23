@@ -67,7 +67,9 @@ def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
 def include_imports(parsed):
     imports_source = create_imports_source(parsed.body.imports)
 
-    # weird syntax, but this is 'extending' from the start of the list
+    # weird syntax, but this is 'extending' from the start of the list.
+    # we add the imported declarations to the start of the source file
+    # we are compiling.
     parsed.body.toplevel_declarations[:0] = imports_source
 
 def compiler_rename(parsed, dump_renamed):

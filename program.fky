@@ -1,9 +1,6 @@
 module test where
 
-    import "stdlib.fky"
+    factorial 0 = 1
+    factorial n given n >= 0 = factorial (n - 1) * n
 
-    f x = match x of
-            0 -> 0
-            n -> n + 1
-
-    main = f 0
+    main = factorial 5

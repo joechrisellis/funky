@@ -96,7 +96,8 @@ def function_rhs_desugar(node):
     decls = [desugar(d) for d in node.declarations]
     decls = condense_function_binds(decls)
 
-    if len(node.expressions) == 1:
+    guarded = all(isinstance(e, GuardedExpression) for e in node.expressions)
+    if not guarded:
         expr = desugar(node.expressions[0])
         return CoreLet(decls, expr) if decls else expr
 

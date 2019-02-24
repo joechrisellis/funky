@@ -1,8 +1,8 @@
 module test where
 
     import "math.fky"
-    import "another.fky"
+    import "logic.fky"
 
     area r = pi * r ** 2
 
-    main = area from_another
+    main = True `implies` False

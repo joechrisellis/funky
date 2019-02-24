@@ -17,7 +17,7 @@ from funky.generate import FunkyCodeGenerationError
 
 from funky.parse.funky_parser import FunkyParser
 from funky.imports import libs_directory
-from funky.imports.import_handler import create_imports_source
+from funky.imports.import_handler import get_imported_declarations
 from funky.rename.rename import do_rename
 from funky.desugar.desugar import do_desugar
 from funky.infer.infer import do_type_inference
@@ -67,12 +67,21 @@ def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
     return parsed
 
 def include_imports(filename, parsed):
+    """Get the declarations from any imported source files and prepend
+    them to the parse tree so that the declarations are made available in
+    this file. Modifies the parse tree in place.
+    
+    :param filename str: the filename of the input file so that we can use
+                         its dirname as a search path -- this allows us to
+                         import files relative to the file the user is compiling
+    :param parsed:       the parse tree
+    """
     search_locations = [
-        os.path.dirname(filename),
-        libs_directory,
+        os.path.dirname(filename), # search relative to the input file first
+        libs_directory,            # use the libs directory as a fallback
     ]
-    imports_source = create_imports_source(parsed.body.imports,
-                                           search_locations)
+    imports_source = get_imported_declarations(parsed.body.imports,
+                                               search_locations)
 
     # weird syntax, but this is 'extending' from the start of the list.
     # we add the imported declarations to the start of the source file

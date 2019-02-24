@@ -6,42 +6,41 @@ from funky.imports import FunkyImportError, libs_directory
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.parse.funky_parser import FunkyParser
 
-def get_imported_declarations(imports, search_paths):
+SEARCH_PATHS = [libs_directory]
+
+def get_imported_declarations(base_path, imports):
     """Given a list of imports and a list of paths to search for them in,
     return a list of declarations containing the imported declarations. The
     returned list of declarations can then be prepended to the the declarations
     in the input file. This function will recursively import if required.
     
-    :param imports [str]:      a list of imports -- these are relative paths to
-                               .fky files
-    :param search_paths [str]: a list of paths to use as the 'base path' when
-                               searching for imports -- i.e if the user
-                               supplies 'test.fky' as an import and ['/libs',
-                               '/var'] as a search path, we will try to import
-                               '/libs/test.fky' first, and failing that try to
-                               import '/var/test.fky'
-    :return:                   a list of declarations from the imported files
+    :param base_path str: the file we are importing from -- used for relative
+                          imports
+    :param imports [str]: a list of imports -- these are relative paths to
+                          .fky files
+    :return:              a list of declarations from the imported files
     """
 
     decls, imported = [], set()
     parser = FunkyParser()
     parser.build()
 
-    def do_import(imp):
-        if imp in imported: return
-
-        filename = search_for_import(imp, search_paths)
+    def do_import(base_path, imp):
+        filename = search_for_import(imp, [base_path] + SEARCH_PATHS)
+        if filename in imported: return
         imported.add(filename)
+
         with open(filename, "r") as f:
             source = f.read()
 
         parsed = parser.do_parse(source)
         for sub_imp in parsed.body.imports:
-            do_import(sub_imp)
+            new_base_path = os.path.dirname(filename)
+            do_import(new_base_path, sub_imp)
         decls.extend(parsed.body.toplevel_declarations)
 
     for imp in imports:
-        do_import(imp)
+        do_import(base_path, imp)
 
     return decls
 
@@ -61,4 +60,11 @@ def search_for_import(import_name, search_paths):
         except FileNotFoundError:
             pass
 
-    raise FunkyImportError("Cannot find import '{}'.".format(import_name))
+    if len(search_paths) >= 2:
+        tried_paths_str = ", ".join(search_paths[:-1])
+        tried_paths_str += ", and {}".format(search_paths[-1])
+    else:
+        tried_paths_str = search_paths[0]
+    raise FunkyImportError("Cannot find import '{}'.\n"
+                           "I tried looking in {}".format(import_name,
+                                                          tried_paths_str))

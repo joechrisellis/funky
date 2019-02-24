@@ -1,8 +1,0 @@
-module test where
-
-    import "math.fky"
-    import "logic.fky"
-
-    area r = pi * r ** 2
-
-    main = True `implies` False

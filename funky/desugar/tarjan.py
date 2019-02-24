@@ -3,54 +3,14 @@ components in graphs.
 """
 
 import logging
+
 from collections import defaultdict
 
-from funky.desugar.dependency_analysis import create_dependency_graph
+from funky.corelang.coretree import *
 
 log = logging.getLogger(__name__)
 
 UNVISITED = -1
-
-def reorder_bindings(bindings):
-    """Reorders the given bindings by dependencies. Keeps mutually-dependent
-    groups together.
-    
-    :param bindings: a list of bindings
-    :return:         the bindings, sorted in reverse dependency order
-    :rtype:          list
-    """
-    dependency_graph = create_dependency_graph(bindings)
-    
-    log.debug("Reordering {} bindings...".format(len(bindings)))
-
-    log.debug("Finding strongly-connected components within dependency graph...")
-    sccs = find_strongly_connected_components(dependency_graph)
-    visited = set()
-    reordered = []
-
-    def dfs(at):
-        visited.add(at)
-
-        neighbours = [dependency_graph.graph[x] for x in at]
-        neighbours = [item for sublist in neighbours for item in sublist]
-
-        for to in neighbours:
-            scc = next(x for x in sccs if to in x)
-            if scc not in visited:
-                dfs(scc)
-        
-        reordered.append(at)
-
-    for scc in sccs:
-        if scc in visited:
-            continue
-        dfs(scc)
-
-    d = {bind.identifier : bind for bind in bindings}
-    reordered = [[d[b] for b in g] for g in reordered]
-
-    log.debug("Finished reordering bindings.")
-    return reordered
 
 def find_strongly_connected_components(graph):
     """Applies Tarjan's algorithm to split a graph down into its strongly

@@ -20,6 +20,7 @@ from funky.imports import libs_directory
 from funky.imports.import_handler import get_imported_declarations
 from funky.rename.rename import do_rename
 from funky.desugar.desugar import do_desugar
+from funky.desugar.dependency_analysis import do_dependency_analysis
 from funky.infer.infer import do_type_inference
 
 from funky.generate.gen_c import CCodeGenerator
@@ -130,6 +131,9 @@ def compiler_desugar(parsed, dump_desugared):
     log.info("Desugaring source code completed.")
     return core_tree, typedefs
 
+def compiler_dependency_analysis(core_tree, dump_minified):
+    do_dependency_analysis(core_tree)
+
 def compiler_inference(core_tree, typedefs, dump_types):
     """Performs type inference on the core tree given a set of type
     definitions. Annotates the tree with types in place.
@@ -215,6 +219,7 @@ def compile(infile, dump_lexed=False,
     include_imports(filename, parsed, dump_imports)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
+    compiler_dependency_analysis(core_tree, False) # TODO
 
     compiler_inference(core_tree, typedefs, dump_types)
 

@@ -8,9 +8,9 @@ from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
 
-from funky.infer.tarjan import create_dependency_graph,            \
-                               prune_bindings,                     \
-                               reorder_bindings
+from funky.desugar.dependency_analysis import create_dependency_graph
+
+from funky.infer.tarjan import reorder_bindings
 
 log = logging.getLogger(__name__)
 
@@ -66,22 +66,7 @@ def infer_let(node, ctx, non_generic):
     """
     new_ctx, new_non_generic = ctx.copy(), non_generic.copy()
 
-    tmp_varname = "_let_expr"
-    let_expr = CoreBind(tmp_varname, node.expr)
-    bindings = [*node.binds, let_expr]
-    dependency_graph = create_dependency_graph(bindings)
-
-    pruned_bindings = prune_bindings(bindings, dependency_graph, tmp_varname)
-    node.binds = pruned_bindings
-
-    new_dependency_graph = Graph()
-    for bind in pruned_bindings:
-        new_dependency_graph.graph.update(
-            {bind.identifier : dependency_graph.graph[bind.identifier]}
-        )
-    dependency_graph = new_dependency_graph
-
-    groups = reorder_bindings(node.binds, dependency_graph)
+    groups = reorder_bindings(node.binds)
 
     # for each strongly-connected component/mutually recursive group...
     for group in groups:

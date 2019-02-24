@@ -65,20 +65,17 @@ def main():
     verbosity = args.verbose - args.quiet
     set_loglevel(verbosity)
 
-    lines = args.input.readlines()
-    log.info("Will compile {}, with {} lines.".format(args.input.name,
-                                                          len(lines)))
-    source = "".join(lines)
+    log.info("Will compile {}.".format(args.input.name))
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))
-    output = compiler.compile(source, dump_lexed=args.dump_lexed,
-                                      dump_parsed=args.dump_parsed,
-                                      dump_renamed=args.dump_renamed,
-                                      dump_desugared=args.dump_desugared,
-                                      dump_types=args.dump_types,
-                                      dump_generated=args.dump_generated,
-                                      target=args.target)
+    output = compiler.compile(args.input, dump_lexed=args.dump_lexed,
+                                          dump_parsed=args.dump_parsed,
+                                          dump_renamed=args.dump_renamed,
+                                          dump_desugared=args.dump_desugared,
+                                          dump_types=args.dump_types,
+                                          dump_generated=args.dump_generated,
+                                          target=args.target)
     finish = time.time()
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {0:.3f} seconds.".format(finish - start))
@@ -98,8 +95,6 @@ def main():
 
 def start():
     """Exists only for setuptools."""
-    import funky.imports.import_handler
-    funky.imports.import_handler.search_for_import("stdlib.fky")
     main()
 
 if __name__ == "__main__":

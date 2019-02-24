@@ -1,5 +1,6 @@
 """Control flow for the compiler."""
 import logging
+import os
 import sys
 
 from funky.exitcode import *
@@ -15,6 +16,7 @@ from funky.infer import FunkyTypeError
 from funky.generate import FunkyCodeGenerationError
 
 from funky.parse.funky_parser import FunkyParser
+from funky.imports import libs_directory
 from funky.imports.import_handler import create_imports_source
 from funky.rename.rename import do_rename
 from funky.desugar.desugar import do_desugar
@@ -64,8 +66,13 @@ def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
 
     return parsed
 
-def include_imports(parsed):
-    imports_source = create_imports_source(parsed.body.imports)
+def include_imports(filename, parsed):
+    search_locations = [
+        os.path.dirname(filename),
+        libs_directory,
+    ]
+    imports_source = create_imports_source(parsed.body.imports,
+                                           search_locations)
 
     # weird syntax, but this is 'extending' from the start of the list.
     # we add the imported declarations to the start of the source file
@@ -164,7 +171,7 @@ def just_dump_desugared(core_tree, typedefs):
     data = (core_tree, typedefs)
     return pickle.dumps(data)
 
-def compile(source, dump_lexed=False,
+def compile(infile, dump_lexed=False,
                     dump_parsed=False,
                     dump_renamed=False,
                     dump_desugared=False,
@@ -186,8 +193,13 @@ def compile(source, dump_lexed=False,
     :rtype:                     str
     """
 
+    filename = infile.name
+    lines = infile.readlines()
+    log.info("Input file has {} lines.".format(len(lines)))
+    source = "".join(lines)
+
     parsed = compiler_lex_and_parse(source, dump_lexed, dump_parsed)
-    include_imports(parsed)
+    include_imports(filename, parsed)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
 

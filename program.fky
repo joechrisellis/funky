@@ -1,6 +1,8 @@
 module test where
 
-    factorial 0 = 1
-    factorial n given n >= 0 = factorial (n - 1) * n
+    import "math.fky"
+    import "another.fky"
 
-    main = factorial 5
+    area r = pi * r ** 2
+
+    main = area from_another

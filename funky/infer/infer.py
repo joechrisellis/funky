@@ -3,12 +3,13 @@
 import logging
 from funky.infer import FunkyTypeError
 from funky.util import get_registry_function, flatten
+from funky.ds import Graph
 from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
 
 from funky.infer.tarjan import create_dependency_graph,            \
-                               find_strongly_connected_components, \
+                               prune_bindings,                     \
                                reorder_bindings
 
 log = logging.getLogger(__name__)
@@ -64,8 +65,23 @@ def infer_let(node, ctx, non_generic):
     ensures that all definitions have the most general type.
     """
     new_ctx, new_non_generic = ctx.copy(), non_generic.copy()
-    
-    groups = reorder_bindings(node.binds)
+
+    tmp_varname = "_let_expr"
+    let_expr = CoreBind(tmp_varname, node.expr)
+    bindings = [*node.binds, let_expr]
+    dependency_graph = create_dependency_graph(bindings)
+
+    pruned_bindings = prune_bindings(bindings, dependency_graph, tmp_varname)
+    node.binds = pruned_bindings
+
+    new_dependency_graph = Graph()
+    for bind in pruned_bindings:
+        new_dependency_graph.graph.update(
+            {bind.identifier : dependency_graph.graph[bind.identifier]}
+        )
+    dependency_graph = new_dependency_graph
+
+    groups = reorder_bindings(node.binds, dependency_graph)
 
     # for each strongly-connected component/mutually recursive group...
     for group in groups:
@@ -360,7 +376,6 @@ def do_type_inference(core_tree, typedefs):
     :param core_tree: the program statements to perform inference on
     :param typedefs:  any type definitions
     """
-
     log.info("Performing type inference...")
 
     ctx, non_generic = DEFAULT_ENVIRONMENT, set()

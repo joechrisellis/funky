@@ -1,5 +1,11 @@
 module test where
 
     import "math.fky"
-    
-    main = factorial 5
+
+    f x = factorial x
+          where y = 51773
+
+    main = f (x + y)
+           where x = abs 1
+                 y = 2
+                 z = 3

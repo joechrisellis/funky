@@ -15,7 +15,26 @@ log = logging.getLogger(__name__)
 
 UNVISITED = -1
 
-def reorder_bindings(bindings):
+def prune_bindings(bindings, dependency_graph, tmp_varname):
+    """Prunes the core tree by getting rid of any unused bindings."""
+    keep, visited = set(), set()
+
+    def dfs(at):
+        visited.add(at)
+        neighbours = dependency_graph.graph[at]
+        for to in neighbours:
+            if to not in visited:
+                dfs(to)
+        keep.add(at)
+
+    dfs(tmp_varname) # <- populate our 'keep' variable
+
+    # get rid of any unused bindings, as well as our temporary binding
+    new_bindings = [b for b in bindings if b.identifier in keep and \
+                                        not b.identifier == tmp_varname]
+    return new_bindings
+
+def reorder_bindings(bindings, dependency_graph):
     """Reorders the given bindings by dependencies. Keeps mutually-dependent
     groups together.
     
@@ -24,9 +43,6 @@ def reorder_bindings(bindings):
     :rtype:          list
     """
     log.debug("Reordering {} bindings...".format(len(bindings)))
-    log.debug("Creating dependency graph...")
-    dependency_graph = create_dependency_graph(bindings)
-    log.debug("Dependency graph is: {}".format(dependency_graph))
 
     log.debug("Finding strongly-connected components within dependency graph...")
     sccs = find_strongly_connected_components(dependency_graph)

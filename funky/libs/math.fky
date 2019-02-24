@@ -5,8 +5,6 @@ module math where
     e  = 2.718281828459045
     pi = 3.141592653589793
 
-    sqrt n = flip (**) 0.5
-
     abs n given n >= 0    = n
           given otherwise = -n
     
@@ -26,3 +24,5 @@ module math where
     recip x = 1.0 / x
 
     exp x = e ** x
+
+    sqrt n = flip (**) 0.5

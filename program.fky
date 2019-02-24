@@ -2,13 +2,4 @@ module test where
 
     import "math.fky"
 
-    even 0 = True
-    odd  0 = False
-    even n = odd  (n - 1)
-    odd  n = even (n - 1)
-             where x = 51312
-
-    main = even (x + y)
-           where x = 1
-                 y = 2
-                 z = 3
+    main = sqrt 7

@@ -25,4 +25,4 @@ module math where
 
     exp x = e ** x
 
-    sqrt n = flip (**) 0.5
+    sqrt = flip (**) 0.5

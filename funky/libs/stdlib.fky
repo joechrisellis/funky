@@ -1,0 +1,10 @@
+module stdlib where
+
+    otherwise = True
+
+    # Boolean negation
+    not  True   =  False
+    not  False  =  True
+
+    # Flipping function application
+    flip f x y = f y x

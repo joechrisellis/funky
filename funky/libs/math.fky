@@ -1,0 +1,18 @@
+module math where
+
+    import "stdlib.fky"
+
+    e  = 2.718281828459045
+    pi = 3.141592653589793
+
+    sqrt n = flip (**) 0.5
+
+    abs n given n >= 0    = n
+          given otherwise = -n
+    
+    signum n given n > 0     = 1
+             given n < 0     = -1
+             given otherwise = 0
+
+    factorial 0              = 1
+    factorial n given n >= 0 = n * factorial (n - 1)

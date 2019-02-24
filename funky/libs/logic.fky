@@ -1,0 +1,10 @@
+module logic where
+
+    # XOR operator
+    True   `xor`  False  =  True
+    False  `xor`  True   =  True
+    _      `xor`  _      =  False
+
+    # logical implication
+    True  `implies`  False  =  False
+    _     `implies`  _      =  True

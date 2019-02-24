@@ -133,6 +133,10 @@ def compiler_desugar(parsed, dump_desugared):
 
 def compiler_dependency_analysis(core_tree, dump_minified):
     do_dependency_analysis(core_tree)
+    if dump_minified:
+        print("\n## MINIFIED CORE (DESUGARED) CODE")
+        print(core_tree)
+        print("")
 
 def compiler_inference(core_tree, typedefs, dump_types):
     """Performs type inference on the core tree given a set of type
@@ -190,6 +194,7 @@ def compile(infile, dump_lexed=False,
                     dump_imports=False,
                     dump_renamed=False,
                     dump_desugared=False,
+                    dump_minified=False,
                     dump_types=False,
                     dump_generated=False,
                     target=None):
@@ -202,6 +207,8 @@ def compile(infile, dump_lexed=False,
                                 stdout
     :param dump_renamed bool:   dump the output of the renamer to stdout
     :param dump_desugared bool: dump the output of the desugarer to stdout
+    :param dump_minified bool:  dump the minified desugared code (i.e. without
+                                unused bindings) to stdout
     :param dump_types bool:     dump the output of the type checker to stdout
     :param dump_generated bool: dump the generated code to stdout
     :param target str:          the target to compile to
@@ -219,7 +226,7 @@ def compile(infile, dump_lexed=False,
     include_imports(filename, parsed, dump_imports)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
-    compiler_dependency_analysis(core_tree, False) # TODO
+    compiler_dependency_analysis(core_tree, dump_minified)
 
     compiler_inference(core_tree, typedefs, dump_types)
 

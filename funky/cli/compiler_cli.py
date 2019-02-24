@@ -42,6 +42,11 @@ def main():
     parser.add_argument("--dump-desugared", default=False, required=False,
                         action="store_true",
                         help="Dump the core (desugared) funky code to stdout.")
+    parser.add_argument("--dump-minified", default=False, required=False,
+                        action="store_true",
+                        help="Dump the minified core (desugared) funky code to "
+                             "stdout. This is the desugared code minus any "
+                             "unused bindings.")
     parser.add_argument("--dump-types", default=False, required=False,
                         action="store_true",
                         help="Dump the types of all symbols in the core tree "
@@ -78,6 +83,7 @@ def main():
                                           dump_imports=args.dump_imports,
                                           dump_renamed=args.dump_renamed,
                                           dump_desugared=args.dump_desugared,
+                                          dump_minified=args.dump_minified,
                                           dump_types=args.dump_types,
                                           dump_generated=args.dump_generated,
                                           target=args.target)

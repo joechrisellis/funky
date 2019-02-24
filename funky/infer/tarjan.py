@@ -28,7 +28,7 @@ def reorder_bindings(bindings):
     dependency_graph = create_dependency_graph(bindings)
     log.debug("Dependency graph is: {}".format(dependency_graph))
 
-    log.debug("Finding strongly-connected components within dependecy graph...")
+    log.debug("Finding strongly-connected components within dependency graph...")
     sccs = find_strongly_connected_components(dependency_graph)
     visited = set()
     reordered = []

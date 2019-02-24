@@ -66,7 +66,7 @@ def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
 
     return parsed
 
-def include_imports(filename, parsed):
+def include_imports(filename, parsed, dump_imports):
     """Get the declarations from any imported source files and prepend
     them to the parse tree so that the declarations are made available in
     this file. Modifies the parse tree in place.
@@ -83,6 +83,11 @@ def include_imports(filename, parsed):
     # we add the imported declarations to the start of the source file
     # we are compiling.
     parsed.body.toplevel_declarations[:0] = imports_source
+
+    if dump_imports:
+        print("## DUMPED PARSE TREE (with imports)")
+        print(parsed)
+        print("")
 
 def compiler_rename(parsed, dump_renamed):
     """Renames the syntax tree to avoid name shadowing and ensure that all
@@ -178,6 +183,7 @@ def just_dump_desugared(core_tree, typedefs):
 
 def compile(infile, dump_lexed=False,
                     dump_parsed=False,
+                    dump_imports=False,
                     dump_renamed=False,
                     dump_desugared=False,
                     dump_types=False,
@@ -188,6 +194,8 @@ def compile(infile, dump_lexed=False,
     :param source str:          the source code for the program as a raw string
     :param dump_lexed bool:     dump the output of the lexer to stdout
     :param dump_parsed bool:    dump the output of the parser to stdout
+    :param dump_imports bool:   dump the output of the parser (with imports) to
+                                stdout
     :param dump_renamed bool:   dump the output of the renamer to stdout
     :param dump_desugared bool: dump the output of the desugarer to stdout
     :param dump_types bool:     dump the output of the type checker to stdout
@@ -204,7 +212,7 @@ def compile(infile, dump_lexed=False,
     source = "".join(lines)
 
     parsed = compiler_lex_and_parse(source, dump_lexed, dump_parsed)
-    include_imports(filename, parsed)
+    include_imports(filename, parsed, dump_imports)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
 

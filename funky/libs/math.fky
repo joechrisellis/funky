@@ -16,3 +16,13 @@ module math where
 
     factorial 0              = 1
     factorial n given n >= 0 = n * factorial (n - 1)
+
+    gcd a 0 = a
+    gcd a b = gcd b (a % b)
+
+    lcm a b = (a / g) * b
+              where g = gcd a b
+
+    recip x = 1.0 / x
+
+    exp x = e ** x

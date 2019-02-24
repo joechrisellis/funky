@@ -1,0 +1,5 @@
+module test where
+
+    import "math.fky"
+    
+    main = factorial 5

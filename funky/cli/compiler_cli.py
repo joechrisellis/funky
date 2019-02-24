@@ -32,6 +32,10 @@ def main():
     parser.add_argument("--dump-parsed", default=False, required=False,
                         action="store_true",
                         help="Dump the parse tree to stdout.")
+    parser.add_argument("--dump-imports", default=False, required=False,
+                        action="store_true",
+                        help="Dump the parse tree (with imports included) to "
+                             "stdout.")
     parser.add_argument("--dump-renamed", default=False, required=False,
                         action="store_true",
                         help="Dump the renamed parse tree to stdout.")
@@ -71,6 +75,7 @@ def main():
     log.info("Started compilation at UNIX timestamp {}.".format(start))
     output = compiler.compile(args.input, dump_lexed=args.dump_lexed,
                                           dump_parsed=args.dump_parsed,
+                                          dump_imports=args.dump_imports,
                                           dump_renamed=args.dump_renamed,
                                           dump_desugared=args.dump_desugared,
                                           dump_types=args.dump_types,

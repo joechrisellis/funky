@@ -26,32 +26,24 @@ python_to_funky = {
     str    :  Char,
 }
 
-Num1               =  TypeVariable()
-Num1.constraints   =  [Float.type_name,  Integer.type_name]
-Num1.parent_class  =  "Num"
-
-Num2               =  TypeVariable()
-Num2.constraints   =  [Float.type_name,  Integer.type_name]
-Num2.parent_class  =  "Num"
-
-Num3               =  TypeVariable()
-Num3.constraints   =  [Float.type_name,  Integer.type_name]
-Num3.parent_class  =  "Num"
+Num               =  TypeVariable()
+Num.constraints   =  [Float.type_name,  Integer.type_name]
+Num.parent_class  =  "Num"
 
 BUILTIN_FUNCTIONS = {
     "=="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
     "!="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
-    "<"       :  FunctionType(Num1, FunctionType(Num2, Bool)),
-    "<="      :  FunctionType(Num1, FunctionType(Num2, Bool)),
-    ">"       :  FunctionType(Num1, FunctionType(Num2, Bool)),
-    ">="      :  FunctionType(Num1, FunctionType(Num2, Bool)),
-    "**"      :  FunctionType(Num1, FunctionType(Num2, Num3)),
-    "+"       :  FunctionType(Num1, FunctionType(Num2, Num3)),
-    "-"       :  FunctionType(Num1, FunctionType(Num2, Num3)),
-    "negate"  :  FunctionType(Num1, Num2),
-    "*"       :  FunctionType(Num1, FunctionType(Num2, Num3)),
-    "/"       :  FunctionType(Num1, FunctionType(Num2, Num3)),
-    "%"       :  FunctionType(Num1, FunctionType(Num2, Num3)),
+    "<"       :  FunctionType(Num, FunctionType(Num, Bool)),
+    "<="      :  FunctionType(Num, FunctionType(Num, Bool)),
+    ">"       :  FunctionType(Num, FunctionType(Num, Bool)),
+    ">="      :  FunctionType(Num, FunctionType(Num, Bool)),
+    "**"      :  FunctionType(Num, FunctionType(Num, Num)),
+    "+"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "-"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "negate"  :  FunctionType(Num, Num),
+    "*"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "/"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "%"       :  FunctionType(Num, FunctionType(Num, Num)),
     "and"     :  FunctionType(Bool, FunctionType(Bool, Bool)),
     "or"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
 }

@@ -1,7 +1,16 @@
 module test where
 
+    import "stdlib.fky"
     import "math.fky"
 
-    y = x
-    x = 2
-    main = sqrt (abs y)
+    newtype BinaryTree = Branch BinaryTree Integer BinaryTree | Empty
+
+    treemap f Empty          = Empty
+    treemap f (Branch l v r) = Branch (treemap f l) (f v) (treemap f r)
+
+    insert e Empty                          = Branch Empty e Empty
+    insert e (Branch l v r) given e <= v    = Branch (insert e l) v r
+                            given otherwise = Branch l v (insert e r)
+
+    main = treemap abs my_tree
+           where my_tree = insert 5 (insert 1 (insert 7 (insert 7 (insert 3 Empty))))

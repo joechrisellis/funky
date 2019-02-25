@@ -8,8 +8,6 @@ from funky.corelang.coretree import *
 from funky.corelang.builtins import *
 from funky.corelang.types import *
 
-from funky.desugar.dependency_analysis import create_dependency_graph
-
 from funky.infer.tarjan import reorder_bindings
 
 log = logging.getLogger(__name__)
@@ -66,7 +64,7 @@ def infer_let(node, ctx, non_generic):
     """
     new_ctx, new_non_generic = ctx.copy(), non_generic.copy()
 
-    groups = reorder_bindings(node.binds)
+    groups = reorder_bindings(node)
 
     # for each strongly-connected component/mutually recursive group...
     for group in groups:

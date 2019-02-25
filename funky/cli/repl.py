@@ -7,6 +7,8 @@ import logging
 import traceback
 
 from funky._version import __version__
+
+import funky.globals
 from funky.cli.verbosity import set_loglevel
 from funky.util.color import *
 
@@ -302,6 +304,7 @@ class FunkyShell(CustomCmd):
 
         check_scope_for_errors(self.scope)
         new_global_let.binds = condense_function_binds(new_global_let.binds)
+        new_global_let.create_dependency_graph()
 
         # type infer the new global let to check for inconsistencies
         do_type_inference(new_global_let, self.global_types)
@@ -347,6 +350,8 @@ class FunkyShell(CustomCmd):
         pass
 
 def main():
+    funky.globals.CURRENT_MODE = funky.globals.Mode.REPL
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-V', '--version', action="version",
                         version='%(prog)s {version}'.format(version=__version__),

@@ -5,13 +5,11 @@ components in graphs.
 import logging
 from collections import defaultdict
 
-from funky.desugar.dependency_analysis import create_dependency_graph
-
 log = logging.getLogger(__name__)
 
 UNVISITED = -1
 
-def reorder_bindings(bindings):
+def reorder_bindings(corelet_node):
     """Reorders the given bindings by dependencies. Keeps mutually-dependent
     groups together.
     
@@ -19,9 +17,9 @@ def reorder_bindings(bindings):
     :return:         the bindings, sorted in reverse dependency order
     :rtype:          list
     """
-    dependency_graph = create_dependency_graph(bindings)
+    dependency_graph = corelet_node.dependency_graph
     
-    log.debug("Reordering {} bindings...".format(len(bindings)))
+    log.debug("Reordering {} bindings...".format(len(corelet_node.binds)))
 
     log.debug("Finding strongly-connected components within dependency graph...")
     sccs = find_strongly_connected_components(dependency_graph)
@@ -46,7 +44,7 @@ def reorder_bindings(bindings):
             continue
         dfs(scc)
 
-    d = {bind.identifier : bind for bind in bindings}
+    d = {bind.identifier : bind for bind in corelet_node.binds}
     reordered = [[d[b] for b in g] for g in reordered]
 
     log.debug("Finished reordering bindings.")

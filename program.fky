@@ -2,4 +2,6 @@ module test where
 
     import "math.fky"
 
-    main = sqrt 7
+    y = x
+    x = 2
+    main = sqrt (abs y)

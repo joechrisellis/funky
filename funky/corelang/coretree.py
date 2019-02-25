@@ -2,7 +2,12 @@
 for the intermediate language.
 """
 
+import funky.globals
+
 from funky.corelang.builtins import python_to_funky
+from funky.corelang.types import AlgebraicDataType
+from funky.ds import Graph
+from funky.util import get_registry_function
 from funky.util import output_attributes
 
 class CoreNode:
@@ -107,10 +112,74 @@ class CoreLet(CoreNode):
     recursive) bindings to be made available in an expression.
     """
 
+    tmp_varname = "_let_expr"
+
     def __init__(self, binds, expr):
         super().__init__()
-        self.binds  =  binds
-        self.expr   =  expr
+        self.binds             =  binds
+        self.expr              =  expr
+        self.create_dependency_graph()
+
+        if funky.globals.CURRENT_MODE != funky.globals.Mode.REPL:
+            self.prune_bindings()
+
+    def create_dependency_graph(self):
+        """Creates a graph representing how the bindings depend on one another.
+        For instance, in:
+
+            a = b 10
+            b x = x + 1
+            c = a
+        
+        a depends on b, b depends on nothing, and c depends on a.
+
+        :return:         a graph object representing the dependencies
+        :rtype:          Graph
+        """
+
+        # add a pseudo bind for the expression -- this is the easiest way to
+        # show us what the actual expression depends on in the list of
+        # bindings, so we can remove anything that's unneeded
+        bindings = [*self.binds]
+        if funky.globals.CURRENT_MODE != funky.globals.Mode.REPL:
+            let_expr = CoreBind(self.tmp_varname, self.expr)
+            bindings.append(let_expr)
+
+        graph = Graph()
+
+        ids = [bind.identifier for bind in bindings]
+        for bind in bindings:
+            graph.add_node(bind.identifier)
+            add_edges(bind.bindee, graph, bind.identifier, ids)
+
+        self.dependency_graph = graph
+
+    def prune_bindings(self):
+        """Prunes the core tree by getting rid of any unused bindings."""
+        keep, visited = set(), set()
+
+        def dfs(at):
+            visited.add(at)
+            neighbours = self.dependency_graph.graph[at]
+            for to in neighbours:
+                if to not in visited:
+                    dfs(to)
+            keep.add(at)
+
+        dfs(self.tmp_varname) # <- populate our 'keep' variable
+
+        # get rid of any unused bindings, as well as our temporary binding
+        new_bindings = [b for b in self.binds if b.identifier in keep and \
+                                              not b.identifier == self.tmp_varname]
+        self.binds = new_bindings
+
+        # Create the new dependency graph from the old one. Extracts all of the
+        # kept variables and their edges.
+        new_dependency_graph = Graph()
+        for var in keep:
+            if var == self.tmp_varname: continue
+            new_dependency_graph.graph[var] = self.dependency_graph.graph[var]
+        self.dependency_graph = new_dependency_graph
 
     def __str__(self):
         binds_str = "; ".join(str(bind) for bind in self.binds)
@@ -140,3 +209,58 @@ class CoreAlt(CoreNode):
     
     def __str__(self):
         return "{} -> {}".format(str(self.altcon), str(self.expr))
+
+add_edges = get_registry_function()
+
+@add_edges.register(CoreVariable)
+def add_edges_variable(bindee, graph, current, ids):
+    # We are only concerned about dependencies in our isolated set of bindings
+    # -- ignore anything that we're not looking for.
+    if bindee.identifier in ids:
+        graph.add(current, bindee.identifier)
+
+@add_edges.register(CoreBind)
+def add_edges_bind(bindee, graph, current, ids):
+    add_edges(bindee.bindee, graph, current, ids)
+
+@add_edges.register(CoreCons)
+def add_edges_cons(bindee, graph, current, ids):
+    for param in bindee.parameters:
+        add_edges(param, graph, current, ids)
+
+@add_edges.register(CoreApplication)
+def add_edges_application(bindee, graph, current, ids):
+    add_edges(bindee.expr, graph, current, ids)
+    add_edges(bindee.arg, graph, current, ids)
+
+@add_edges.register(CoreLambda)
+def add_edges_lambda(bindee, graph, current, ids):
+    add_edges(bindee.expr, graph, current, ids)
+
+@add_edges.register(CoreLet)
+def add_edges_let(bindee, graph, current, ids):
+    for local_let_bind in bindee.binds:
+        add_edges(local_let_bind, graph, current, ids)
+    add_edges(bindee.expr, graph, current, ids)
+
+@add_edges.register(CoreMatch)
+def add_edges_match(bindee, graph, current, ids):
+    # TODO: there might be an issue here with scrutinees and binding?
+    add_edges(bindee.scrutinee, graph, current, ids)
+    for alt in bindee.alts:
+        add_edges(alt, graph, current, ids)
+
+@add_edges.register(CoreAlt)
+def add_edges_alt(bindee, graph, current, ids):
+    if bindee.expr is None: return
+    add_edges(bindee.expr, graph, current, ids)
+
+@add_edges.register(AlgebraicDataType)
+def add_edges_algebraic_data_type(bindee, graph, current, ids):
+    for constructor in bindee.constructors:
+        add_edges(constructor, graph, current, ids)
+
+@add_edges.register(CoreLiteral)
+@add_edges.register(str) # <- builtin functions
+def add_edges_noop(bindee, graph, current, ids):
+    pass

@@ -2,6 +2,7 @@ from keyword import kwlist
 import logging
 
 from funky.corelang.coretree import *
+from funky.corelang.builtins import String
 from funky.generate.gen import CodeGenerator, annotate_section
 from funky.util import get_registry_function, global_counter
 
@@ -38,6 +39,9 @@ def __pow(a):
     return lambda x: a ** x
 
 def __add(a):
+    return lambda x: a + x
+
+def __concat(a):
     return lambda x: a + x
 
 def __sub(a):
@@ -102,6 +106,7 @@ builtins = {
     ">="      :  "__geq",
     "**"      :  "__pow",
     "+"       :  "__add",
+    "++"      :  "__concat",
     "-"       :  "__sub",
     "negate"  :  "__negate",
     "*"       :  "__mul",
@@ -156,10 +161,10 @@ class PythonCodeGenerator(CodeGenerator):
                 self.emit("        return all(x == y for x, y in zip(self.params, other.params))")
                 self.newline()
 
-                self.emit("    def __str__(self):")
+                self.emit("    def __repr__(self):")
                 self.emit("        name = type(self).__name__[3:]")
                 if varnames:
-                    self.emit("        vars = [str(x) for x in self.params]")
+                    self.emit("        vars = [repr(x) for x in self.params]")
                     self.emit("        return \"({} {})\".format(name, \" \".join(vars))")
                 else:
                     self.emit("        return name")
@@ -214,7 +219,11 @@ class PythonCodeGenerator(CodeGenerator):
 
     @py_compile.register(CoreLiteral)
     def py_compile_literal(self, node, indent):
-        return str(node.value)
+        print(node.inferred_type)
+        if node.inferred_type == String:
+            return "\"{}\"".format(node.value)
+        else:
+            return str(node.value)
 
     @py_compile.register(CoreApplication)
     def py_compile_application(self, node, indent):

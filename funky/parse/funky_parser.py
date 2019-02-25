@@ -359,6 +359,7 @@ class FunkyParser:
                   | LEQ
                   | GREATER
                   | GEQ
+                  | CONCAT
                   | AND
                   | OR
         """
@@ -368,7 +369,6 @@ class FunkyParser:
         """LITERAL : FLOAT
                    | INTEGER
                    | BOOL
-                   | CHAR
                    | STRING
         """
         p[0] = Literal(p[1])
@@ -395,7 +395,6 @@ class FunkyParser:
         self.lexer = IndentationLexer(self.lexer, dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self,
-                                errorlog=yacc.NullLogger(),
                                 **kwargs)
         log.debug("Parser built.")
 

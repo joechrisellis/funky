@@ -35,10 +35,10 @@ class FunkyLexer:
 
         "BACKTICK", "PIPE", "ARROW", "ENDSTATEMENT",
 
-        "FLOAT", "INTEGER", "BOOL", "CHAR", "STRING",
+        "FLOAT", "INTEGER", "BOOL", "STRING",
 
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
-        "POW", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO",
+        "POW", "CONCAT", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO",
 
         "OPEN_PAREN", "CLOSE_PAREN",
         "OPEN_BRACE", "CLOSE_BRACE",
@@ -99,11 +99,6 @@ class FunkyLexer:
         t.value = t.value == "True"
         return t
 
-    def t_CHAR(self, t):
-        r"'.'"
-        t.value = t.value[1:-1]
-        return t
-
     def t_STRING(self, t):
         r"(\".*?\"|'.*?')"
         t.value = t.value[1:-1]
@@ -118,6 +113,7 @@ class FunkyLexer:
     t_GEQ               =  r">="
     t_EQUALS            =  r"="
     t_POW               =  r"\*\*"
+    t_CONCAT            =  r"\+\+"
     t_PLUS              =  r"\+"
     t_MINUS             =  r"-"
     t_TIMES             =  r"\*"

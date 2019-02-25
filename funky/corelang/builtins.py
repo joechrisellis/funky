@@ -4,26 +4,25 @@ from funky.corelang.types import TypeVariable, TypeOperator, FunctionType
 from enum import Enum, auto
 
 # BUILTIN TYPES
-BUILTIN_PRIMITIVES = ["Float", "Integer", "Bool", "Char"]
 BUILTIN_PRIMITIVES = {
     "Float"    :  TypeOperator("Float",    []),
     "Integer"  :  TypeOperator("Integer",  []),
     "Bool"     :  TypeOperator("Bool",     []),
-    "Char"     :  TypeOperator("Char",     []),
+    "String"   :  TypeOperator("String",   []),
 }
 
 # purely for easy typing
 Float    =  BUILTIN_PRIMITIVES["Float"]
 Integer  =  BUILTIN_PRIMITIVES["Integer"]
 Bool     =  BUILTIN_PRIMITIVES["Bool"]
-Char     =  BUILTIN_PRIMITIVES["Char"]
+String   =  BUILTIN_PRIMITIVES["String"]
 
 # Mapping of Python types to Funky types.
 python_to_funky = {
     float  :  Float,
     int    :  Integer,
     bool   :  Bool,
-    str    :  Char,
+    str    :  String,
 }
 
 Num               =  TypeVariable()
@@ -39,6 +38,7 @@ BUILTIN_FUNCTIONS = {
     ">="      :  FunctionType(Num, FunctionType(Num, Bool)),
     "**"      :  FunctionType(Num, FunctionType(Num, Num)),
     "+"       :  FunctionType(Num, FunctionType(Num, Num)),
+    "++"      :  FunctionType(String, FunctionType(String, String)),
     "-"       :  FunctionType(Num, FunctionType(Num, Num)),
     "negate"  :  FunctionType(Num, Num),
     "*"       :  FunctionType(Num, FunctionType(Num, Num)),

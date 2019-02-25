@@ -32,6 +32,7 @@ fixities = {
     "!="   :  ("nonassoc",    5),
     "<="   :  ("nonassoc",    5),
     "<"    :  ("nonassoc",    5),
+    "++"   :  ("rightassoc",  5),
     "-"    :  ("leftassoc",   6),
     "+"    :  ("leftassoc",   6),
     "/"    :  ("leftassoc",   7),

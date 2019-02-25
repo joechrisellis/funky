@@ -1,6 +1,7 @@
 import logging
 
 from funky.corelang.coretree import *
+from funky.corelang.builtins import String
 from funky.generate.gen import CodeGenerator, annotate_section
 from funky.util import get_registry_function, global_counter
 
@@ -15,6 +16,7 @@ builtins = {
     ">="      :  ">=",
     "**"      :  "**",
     "+"       :  "+",
+    "++"      :  "++",
     "-"       :  "-",
     "negate"  :  "negate",
     "*"       :  "*",
@@ -82,7 +84,10 @@ class HaskellCodeGenerator(CodeGenerator):
 
     @hs_compile.register(CoreLiteral)
     def hs_compile_literal(self, node):
-        return str(node.value)
+        if node.inferred_type == String:
+            return "\"{}\"".format(node.value)
+        else:
+            return str(node.value)
 
     @hs_compile.register(CoreApplication)
     def hs_compile_application(self, node):

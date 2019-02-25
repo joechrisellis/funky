@@ -3,14 +3,23 @@ module test where
     import "stdlib.fky"
     import "math.fky"
 
-    newtype BinaryTree = Branch BinaryTree Integer BinaryTree | Empty
+    newtype IList = ICons Integer IList | INil
+    newtype SList = SCons String SList | SNil
 
-    treemap f Empty          = Empty
-    treemap f (Branch l v r) = Branch (treemap f l) (f v) (treemap f r)
+    to_speech 0 = "zero"
+    to_speech 1 = "one"
+    to_speech 2 = "two"
+    to_speech 3 = "three"
+    to_speech 4 = "four"
+    to_speech 5 = "five"
+    to_speech 6 = "six"
+    to_speech 7 = "seven"
+    to_speech 8 = "eight"
+    to_speech 9 = "nine"
+    to_speech _ = "undefined"
 
-    insert e Empty                          = Branch Empty e Empty
-    insert e (Branch l v r) given e <= v    = Branch (insert e l) v r
-                            given otherwise = Branch l v (insert e r)
+    imap _ INil         = SNil
+    imap f (ICons x xs) = SCons (f x) (imap f xs)
 
-    main = treemap abs my_tree
-           where my_tree = insert 5 (insert 1 (insert 7 (insert 7 (insert 3 Empty))))
+    main = imap to_speech my_list
+           where my_list = ICons 5 (ICons 1 (ICons 7 (ICons 7 (ICons 3 INil))))

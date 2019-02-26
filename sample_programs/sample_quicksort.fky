@@ -1,0 +1,24 @@
+module quicksort where
+
+    import "stdlib.fky"
+
+    newtype List = Cons Integer List | Nil
+
+    concatenate (Cons x xs) ys  = Cons x (xs `concatenate` ys)
+    concatenate xs          Nil = xs
+    concatenate Nil         ys  = ys
+
+    filter p Nil                         = Nil
+    filter p (Cons x xs) given p x       = Cons x rest
+                         given otherwise = rest
+                         where rest = filter p xs
+
+    quicksort Nil         = Nil
+    quicksort (Cons x xs) = lesser       `concatenate`
+                            (Cons x Nil) `concatenate`
+                            greater
+                            where lesser  = filter ((>)  x) xs
+                                  greater = filter ((<=) x) xs
+
+    main = quicksort my_list
+           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

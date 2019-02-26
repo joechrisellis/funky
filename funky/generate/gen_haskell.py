@@ -2,42 +2,26 @@ import logging
 
 from funky.corelang.coretree import *
 from funky.corelang.builtins import String
-from funky.generate.gen import CodeGenerator
+from funky.generate.gen import CodeGenerator, CodeSection
+from funky.generate.runtime.haskell_runtime import HaskellRuntime
 from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
-
-builtins = {
-    "=="      :  "==",
-    "!="      :  "/=",
-    "<"       :  "<",
-    "<="      :  "<=",
-    ">"       :  ">",
-    ">="      :  ">=",
-    "**"      :  "**",
-    "+"       :  "+",
-    "++"      :  "++",
-    "-"       :  "-",
-    "negate"  :  "negate",
-    "*"       :  "*",
-    "/"       :  "/",
-    "%"       :  "mod",
-    "and"     :  "&&",
-    "or"      :  "||",
-}
 
 class HaskellCodeGenerator(CodeGenerator):
 
     comment = "-- {}".format
 
     def __init__(self):
-        super().__init__("Haskell")
+        super().__init__("Haskell", "-- {}".format)
+        self.runtime = HaskellRuntime()
 
         # this set contains the names that are known to be constructors so that
         # we do not convert them to lowercase when compiling CoreVariables.
         self.constructor_names = set()
 
-    def create_adts(self, typedefs):
+    def make_adts(self, typedefs):
+        adts = CodeSection("algebraic data types")
         for typedef in typedefs:
             adt = typedef.typ
 
@@ -50,14 +34,16 @@ class HaskellCodeGenerator(CodeGenerator):
                     line = "{} = {} {}".format(definition,
                                                constructor.identifier,
                                                params)
-                    self.emit(line)
+                    adts.emit(line)
                 else:
                     line = "| {} {}".format(constructor.identifier, params)
-                    self.emit(line, d=ind)
+                    adts.emit(line, d=ind)
                 self.constructor_names.add(constructor.identifier)
 
-            self.emit("deriving (Show, Eq)", d=ind)
-            self.newline()
+            adts.emit("deriving (Show, Eq)", d=ind)
+            adts.newline()
+
+        return adts
 
     hs_compile = get_registry_function(registered_index=1) # 1 to skip self
 
@@ -75,7 +61,7 @@ class HaskellCodeGenerator(CodeGenerator):
     def hs_compile_variable(self, node):
         ident = node.identifier
         try:
-            return builtins[ident]
+            return self.runtime.runtime_method(ident)
         except KeyError:
             if node.identifier not in self.constructor_names:
                 ident = ident.lower()
@@ -119,9 +105,19 @@ class HaskellCodeGenerator(CodeGenerator):
 
         return "case {} of {{ {} }}".format(scrutinee, "; ".join(alts))
 
-    def emit_main(self, expr):
-        self.emit("main = do")
-        self.emit("       print ({})".format(self.hs_compile(expr)))
+    def make_core_section(self, core_tree):
+        core_section = CodeSection("core section")
+        for bind in core_tree.binds:
+            compiled_bind = self.hs_compile(bind)
+            core_section.emit(compiled_bind)
+        core_section.newline()
+        return core_section
+
+    def make_main_section(self, expr):
+        main_section = CodeSection("main")
+        main_section.emit("main = do")
+        main_section.emit("       print ({})".format(self.hs_compile(expr)))
+        return main_section
 
     def do_generate_code(self, core_tree, typedefs):
         """Generates Haskell code from the core tree and type definitions.
@@ -133,24 +129,25 @@ class HaskellCodeGenerator(CodeGenerator):
         """
 
         log.info("Generating {} code...".format(self.lang_name))
-        self.program = ""
-        self.code_header()
+        self.program.reset()
+
+        header_section = self.code_header()
 
         log.info("Creating user-defined data structres...")
-        self.create_adts(typedefs)
+        adts = self.make_adts(typedefs)
         log.info("Done.")
-        log.info("Compiling core tree...")
-        
-        for bind in core_tree.binds:
-            compiled_bind = self.hs_compile(bind)
-            self.emit(compiled_bind)
-        self.newline()
 
+        log.info("Compiling core tree...")
+        core_section = self.make_core_section(core_tree)
         log.info("Done.")
 
         log.info("Creating main method...")
-        self.emit_main(core_tree.expr)
+        main_section = self.make_main_section(core_tree.expr)
         log.info("Done.")
 
+        for i, section in enumerate([header_section, adts, core_section,
+                                     main_section]):
+            self.program.add_section(section, i)
+
         log.info("Done generating {} code.".format(self.lang_name))
-        return self.program[:]
+        return self.program.get_code()

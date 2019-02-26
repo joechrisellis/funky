@@ -66,7 +66,6 @@ class PythonCodeGenerator(CodeGenerator):
         for typedef in typedefs:
             adt = typedef.typ
             superclass_name = "ADT{}".format(adt.type_name)
-            adts.emit(self.comment("ADT superclass."))
             adts.emit("class {}(ADT):".format(superclass_name))
             adts.emit("    pass")
             adts.newline()
@@ -78,7 +77,7 @@ class PythonCodeGenerator(CodeGenerator):
                 varnames = ["v{}".format(i)
                             for i, _ in enumerate(constructor.parameters)]
 
-                self.newline()
+                adts.newline()
                 if varnames:
                     adts.emit("    def __init__(self, {}):".format(", ".join(varnames)))
                     adts.emit("        super().__init__([{}])".format(", ".join(v for v in varnames)))
@@ -127,7 +126,7 @@ class PythonCodeGenerator(CodeGenerator):
         if isinstance(node.bindee, CoreLambda):
             lam = node.bindee
             sect.emit("def {}({}):".format(node.identifier,
-                                           self.py_compile(lam.param, indent)),
+                                           self.py_compile(lam.param, sect, indent)),
                       d=indent)
             return_statement = self.py_compile(lam.expr, sect, indent+4)
             sect.emit("return {}".format(return_statement), d=indent+4)
@@ -168,7 +167,7 @@ class PythonCodeGenerator(CodeGenerator):
     def py_compile_lambda(self, node, sect, indent):
         param = self.py_compile(node.param, sect, indent)
         differentiator = str(global_counter())
-        lam_name = "lam{}".forme(differentiator)
+        lam_name = "lam{}".format(differentiator)
         sect.emit("def {}({}):".format(lam_name, param), d=indent)
         expr = self.py_compile(node.expr, sect, indent + 4)
         sect.emit("return {}".format(expr), d=indent+4)
@@ -220,7 +219,7 @@ class PythonCodeGenerator(CodeGenerator):
             default,
         )
 
-    def emit_main(self, main):
+    def make_main(self, main):
         main_section = CodeSection("main method")
 
         main_section.emit("def main():")
@@ -255,7 +254,7 @@ class PythonCodeGenerator(CodeGenerator):
         log.info("Done.")
 
         log.info("Creating main method...")
-        main_section = self.emit_main(main)
+        main_section = self.make_main(main)
         log.info("Done.")
 
         used_runtime_section = self.make_used_runtime()

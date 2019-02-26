@@ -1,7 +1,7 @@
 import logging
 
 from funky.corelang.coretree import *
-from funky.generate.gen import CodeGenerator, annotate_section
+from funky.generate.gen import CodeGenerator
 from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
@@ -89,16 +89,13 @@ class CCodeGenerator(CodeGenerator):
     def __init__(self):
         super().__init__("C")
 
-    @annotate_section
     def includes(self):
         self.emit("#include <stdlib.h>")
         self.emit("#include <stdio.h>")
 
-    @annotate_section
     def runtime(self):
         self.emit(c_runtime)
 
-    @annotate_section
     def default_storage(self):
         self.emit("Value __add;")
         self.emit("Value __subtract;")
@@ -107,7 +104,6 @@ class CCodeGenerator(CodeGenerator):
         self.emit("Value __print;")
         self.emit("Value __numEqual;")
 
-    @annotate_section
     def create_adts(self, typedefs):
         names = [typedef.typ.type_name for typedef in typedefs]
         for typedef in typedefs:

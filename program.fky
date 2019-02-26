@@ -1,25 +1,3 @@
 module test where
 
-    import "stdlib.fky"
-    import "math.fky"
-
-    newtype IList = ICons Integer IList | INil
-    newtype SList = SCons String SList | SNil
-
-    to_speech 0 = "zero"
-    to_speech 1 = "one"
-    to_speech 2 = "two"
-    to_speech 3 = "three"
-    to_speech 4 = "four"
-    to_speech 5 = "five"
-    to_speech 6 = "six"
-    to_speech 7 = "seven"
-    to_speech 8 = "eight"
-    to_speech 9 = "nine"
-    to_speech _ = "undefined"
-
-    imap _ INil         = SNil
-    imap f (ICons x xs) = SCons (f x) (imap f xs)
-
-    main = imap to_speech my_list
-           where my_list = ICons 5 (ICons 1 (ICons 7 (ICons 7 (ICons 3 INil))))
+    main = 1 + 1 - 2

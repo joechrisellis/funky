@@ -2,7 +2,7 @@ import logging
 
 from funky.corelang.coretree import *
 from funky.corelang.builtins import String
-from funky.generate.gen import CodeGenerator, annotate_section
+from funky.generate.gen import CodeGenerator
 from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
@@ -37,7 +37,6 @@ class HaskellCodeGenerator(CodeGenerator):
         # we do not convert them to lowercase when compiling CoreVariables.
         self.constructor_names = set()
 
-    @annotate_section
     def create_adts(self, typedefs):
         for typedef in typedefs:
             adt = typedef.typ
@@ -120,7 +119,6 @@ class HaskellCodeGenerator(CodeGenerator):
 
         return "case {} of {{ {} }}".format(scrutinee, "; ".join(alts))
 
-    @annotate_section
     def emit_main(self, expr):
         self.emit("main = do")
         self.emit("       print ({})".format(self.hs_compile(expr)))

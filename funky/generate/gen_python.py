@@ -3,12 +3,13 @@ import logging
 
 from funky.corelang.coretree import *
 from funky.corelang.builtins import String
-from funky.generate.gen import CodeGenerator, annotate_section
+from funky.generate.gen import CodeGenerator, CodeSection
+from funky.generate.runtime.python_runtime import PythonRuntime
 from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
 
-python_runtime = """class ADT:
+base_runtime = """class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
 
     def __init__(self, params):
@@ -16,57 +17,6 @@ python_runtime = """class ADT:
 
 class InexhaustivePatternMatchError(Exception):
     pass
-
-def __eq(a):
-    return lambda x: a == x
-
-def __neq(a):
-    return lambda x: a != x
-
-def __less(a):
-    return lambda x: a < x
-
-def __leq(a):
-    return lambda x: a <= x
-
-def __greater(a):
-    return lambda x: a > x
-
-def __geq(a):
-    return lambda x: a >= x
-
-def __pow(a):
-    return lambda x: a ** x
-
-def __add(a):
-    return lambda x: a + x
-
-def __concat(a):
-    return lambda x: a + x
-
-def __sub(a):
-    return lambda x: a - x
-
-def __negate(a):
-    return -a
-
-def __mul(a):
-    return lambda x: a * x
-
-def __div(a):
-    if isinstance(a, int):
-        return lambda x: a // x
-    else:
-        return lambda x: a / x
-
-def __mod(a):
-    return lambda x: a % x
-
-def __logical_and(a):
-    return lambda x: a and x
-
-def __logical_or(a):
-    return lambda x: a or x
 
 def __match(scrutinee, outcomes, default):
     if isinstance(scrutinee, ADT):
@@ -94,82 +44,65 @@ def __match_adt(scrutinee, outcomes):
 def __match_literal(scrutinee, outcomes):
     for alt, expr in outcomes.items():
         if scrutinee == alt:
-            return expr
-"""
-
-builtins = {
-    "=="      :  "__eq",
-    "!="      :  "__neq",
-    "<"       :  "__less",
-    "<="      :  "__leq",
-    ">"       :  "__greater",
-    ">="      :  "__geq",
-    "**"      :  "__pow",
-    "+"       :  "__add",
-    "++"      :  "__concat",
-    "-"       :  "__sub",
-    "negate"  :  "__negate",
-    "*"       :  "__mul",
-    "/"       :  "__div",
-    "%"       :  "__mod",
-    "and"     :  "__logical_and",
-    "or"      :  "__logical_or",
-}
+            return expr"""
 
 class PythonCodeGenerator(CodeGenerator):
 
-    docstring = "\"\"\"{}\"\"\"".format
-    comment = "# {}".format
-
     def __init__(self):
-        super().__init__("Python")
+        super().__init__("Python", "# {}".format)
+        self.runtime = PythonRuntime()
 
-    @annotate_section
-    def code_runtime(self):
-        self.emit(python_runtime)
+    def make_base_runtime(self):
+        runtime_section = CodeSection("base runtime")
+        runtime_section.emit(base_runtime)
+        runtime_section.newline()
+        return runtime_section
 
-    @annotate_section
-    def create_adts(self, typedefs):
+    def make_used_runtime(self):
+        return self.runtime.get_runtime()
+
+    def make_adts(self, typedefs):
+        adts = CodeSection("algebraic data types")
         for typedef in typedefs:
             adt = typedef.typ
             superclass_name = "ADT{}".format(adt.type_name)
-            self.emit("class {}(ADT):".format(superclass_name))
-            self.emit(self.docstring("ADT superclass."), d=4)
-            self.emit("    pass")
-            self.newline()
+            adts.emit(self.comment("ADT superclass."))
+            adts.emit("class {}(ADT):".format(superclass_name))
+            adts.emit("    pass")
+            adts.newline()
 
             for constructor in adt.constructors:
                 constructor_name = "ADT{}".format(constructor.identifier)
-                self.emit("class {}({}):".format(constructor_name,
+                adts.emit("class {}({}):".format(constructor_name,
                                                  superclass_name))
                 varnames = ["v{}".format(i)
                             for i, _ in enumerate(constructor.parameters)]
 
                 self.newline()
                 if varnames:
-                    self.emit("    def __init__(self, {}):".format(", ".join(varnames)))
-                    self.emit("        super().__init__([{}])".format(", ".join(v for v in varnames)))
+                    adts.emit("    def __init__(self, {}):".format(", ".join(varnames)))
+                    adts.emit("        super().__init__([{}])".format(", ".join(v for v in varnames)))
                 else:
-                    self.emit("    def __init__(self):".format(", ".join(varnames)))
-                    self.emit("        super().__init__([])")
+                    adts.emit("    def __init__(self):".format(", ".join(varnames)))
+                    adts.emit("        super().__init__([])")
 
-                self.newline()
+                adts.newline()
 
-                self.emit("    def __eq__(self, other):")
-                self.emit("        if not isinstance(other, self.__class__):")
-                self.emit("            return False")
-                self.emit("        return all(x == y for x, y in zip(self.params, other.params))")
-                self.newline()
+                adts.emit("    def __eq__(self, other):")
+                adts.emit("        if not isinstance(other, self.__class__):")
+                adts.emit("            return False")
+                adts.emit("        return all(x == y for x, y in zip(self.params, other.params))")
+                adts.newline()
 
-                self.emit("    def __repr__(self):")
-                self.emit("        name = type(self).__name__[3:]")
+                adts.emit("    def __repr__(self):")
+                adts.emit("        name = type(self).__name__[3:]")
                 if varnames:
-                    self.emit("        vars = [repr(x) for x in self.params]")
-                    self.emit("        return \"({} {})\".format(name, \" \".join(vars))")
+                    adts.emit("        vars = [repr(x) for x in self.params]")
+                    adts.emit("        return \"({} {})\".format(name, \" \".join(vars))")
                 else:
-                    self.emit("        return name")
+                    adts.emit("        return name")
 
-                self.newline()
+                adts.newline()
 
                 s = ""
                 for var in varnames:
@@ -179,76 +112,77 @@ class PythonCodeGenerator(CodeGenerator):
                     py_name = "__{}".format(constructor.identifier)
                 else:
                     py_name = constructor.identifier
-                self.emit("{} = {}{}({})".format(py_name,
+                adts.emit("{} = {}{}({})".format(py_name,
                                                  s,
                                                  constructor_name,
                                                  ", ".join(varnames)))
-                self.newline()
+                adts.newline()
+
+        return adts
 
     py_compile = get_registry_function(registered_index=1) # 1 to skip self
 
     @py_compile.register(CoreBind)
-    def py_compile_bind(self, node, indent):
+    def py_compile_bind(self, node, sect, indent):
         if isinstance(node.bindee, CoreLambda):
             lam = node.bindee
-            self.emit("def {}({}):".format(node.identifier,
+            sect.emit("def {}({}):".format(node.identifier,
                                            self.py_compile(lam.param, indent)),
                       d=indent)
-            return_statement = self.py_compile(lam.expr, indent+4)
-            self.emit("return {}".format(return_statement), d=indent+4)
-            self.newline()
+            return_statement = self.py_compile(lam.expr, sect, indent+4)
+            sect.emit("return {}".format(return_statement), d=indent+4)
+            sect.newline()
         else:
             # if it's not a function bind, it must be a value bind.
             val = node.bindee
-            self.emit("{} = {}".format(node.identifier,
-                                       self.py_compile(val, indent)),
+            sect.emit("{} = {}".format(node.identifier,
+                                       self.py_compile(val, sect, indent)),
                       d=indent)
 
     @py_compile.register(CoreCons)
-    def py_compile_cons(self, node, indent):
+    def py_compile_cons(self, node, sect, indent):
         return "ADT{}".format(node.constructor)
 
     @py_compile.register(CoreVariable)
-    def py_compile_variable(self, node, indent):
+    def py_compile_variable(self, node, sect, indent):
         try:
-            return builtins[node.identifier]
+            return self.runtime.runtime_method(node.identifier)
         except KeyError:
             if node.identifier in kwlist:
                 return "__{}".format(node.identifier)
             return node.identifier
 
     @py_compile.register(CoreLiteral)
-    def py_compile_literal(self, node, indent):
-        print(node.inferred_type)
+    def py_compile_literal(self, node, sect, indent):
         if node.inferred_type == String:
             return "\"{}\"".format(node.value)
         else:
             return str(node.value)
 
     @py_compile.register(CoreApplication)
-    def py_compile_application(self, node, indent):
-        f = self.py_compile(node.expr, indent)
-        return "({})({})".format(f, self.py_compile(node.arg, indent))
+    def py_compile_application(self, node, sect, indent):
+        f = self.py_compile(node.expr, sect, indent)
+        return "({})({})".format(f, self.py_compile(node.arg, sect, indent))
 
     @py_compile.register(CoreLambda)
-    def py_compile_lambda(self, node, indent):
-        param = self.py_compile(node.param, indent)
+    def py_compile_lambda(self, node, sect, indent):
+        param = self.py_compile(node.param, sect, indent)
         differentiator = str(global_counter())
-        lam_name = "lam{}".format(differentiator)
-        self.emit("def {}({}):".format(lam_name, param), d=indent)
-        expr = self.py_compile(node.expr, indent + 4)
-        self.emit("return {}".format(expr), d=indent+4)
+        lam_name = "lam{}".forme(differentiator)
+        sect.emit("def {}({}):".format(lam_name, param), d=indent)
+        expr = self.py_compile(node.expr, sect, indent + 4)
+        sect.emit("return {}".format(expr), d=indent+4)
         return lam_name
 
     @py_compile.register(CoreLet)
-    def py_compile_let(self, node, indent):
+    def py_compile_let(self, node, sect, indent):
         for bind in node.binds:
-            self.py_compile(bind, indent)
-        return self.py_compile(node.expr, indent)
+            self.py_compile(bind, sect, indent)
+        return self.py_compile(node.expr, sect, indent)
 
     @py_compile.register(CoreMatch)
-    def py_compile_match(self, node, indent):
-        scrutinee = self.py_compile(node.scrutinee, indent)
+    def py_compile_match(self, node, sect, indent):
+        scrutinee = self.py_compile(node.scrutinee, sect, indent)
         d = {}
         default = None
         for i, alt in enumerate(node.alts):
@@ -262,23 +196,23 @@ class PythonCodeGenerator(CodeGenerator):
                     if name == "_":
                         name += str(i)
                     params.append(name)
-                self.emit("def {}({}):".format(fname, ", ".join(params)),
+                sect.emit("def {}({}):".format(fname, ", ".join(params)),
                           d=indent)
             else:
-                self.emit("def {}():".format(fname), d=indent)
+                sect.emit("def {}():".format(fname), d=indent)
                 if isinstance(alt.altcon, CoreVariable) and \
                    alt.altcon.identifier != "_":
-                    self.emit("{} = {}".format(alt.altcon.identifier, scrutinee),
+                    sect.emit("{} = {}".format(alt.altcon.identifier, scrutinee),
                               d=indent+4)
 
-            k = self.py_compile(alt.altcon, indent+4)
-            v = self.py_compile(alt.expr, indent=indent+4)
+            k = self.py_compile(alt.altcon, sect, indent+4)
+            v = self.py_compile(alt.expr, sect, indent=indent+4)
 
             if isinstance(alt.altcon, CoreVariable):
                 default = fname
             else:
                 d[k] = fname
-            self.emit("return {}".format(v), d=indent+4)
+            sect.emit("return {}".format(v), d=indent+4)
 
         return "__match({}, {{{}}}, {})".format(
             scrutinee,
@@ -286,13 +220,16 @@ class PythonCodeGenerator(CodeGenerator):
             default,
         )
 
-    @annotate_section
     def emit_main(self, main):
-        self.emit("def main():")
-        self.emit("print({})".format(main), d=4)
-        self.newline()
-        self.emit("if __name__ == \"__main__\":")
-        self.emit("    main()")
+        main_section = CodeSection("main method")
+
+        main_section.emit("def main():")
+        main_section.emit("print({})".format(main), d=4)
+        main_section.newline()
+        main_section.emit("if __name__ == \"__main__\":")
+        main_section.emit("    main()")
+
+        return main_section
 
     def do_generate_code(self, core_tree, typedefs):
         """Generates Python code from the core tree and type definitions.
@@ -304,20 +241,29 @@ class PythonCodeGenerator(CodeGenerator):
         """
 
         log.info("Generating {} code...".format(self.lang_name))
-        self.program = ""
-        self.code_header()
-        self.code_runtime()
+        self.program.reset()
+
+        header_section = self.code_header()
+        base_runtime_section = self.make_base_runtime()
 
         log.info("Creating user-defined data structres...")
-        self.create_adts(typedefs)
+        adts_section = self.make_adts(typedefs)
         log.info("Done.")
         log.info("Compiling core tree...")
-        main = self.py_compile(core_tree, 0)
+        core_section = CodeSection("core code")
+        main = self.py_compile(core_tree, core_section,  0)
         log.info("Done.")
 
         log.info("Creating main method...")
-        self.emit_main(main)
+        main_section = self.emit_main(main)
         log.info("Done.")
 
+        used_runtime_section = self.make_used_runtime()
+
+        for i, section in enumerate([header_section, base_runtime_section,
+                                     used_runtime_section, adts_section,
+                                     core_section, main_section]):
+            self.program.add_section(section, i)
+
         log.info("Done generating {} code.".format(self.lang_name))
-        return self.program[:]
+        return self.program.get_code()

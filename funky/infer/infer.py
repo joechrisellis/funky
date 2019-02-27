@@ -285,7 +285,6 @@ def get_constrained_var(typ):
     return t
 
 def replace_strings(f, ctx):
-    print(typeclass_mapping)
     if isinstance(f.input_type, FunctionType):
         replace_strings(f.input_type, ctx)
     elif isinstance(f.input_type, str):

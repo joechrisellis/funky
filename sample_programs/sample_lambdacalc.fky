@@ -1,0 +1,22 @@
+module lambdacalc where
+
+    # Inspired by Jim Fisher's blog post code, available at:
+    # https://jameshfisher.com/2018/03/15/a-lambda-calculus-interpreter-in-haskell.html
+
+    newtype LambdaExpression = App LambdaExpression LambdaExpression
+                             | Abs LambdaExpression
+                             | Var Integer
+                             | Const Integer
+
+    eval (App fun arg) = match eval fun of
+                             Abs body -> eval (sub 0 body)
+                             x        -> App x arg
+                         where sub n e = match e of
+                                             App e1 e2 -> App (sub n e1) (sub n e2)
+                                             Abs e3    -> Abs (sub (n + 1) e3)
+                                             Var y     -> arg if n == y else Var y
+                                             x         -> x
+    eval x = x
+
+    main = eval my_expr
+           where my_expr = App (App (Abs (Abs (Var 1))) (Const 42)) (Const 43)

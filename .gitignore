@@ -115,3 +115,7 @@ dmypy.json
 
 # vim swap files
 *.swp
+
+# compiled samples
+sample_programs/*.py
+sample_programs/*.hs

@@ -278,21 +278,37 @@ def operator_prefix(s):
 # prefix.
 typeclass_mapping = {}
 
+def get_constrained_var(typ):
+    t = TypeVariable()
+    t.constraints = typeclass_mapping[typ]
+    t.parent_class = typ
+    return t
+
 def replace_strings(f, ctx):
+    print(typeclass_mapping)
     if isinstance(f.input_type, FunctionType):
         replace_strings(f.input_type, ctx)
     elif isinstance(f.input_type, str):
-        f.input_type = ctx[f.input_type]
+        try:
+            f.input_type = ctx[f.input_type]
+        except KeyError:
+            f.input_type = get_constrained_var(f.input_type)
 
     if isinstance(f.output_type, FunctionType):
         replace_strings(f.output_type, ctx)
     elif isinstance(f.output_type, str):
-        f.output_type = ctx[f.output_type]
+        try:
+            f.output_type = ctx[f.output_type]
+        except KeyError:
+            f.output_type = get_constrained_var(f.output_type)
 
     if isinstance(f, FunctionType):
         for i, typ in enumerate(f.types):
             if not isinstance(typ, str): continue
-            f.types[i] = ctx[typ]
+            try:
+                f.types[i] = ctx[typ]
+            except KeyError:
+                f.types[i] = get_constrained_var(typ)
 
 def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.

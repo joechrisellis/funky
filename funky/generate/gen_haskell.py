@@ -27,7 +27,7 @@ class HaskellCodeGenerator(CodeGenerator):
 
             ind = 0
             for i, constructor in enumerate(adt.constructors):
-                params = " ".join(constructor.parameters)
+                params = " ".join(str(x) for x in constructor.parameters)
                 if i == 0:
                     definition = "data {}".format(adt.type_name)
                     ind = len(definition) + 1

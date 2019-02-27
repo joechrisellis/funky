@@ -1,0 +1,36 @@
+module turing_machine where
+
+    newtype Alphabet = One | Zero | Blank
+    newtype Tape = TapeCons Alphabet Tape | TapeEnd
+    newtype Machine = TM Tape Alphabet Tape
+
+    newtype Program = ProgramCons (Machine -> Machine) Program | ProgramEnd
+
+    read (TM _ h _) = h
+    write s (TM ls _ rs) = TM ls s rs
+
+    shift_left (TM (TapeCons l ls) h rs) = TM ls l (TapeCons h rs)
+    shift_left (TM TapeEnd h rs)         = TM TapeEnd Blank (TapeCons h rs)
+
+    shift_right (TM ls h (TapeCons r rs)) = TM (TapeCons h ls) r rs
+    shift_right (TM ls h TapeEnd)         = TM (TapeCons h ls) Blank TapeEnd
+
+    fresh_machine = TM TapeEnd Blank TapeEnd
+
+    instruction_swap (TM ls One rs)  = (TM ls Zero rs)
+    instruction_swap (TM ls Zero rs) = (TM ls One rs)
+    instruction_swap (TM ls x rs)    = (TM ls x rs)
+
+    run ProgramEnd machine         = machine
+    run (ProgramCons i is) machine = run is (i machine)
+
+    main = run instructions fresh_machine
+           where instructions = ProgramCons (write One) (
+                                ProgramCons shift_right (
+                                ProgramCons (write One) (
+                                ProgramCons shift_right (
+                                ProgramCons (write One) (
+                                ProgramCons instruction_swap (
+                                ProgramCons shift_left (
+                                ProgramCons instruction_swap (
+                                ProgramCons shift_left ProgramEnd))))))))

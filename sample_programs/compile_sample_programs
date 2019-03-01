@@ -10,11 +10,9 @@ fi
 COMPILED_DIR=compiled
 FKY_FILES=$(find . -name 'sample_*.fky')
 
-echo $FKY_FILES
-
 mkdir -p $COMPILED_DIR
 for source_file in $FKY_FILES; do
     output_file=$(basename $source_file .fky)
-    funky -o $COMPILED_DIR/$output_file.py --target=python $source_file
-    funky -o $COMPILED_DIR/$output_file.hs --target=haskell $source_file
+    funky -o $COMPILED_DIR/$output_file.py --target=python $source_file $@
+    funky -o $COMPILED_DIR/$output_file.hs --target=haskell $source_file $@
 done

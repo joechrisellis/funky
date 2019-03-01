@@ -1,0 +1,8 @@
+module mutualrecursion where
+
+    even 0 = True
+    even n = odd  (n - 1)
+    odd  0 = False
+    odd  n = even  (n - 1)
+
+    main = odd 15

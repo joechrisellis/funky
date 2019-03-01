@@ -24,8 +24,6 @@ def get_imported_declarations(base_path, imports):
     base_path = os.path.abspath(base_path) # just in case...
     base_dir = os.path.dirname(base_path)
 
-    print("!!", base_path)
-
     decls, imported = [], set([base_path])
     parser = FunkyParser()
     parser.build()
@@ -46,8 +44,6 @@ def get_imported_declarations(base_path, imports):
 
     for imp in imports:
         do_import(base_dir, imp)
-
-    print(imported)
 
     return decls
 

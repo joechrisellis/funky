@@ -1,7 +1,0 @@
-module test where
-
-    import "math.fky"
-
-    double_and_factorial x = factorial (x * 2)
-
-    main = double_and_factorial 2

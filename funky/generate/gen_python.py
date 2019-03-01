@@ -15,6 +15,19 @@ base_runtime = """class ADT:
     def __init__(self, params):
         self.params = params
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return all(x == y for x, y in zip(self.params, other.params))
+
+    def __repr__(self):
+        name = type(self).__name__[3:]
+
+        vars = [repr(x) for x in self.params]
+        return \"({} {})\".format(name, \" \".join(vars))
+
+        return name
+
 class InexhaustivePatternMatchError(Exception):
     pass
 
@@ -84,22 +97,6 @@ class PythonCodeGenerator(CodeGenerator):
                 else:
                     adts.emit("    def __init__(self):".format(", ".join(varnames)))
                     adts.emit("        super().__init__([])")
-
-                adts.newline()
-
-                adts.emit("    def __eq__(self, other):")
-                adts.emit("        if not isinstance(other, self.__class__):")
-                adts.emit("            return False")
-                adts.emit("        return all(x == y for x, y in zip(self.params, other.params))")
-                adts.newline()
-
-                adts.emit("    def __repr__(self):")
-                adts.emit("        name = type(self).__name__[3:]")
-                if varnames:
-                    adts.emit("        vars = [repr(x) for x in self.params]")
-                    adts.emit("        return \"({} {})\".format(name, \" \".join(vars))")
-                else:
-                    adts.emit("        return name")
 
                 adts.newline()
 
@@ -232,7 +229,7 @@ class PythonCodeGenerator(CodeGenerator):
 
     def do_generate_code(self, core_tree, typedefs):
         """Generates Python code from the core tree and type definitions.
-        
+
         :param core_tree: the type-checked core tree from the desugarer
         :param typedefs:  the typedefs from the desugarer
         :return:          the generated Python code as a string

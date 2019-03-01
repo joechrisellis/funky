@@ -76,8 +76,9 @@ def include_imports(filename, parsed, dump_imports):
                          import files relative to the file the user is compiling
     :param parsed:       the parse tree
     """
-    base_path = os.path.dirname(filename)
-    imports_source = get_imported_declarations(base_path, parsed.body.imports)
+    full_filename = os.path.abspath(filename)
+    imports_source = get_imported_declarations(full_filename,
+                                               parsed.body.imports)
 
     # weird syntax, but this is 'extending' from the start of the list.
     # we add the imported declarations to the start of the source file

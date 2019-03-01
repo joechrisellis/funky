@@ -14,19 +14,24 @@ def get_imported_declarations(base_path, imports):
     returned list of declarations can then be prepended to the the declarations
     in the input file. This function will recursively import if required.
     
-    :param base_path str: the file we are importing from -- used for relative
-                          imports
+    :param base_file str: the absolute path to the file we are currently
+                          compiling
     :param imports [str]: a list of imports -- these are relative paths to
                           .fky files
     :return:              a list of declarations from the imported files
     """
 
-    decls, imported = [], set()
+    base_path = os.path.abspath(base_path) # just in case...
+    base_dir = os.path.dirname(base_path)
+
+    print("!!", base_path)
+
+    decls, imported = [], set([base_path])
     parser = FunkyParser()
     parser.build()
 
-    def do_import(base_path, imp):
-        filename = search_for_import(imp, [base_path] + SEARCH_PATHS)
+    def do_import(base_dir, imp):
+        filename = search_for_import(imp, [base_dir] + SEARCH_PATHS)
         if filename in imported: return
         imported.add(filename)
 
@@ -35,12 +40,14 @@ def get_imported_declarations(base_path, imports):
 
         parsed = parser.do_parse(source)
         for sub_imp in parsed.body.imports:
-            new_base_path = os.path.dirname(filename)
-            do_import(new_base_path, sub_imp)
+            new_base_dir = os.path.dirname(filename)
+            do_import(new_base_dir, sub_imp)
         decls.extend(parsed.body.toplevel_declarations)
 
     for imp in imports:
-        do_import(base_path, imp)
+        do_import(base_dir, imp)
+
+    print(imported)
 
     return decls
 

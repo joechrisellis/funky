@@ -26,3 +26,6 @@ module math where
     exp x = e ** x
 
     sqrt = flip (**) 0.5
+
+    even n = n % 2 == 0
+    odd    = not `compose` even

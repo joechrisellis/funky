@@ -2,9 +2,15 @@ module stdlib where
 
     otherwise = True
 
+    # Identity function
+    id x = x
+
     # Boolean negation
     not  True   =  False
     not  False  =  True
 
     # Flipping function application
     flip f x y = f y x
+
+    # Function composition
+    compose f g x = f (g x)

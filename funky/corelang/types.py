@@ -41,6 +41,9 @@ class TypeVariable:
         self._type_name = next(get_typename)
         return self._type_name
 
+    def constraints_str(self):
+        return "[accepts: {}]".format("/".join(self.constraints))
+
     def __str__(self):
         """If we have a concrete type instance, print that.  . Otherwise, use
         our lazy-defined type name.
@@ -50,7 +53,7 @@ class TypeVariable:
         if self.parent_class:
             return self.parent_class
         if self.constraints:
-            return "{} [{}]".format(self.type_name, "/".join(self.constraints))
+            return self.constraints_str()
         return self.type_name
 
 class TypeOperator:

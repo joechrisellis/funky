@@ -20,6 +20,7 @@ from funky.generate import FunkyCodeGenerationError
 
 from funky.ds import Scope
 from funky.corelang.coretree import *
+from funky.corelang.builtins import TYPECLASSES
 
 from funky.parse.funky_parser import FunkyParser
 from funky.parse import fixity
@@ -229,6 +230,14 @@ class FunkyShell(CustomCmd):
     def do_setfix(self, arg):
         """Change the fixity of an operator. E.g.: :setfix leftassoc 8 **"""
         self.setfix_parser.do_parse("setfix {}".format(arg))
+
+    def do_typeclass(self, arg):
+        """Prints a quick summary of a typeclass."""
+        try:
+            typeclass = TYPECLASSES[arg]
+            print(arg, typeclass.constraints_str())
+        except KeyError:
+            print(cred("Typeclass '{}' does not exist.".format(arg)))
 
     def do_reset(self, arg):
         """Reset the environment (clear the current list of bindings)."""

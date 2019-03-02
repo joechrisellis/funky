@@ -1,6 +1,8 @@
 from keyword import kwlist
 import logging
 
+import funky.globals
+
 from funky.corelang.coretree import *
 from funky.corelang.builtins import String
 from funky.generate.gen import CodeGenerator, CodeSection
@@ -220,7 +222,15 @@ class PythonCodeGenerator(CodeGenerator):
         main_section = CodeSection("main method")
 
         main_section.emit("def main():")
-        main_section.emit("print({})".format(main), d=4)
+
+        # are we in the REPL?  if so, we want to show the representation of an
+        # object.  this has the nice benefit of wrapping it in quotes, etc, if
+        # need be
+        if funky.globals.CURRENT_MODE == funky.globals.Mode.REPL:
+            main_section.emit("print(repr({}))".format(main), d=4)
+        else:
+            main_section.emit("print({})".format(main), d=4)
+
         main_section.newline()
         main_section.emit("if __name__ == \"__main__\":")
         main_section.emit("    main()")

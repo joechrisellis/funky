@@ -31,8 +31,14 @@ Stringable.constraints   =  [Float.type_name, Integer.type_name,
 Stringable.parent_class  =  "Stringable"
 
 Num               =  TypeVariable()
-Num.constraints   =  [Float.type_name,  Integer.type_name]
+Num.constraints   =  [Float.type_name, Integer.type_name]
 Num.parent_class  =  "Num"
+
+# hardly important -- kept for easy lookup of typeclasses where needed
+TYPECLASSES = {
+    "Num"         :  Num,
+    "Stringable"  :  Stringable,
+}
 
 BUILTIN_FUNCTIONS = {
     "=="          :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),

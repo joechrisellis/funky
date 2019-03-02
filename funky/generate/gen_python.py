@@ -253,6 +253,7 @@ class PythonCodeGenerator(CodeGenerator):
 
         log.info("Generating {} code...".format(self.lang_name))
         self.program.reset()
+        self.runtime.reset()
 
         header_section = self.code_header()
         base_runtime_section = self.make_base_runtime()

@@ -24,3 +24,6 @@ class Runtime:
             runtime_section.emit(method_code)
             runtime_section.newline()
         return runtime_section
+    
+    def reset(self):
+        self.used_runtime_methods.clear()

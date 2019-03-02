@@ -1,0 +1,14 @@
+module fizzbuzz where
+
+    import "stdlib.fky"
+
+    fizzbuzz n = fizzbuzz_ 1 n
+
+    fizzbuzz_ n m given n == m    = aux n
+                  given otherwise = aux n ++ "\n" ++ fizzbuzz_ (n + 1) m
+                                    where aux x given x % 3 == 0 and x % 5 == 0 = "FizzBuzz"
+                                                given x % 3 == 0                = "Fizz"
+                                                given x % 5 == 0                = "Buzz"
+                                                given otherwise                 = to_str x
+
+    main = fizzbuzz 100

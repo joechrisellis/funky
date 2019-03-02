@@ -1,0 +1,25 @@
+module fizzbuzz_list where
+
+    import "stdlib.fky"
+
+    newtype IList = ICons Integer IList | INil
+    newtype SList = SCons String SList | SNil
+
+    to_fizzbuzz n given n % 3 == 0 and n % 5 == 0 = "FizzBuzz"
+                  given n % 3 == 0                = "Fizz"
+                  given n % 5 == 0                = "Buzz"
+                  given otherwise                 = to_str n
+
+    range m n given m >  n    = INil
+              given m == n    = ICons m INil
+              given otherwise = ICons m (range (m + 1) n)
+    
+    map f INil         = SNil
+    map f (ICons i is) = SCons (f i) (map f is)
+
+    join SNil         delim = ""
+    join (SCons x xs) delim = x ++ delim ++ join xs delim
+
+    fizzbuzz n = map to_fizzbuzz (range 1 n)
+
+    main = join (fizzbuzz 100) "\n"

@@ -25,28 +25,34 @@ python_to_funky = {
     str    :  String,
 }
 
+Stringable               =  TypeVariable()
+Stringable.constraints   =  [Float.type_name, Integer.type_name,
+                             Bool.type_name, String.type_name]
+Stringable.parent_class  =  "Stringable"
+
 Num               =  TypeVariable()
 Num.constraints   =  [Float.type_name,  Integer.type_name]
 Num.parent_class  =  "Num"
 
 BUILTIN_FUNCTIONS = {
-    "=="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
-    "!="      :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
-    "<"       :  FunctionType(Num, FunctionType(Num, Bool)),
-    "<="      :  FunctionType(Num, FunctionType(Num, Bool)),
-    ">"       :  FunctionType(Num, FunctionType(Num, Bool)),
-    ">="      :  FunctionType(Num, FunctionType(Num, Bool)),
-    "**"      :  FunctionType(Num, FunctionType(Num, Num)),
-    "+"       :  FunctionType(Num, FunctionType(Num, Num)),
-    "++"      :  FunctionType(String, FunctionType(String, String)),
-    "-"       :  FunctionType(Num, FunctionType(Num, Num)),
-    "negate"  :  FunctionType(Num, Num),
-    "*"       :  FunctionType(Num, FunctionType(Num, Num)),
-    "/"       :  FunctionType(Num, FunctionType(Num, Num)),
-    "%"       :  FunctionType(Num, FunctionType(Num, Num)),
-    "and"     :  FunctionType(Bool, FunctionType(Bool, Bool)),
-    "or"      :  FunctionType(Bool, FunctionType(Bool, Bool)),
+    "=="          :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
+    "!="          :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
+    "<"           :  FunctionType(Num, FunctionType(Num, Bool)),
+    "<="          :  FunctionType(Num, FunctionType(Num, Bool)),
+    ">"           :  FunctionType(Num, FunctionType(Num, Bool)),
+    ">="          :  FunctionType(Num, FunctionType(Num, Bool)),
+    "**"          :  FunctionType(Num, FunctionType(Num, Num)),
+    "+"           :  FunctionType(Num, FunctionType(Num, Num)),
+    "++"          :  FunctionType(String, FunctionType(String, String)),
+    "-"           :  FunctionType(Num, FunctionType(Num, Num)),
+    "negate"      :  FunctionType(Num, Num),
+    "*"           :  FunctionType(Num, FunctionType(Num, Num)),
+    "/"           :  FunctionType(Num, FunctionType(Num, Num)),
+    "%"           :  FunctionType(Num, FunctionType(Num, Num)),
+    "and"         :  FunctionType(Bool, FunctionType(Bool, Bool)),
+    "or"          :  FunctionType(Bool, FunctionType(Bool, Bool)),
+    "to_str"      :  FunctionType(Stringable, String),
 }
 
-# All of the builtins form the default environment.
+#StringableAll of the builtins form the default environment.
 DEFAULT_ENVIRONMENT = {**BUILTIN_PRIMITIVES, **BUILTIN_FUNCTIONS}

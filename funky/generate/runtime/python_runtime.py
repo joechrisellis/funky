@@ -22,6 +22,7 @@ class PythonRuntime(Runtime):
             "%"       :  self.runtime_mod,
             "and"     :  self.runtime_logical_and,
             "or"      :  self.runtime_logical_or,
+            "to_str"  :  self.runtime_to_str,
         }
     
     @add_to_runtime
@@ -72,10 +73,12 @@ class PythonRuntime(Runtime):
         return """def {}(a):
     return lambda x: a + x""".format(fname), fname
 
+    @add_to_runtime
     def runtime_concat(self):
         fname = "__concat"
         return """def {}(a):
     return lambda x: a + x""".format(fname), fname
+
     @add_to_runtime
     def runtime_sub(self):
         fname = "__sub"
@@ -120,3 +123,9 @@ class PythonRuntime(Runtime):
         fname = "__logical_or"
         return """def {}(a):
     return lambda x: a or x""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_to_str(self):
+        fname = "__to_str"
+        return """def {}(a):
+    return str(a)""".format(fname), fname

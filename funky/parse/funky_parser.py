@@ -395,6 +395,7 @@ class FunkyParser:
         self.lexer = IndentationLexer(self.lexer, dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self,
+                                errorlog=yacc.NullLogger(),
                                 **kwargs)
         log.debug("Parser built.")
 

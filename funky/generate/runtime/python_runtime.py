@@ -6,23 +6,25 @@ class PythonRuntime(Runtime):
         super().__init__()
 
         self.builtins = {
-            "=="      :  self.runtime_eq,
-            "!="      :  self.runtime_neq,
-            "<"       :  self.runtime_less,
-            "<="      :  self.runtime_leq,
-            ">"       :  self.runtime_greater,
-            ">="      :  self.runtime_geq,
-            "**"      :  self.runtime_pow,
-            "+"       :  self.runtime_add,
-            "++"      :  self.runtime_concat,
-            "-"       :  self.runtime_sub,
-            "negate"  :  self.runtime_negate,
-            "*"       :  self.runtime_mul,
-            "/"       :  self.runtime_div,
-            "%"       :  self.runtime_mod,
-            "and"     :  self.runtime_logical_and,
-            "or"      :  self.runtime_logical_or,
-            "to_str"  :  self.runtime_to_str,
+            "=="        :  self.runtime_eq,
+            "!="        :  self.runtime_neq,
+            "<"         :  self.runtime_less,
+            "<="        :  self.runtime_leq,
+            ">"         :  self.runtime_greater,
+            ">="        :  self.runtime_geq,
+            "**"        :  self.runtime_pow,
+            "+"         :  self.runtime_add,
+            "++"        :  self.runtime_concat,
+            "-"         :  self.runtime_sub,
+            "negate"    :  self.runtime_negate,
+            "*"         :  self.runtime_mul,
+            "/"         :  self.runtime_div,
+            "%"         :  self.runtime_mod,
+            "and"       :  self.runtime_logical_and,
+            "or"        :  self.runtime_logical_or,
+            "to_str"    :  self.runtime_to_str,
+            "to_int"    :  self.runtime_to_int,
+            "to_float"  :  self.runtime_to_float,
         }
     
     @add_to_runtime
@@ -129,3 +131,21 @@ class PythonRuntime(Runtime):
         fname = "__to_str"
         return """def {}(a):
     return str(a)""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_to_int(self):
+        fname = "__to_int"
+        return """def {}(a):
+    try:
+        return int(a)
+    except ValueError:
+        raise FunkyRuntimeError("Cannot convert '{{}}' to Integer.".format(a))""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_to_float(self):
+        fname = "__to_float"
+        return """def {}(a):
+    try:
+        return float(a)
+    except ValueError:
+        raise FunkyRuntimeError("Cannot convert '{{}}' to Float.".format(a))""".format(fname), fname

@@ -30,8 +30,13 @@ base_runtime = """class ADT:
 
         return name
 
-class InexhaustivePatternMatchError(Exception):
+class FunkyRuntimeError(Exception):
     pass
+
+class InexhaustivePatternMatchError(FunkyRuntimeError):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 def __match(scrutinee, outcomes, default):
     if isinstance(scrutinee, ADT):

@@ -25,6 +25,7 @@ class PythonRuntime(Runtime):
             "to_str"    :  self.runtime_to_str,
             "to_int"    :  self.runtime_to_int,
             "to_float"  :  self.runtime_to_float,
+            "randint"   :  self.runtime_randint,
         }
     
     @add_to_runtime
@@ -149,3 +150,12 @@ class PythonRuntime(Runtime):
         return float(a)
     except ValueError:
         raise FunkyRuntimeError("Cannot convert '{{}}' to Float.".format(a))""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_randint(self):
+        fname = "__randint"
+        return """
+import random
+def {}(seed):
+    random.seed(seed)
+    return lambda x: lambda y: random.randint(x, y)""".format(fname), fname

@@ -240,7 +240,8 @@ class FunkyShell(CustomCmd):
         import_stmt = self.import_parser.do_parse("import {}".format(arg))
 
         cwd = os.path.abspath(os.getcwd())
-        imports_source = get_imported_declarations(cwd, [import_stmt])
+        imports_source = get_imported_declarations(cwd, [import_stmt],
+                                                   imported=self.imported)
 
         self.add_declarations(imports_source)
 
@@ -259,6 +260,7 @@ class FunkyShell(CustomCmd):
 
     def reset(self):
         """Resets the scope and bindings."""
+        self.imported = set([])
         self.scope = Scope()
 
         # global_types is the collection of user-defined type declarations.

@@ -29,3 +29,9 @@ module math where
 
     even n = n % 2 == 0
     odd    = not `compose` even
+
+    max a b given a >= b    = a
+            given otherwise = b
+
+    min a b given a <= b    = a
+            given otherwise = b

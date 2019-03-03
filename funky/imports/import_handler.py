@@ -8,7 +8,7 @@ from funky.parse.funky_parser import FunkyParser
 
 SEARCH_PATHS = [libs_directory]
 
-def get_imported_declarations(base_path, imports):
+def get_imported_declarations(base_path, imports, imported=None):
     """Given a list of imports and a list of paths to search for them in,
     return a list of declarations containing the imported declarations. The
     returned list of declarations can then be prepended to the the declarations
@@ -21,10 +21,15 @@ def get_imported_declarations(base_path, imports):
     :return:              a list of declarations from the imported files
     """
 
+    if imported is None:
+        imported = set([base_path])
+    else:
+        imported.add(base_path)
+
     base_path = os.path.abspath(base_path) # just in case...
     base_dir = os.path.dirname(base_path)
 
-    decls, imported = [], set([base_path])
+    decls = []
     parser = FunkyParser()
     parser.build()
 

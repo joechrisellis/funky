@@ -72,7 +72,6 @@ BUILTIN_FUNCTIONS = {
     "to_str"      :  FunctionType(Stringable, String),
     "to_int"      :  FunctionType(Intable, Integer),
     "to_float"    :  FunctionType(Floatable, Float),
-    "randint"     :  FunctionType(Integer, FunctionType(Integer, FunctionType(Integer, Integer))),
 }
 
 # All of the builtins form the default environment.

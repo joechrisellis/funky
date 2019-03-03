@@ -1,0 +1,16 @@
+module random where
+
+    # linear congruential generator -- see:
+    # http://en.wikipedia.org/wiki/Linear_congruential_generator
+    lcg a c m seed = (a * seed + c) % m
+
+
+    # initialise our lcg -- these parameters are used by many ANSI C compilers
+    # so are known to be reasonably good
+    rand = lcg 1103515245 12345 (2 ** 31)
+
+    # helper functions
+    randint seed lbound ubound = (rand seed) % (ubound - lbound) + lbound
+
+    randfloat seed = to_float (randint seed 1 big_num) / to_float big_num
+                     where big_num = 2 ** 31

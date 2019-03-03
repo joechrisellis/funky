@@ -1,0 +1,7 @@
+module randomfloat where
+
+    import "random.fky"
+
+    seed = 51780
+
+    main = randfloat seed

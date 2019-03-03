@@ -1,0 +1,10 @@
+module random_sequence where
+
+    import "random.fky"
+
+    seed = 51773
+
+    rand_seq seed 0 = ""
+    rand_seq seed n = to_str (randint seed 20 30) ++ "\n" ++ rand_seq (seed + 1) (n - 1) 
+
+    main = rand_seq seed 10

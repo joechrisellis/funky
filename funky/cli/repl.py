@@ -4,6 +4,7 @@ import argparse
 import cmd
 import copy
 import logging
+import os
 import traceback
 
 from funky._version import __version__
@@ -24,6 +25,7 @@ from funky.corelang.builtins import TYPECLASSES
 
 from funky.parse.funky_parser import FunkyParser
 from funky.parse import fixity
+from funky.imports.import_handler import get_imported_declarations
 from funky.rename.rename import rename, check_scope_for_errors
 from funky.desugar.desugar import do_desugar, desugar, condense_function_binds
 from funky.infer.infer import do_type_inference, infer
@@ -169,6 +171,8 @@ class FunkyShell(CustomCmd):
         self.newtype_parser.build(start="TYPE_DECLARATION")
         self.setfix_parser = FunkyParser()
         self.setfix_parser.build(start="FIXITY_DECLARATION")
+        self.import_parser = FunkyParser()
+        self.import_parser.build(start="IMPORT_DECLARATION")
         self.py_generator = PythonCodeGenerator()
         log.debug("Done creating parsers.")
 
@@ -189,7 +193,7 @@ class FunkyShell(CustomCmd):
         except KeyboardInterrupt:
             print("^C\n{}".format(cred("Cancelled block.")))
             return
-        self.add_declarations(lines)
+        self.parse_and_add_declarations(lines)
 
     @report_errors
     def do_type(self, arg):
@@ -230,6 +234,15 @@ class FunkyShell(CustomCmd):
     def do_setfix(self, arg):
         """Change the fixity of an operator. E.g.: :setfix leftassoc 8 **"""
         self.setfix_parser.do_parse("setfix {}".format(arg))
+
+    @report_errors
+    def do_import(self, arg):
+        import_stmt = self.import_parser.do_parse("import {}".format(arg))
+
+        cwd = os.path.abspath(os.getcwd())
+        imports_source = get_imported_declarations(cwd, [import_stmt])
+
+        self.add_declarations(imports_source)
 
     def do_typeclass(self, arg):
         """Prints a quick summary of a typeclass."""
@@ -283,17 +296,12 @@ class FunkyShell(CustomCmd):
                                                            self.global_types)
         return target_source
 
-    def add_declarations(self, lines):
+    def parse_and_add_declarations(self, lines):
         """Add a new block of declarations to global_let.
         
         :param lines: the Funky source code lines in the new block of
                       declarations
         """
-
-        # copy the global let -- we work with this until we can be confident
-        # that the given lines don't have syntax/type errors, etc.
-        new_global_let = copy.deepcopy(self.global_let)
-
         # shoehorn the lines into a 'fake' where clause so that they can
         # be parsed correctly.
         parsed = self.decl_parser.do_parse("func = 0 where\n{}".format(
@@ -302,6 +310,13 @@ class FunkyShell(CustomCmd):
         # extract the parsed declarations back out from our 'fake' where
         # clause.
         declarations = parsed[0].expression.declarations
+
+        self.add_declarations(declarations)
+
+    def add_declarations(self, declarations):
+        # copy the global let -- we work with this until we can be confident
+        # that the given lines don't have syntax/type errors, etc.
+        new_global_let = copy.deepcopy(self.global_let)
 
         # rename and desugar each declaration one-by-one, and append each to
         # the (new_) global_let binds
@@ -351,7 +366,7 @@ class FunkyShell(CustomCmd):
                 print(cred(str(e)))
         except FunkyParsingError:
             # if that didn't work, try treating as a declaration
-            self.add_declarations([arg])
+            self.parse_and_add_declarations([arg])
 
     def emptyline(self):
         """Empty lines in the REPL do nothing."""

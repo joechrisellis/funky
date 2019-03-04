@@ -16,7 +16,7 @@ from funky.util import get_registry_function, global_counter
 from funky.corelang.coretree import *
 from funky.corelang.sourcetree import *
 from funky.corelang.types import *
-from funky.rename.rename import get_parameter_name
+from funky.rename.rename import get_parameter_name, MAIN
 
 from funky.desugar.maranget import get_match_tree
 
@@ -58,7 +58,7 @@ def program_body_desugar(node):
 
     main_expr = None
     for i, bind in enumerate(toplevel_declarations):
-        if bind.identifier == "main":
+        if bind.identifier == MAIN:
             main_expr = bind.bindee
             toplevel_declarations.pop(i)
             break

@@ -21,6 +21,7 @@ from funky.rename import FunkyRenamingError
 log = logging.getLogger(__name__)
 
 get_unique_varname = lambda: "v" + str(global_counter())
+MAIN = "_main"
 
 def get_parameter_name(*args):
     """Gets an underscore-separated parameter name."""
@@ -224,7 +225,7 @@ def parameter_rename(node, scope, fname=None, index=None, localizer=None,
 
 
     if is_main:
-        newid = "main"
+        newid = MAIN
     elif scope.is_pending_definition(node.name):
         newid = scope.get_pending_name(node.name)
         if node.name in scope.pending_definition:

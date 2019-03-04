@@ -25,6 +25,7 @@ class PythonRuntime(Runtime):
             "to_str"    :  self.runtime_to_str,
             "to_int"    :  self.runtime_to_int,
             "to_float"  :  self.runtime_to_float,
+            "slice"     :  self.runtime_slice,
         }
     
     @add_to_runtime
@@ -149,3 +150,9 @@ class PythonRuntime(Runtime):
         return float(a)
     except ValueError:
         raise FunkyRuntimeError("Cannot convert '{{}}' to Float.".format(a))""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_slice(self):
+        fname = "__slice"
+        return """def {}(a):
+    return lambda b: lambda s: s[a:b]""".format(fname), fname

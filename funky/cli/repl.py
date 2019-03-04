@@ -14,6 +14,7 @@ from funky.cli.verbosity import set_loglevel
 from funky.util.color import *
 
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
+from funky.imports import FunkyImportError
 from funky.rename import FunkyRenamingError
 from funky.desugar import FunkyDesugarError
 from funky.infer import FunkyTypeError
@@ -26,7 +27,7 @@ from funky.corelang.builtins import TYPECLASSES
 from funky.parse.funky_parser import FunkyParser
 from funky.parse import fixity
 from funky.imports.import_handler import get_imported_declarations
-from funky.rename.rename import rename, check_scope_for_errors
+from funky.rename.rename import rename, check_scope_for_errors, MAIN
 from funky.desugar.desugar import do_desugar, desugar, condense_function_binds, \
                                   split_typedefs_and_code
 from funky.infer.infer import do_type_inference, infer
@@ -129,6 +130,8 @@ def report_errors(f):
             return f(self, *args, **kwargs)
         except FunkyParsingError as ex:
             e, err = ex, "Failed to parse"
+        except FunkyImportError as ex:
+            e, err = ex, "Failed to import"
         except FunkyRenamingError as ex:
             e, err = ex, "Renaming error"
             self.scope.pending_definition = {}
@@ -220,9 +223,8 @@ class FunkyShell(CustomCmd):
     @report_errors
     def do_newtype(self, arg):
         """Create an ADT. E.g.: :newtype List = Cons Integer List | Nil"""
-        stmt = self.newtype_parser.do_parse("newtype {}".format(arg))
-        rename(stmt, self.scope)
-        self.add_typedefs([typedef])
+        parsed = self.newtype_parser.do_parse("newtype {}".format(arg))
+        self.add_typedefs([parsed])
 
     @report_errors
     def do_show(self, arg): 
@@ -245,8 +247,6 @@ class FunkyShell(CustomCmd):
 
         typedefs, code = split_typedefs_and_code(imports_source)
 
-        for typedef in typedefs:
-            rename(typedef, self.scope)
         self.add_typedefs(typedefs)
         self.add_declarations(code)
 
@@ -322,6 +322,7 @@ class FunkyShell(CustomCmd):
 
     def add_typedefs(self, typedefs):
         for typedef in typedefs:
+            rename(typedef, self.scope)
             typedef = desugar(typedef)
             self.global_types.append(typedef)
 

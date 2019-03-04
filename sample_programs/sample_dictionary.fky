@@ -1,0 +1,13 @@
+module dictionary where
+
+    import "dict.fky"
+
+    newtype Maybe = Just String | Nothing
+
+    main = dict "asd"
+           where dict = add_pair    "John"     (Just "Smith")    (
+                        add_pair    "George"   (Just "Michael")  (
+                        add_pair    "Pete"     (Just "Wentz")    (
+                        add_pair    "Michael"  (Just "Jackson")  (
+                        empty_dict Nothing
+                        ))))

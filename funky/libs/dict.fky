@@ -1,0 +1,14 @@
+# Module providing basic dictionary functionality. Dictionaries are implemented as
+# first-class functions.
+
+module dict where
+
+    import "stdlib.fky"
+
+    # An empty dict is a function returning some default value
+    empty_dict default = const default
+
+    # When we add a pair to a dict, we wrap the existing dict function in a new
+    # dict function that checks the corresponding key. If it matches, we return
+    # `value`. Otherwise, we delegate to the nested dict.
+    add_pair key value dict = lambda k -> value if k == key else dict k

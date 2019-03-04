@@ -5,6 +5,9 @@ module stdlib where
     # Identity function
     id x = x
 
+    # Constant function
+    const x = lambda _ -> x
+
     # Boolean negation
     not  True   =  False
     not  False  =  True

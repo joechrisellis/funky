@@ -1,0 +1,24 @@
+module sample_set where
+
+    import "dict.fky"
+
+    # we use a dictionary to represent a set of elements.
+    empty_set = empty_dict False
+    add elem set = add_pair elem True set
+
+    newtype List = Cons Integer List | Nil
+
+    has_duplicates list = aux list empty_set
+                          where
+                            aux Nil seen         = False
+                            aux (Cons x xs) seen given seen x = True
+                                                 given otherwise = aux xs (add x seen)
+
+    main = "has_duplicates my_list1 is " ++ to_str (has_duplicates my_list1)
+           ++ "\n" ++
+           "has_duplicates my_list2 is " ++ to_str (has_duplicates my_list2)
+           ++ "\n" ++
+           "has_duplicates my_list3 is " ++ to_str (has_duplicates my_list3)
+           where my_list1 = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+                 my_list2 = Cons 1 (Cons 2 (Cons 3 Nil))
+                 my_list3 = Cons 2 (Cons 1 (Cons 6 (Cons 1 Nil)))

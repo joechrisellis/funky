@@ -27,7 +27,8 @@ from funky.parse.funky_parser import FunkyParser
 from funky.parse import fixity
 from funky.imports.import_handler import get_imported_declarations
 from funky.rename.rename import rename, check_scope_for_errors
-from funky.desugar.desugar import do_desugar, desugar, condense_function_binds
+from funky.desugar.desugar import do_desugar, desugar, condense_function_binds, \
+                                  split_typedefs_and_code
 from funky.infer.infer import do_type_inference, infer
 from funky.generate.gen_python import PythonCodeGenerator
 
@@ -181,7 +182,7 @@ class FunkyShell(CustomCmd):
     @report_errors
     def do_begin_block(self, arg):
         """Start a block of definitions."""
-        block_prompt = cyellow("block > ")
+        block_prompt = cyellow("block>  ")
         end_block = ":end_block" # <- type this to end the block
         lines = []
         try:
@@ -221,11 +222,10 @@ class FunkyShell(CustomCmd):
         """Create an ADT. E.g.: :newtype List = Cons Integer List | Nil"""
         stmt = self.newtype_parser.do_parse("newtype {}".format(arg))
         rename(stmt, self.scope)
-        typedef = desugar(stmt)
-        self.global_types.append(typedef)
+        self.add_typedefs([typedef])
 
     @report_errors
-    def do_show(self, arg):
+    def do_show(self, arg): 
         """Show the compiled code for an expression. E.g.: :show 1 + 1"""
         code = self.get_compiled(arg)
         print(code)
@@ -243,7 +243,12 @@ class FunkyShell(CustomCmd):
         imports_source = get_imported_declarations(cwd, [import_stmt],
                                                    imported=self.imported)
 
-        self.add_declarations(imports_source)
+        typedefs, code = split_typedefs_and_code(imports_source)
+
+        for typedef in typedefs:
+            rename(typedef, self.scope)
+        self.add_typedefs(typedefs)
+        self.add_declarations(code)
 
     def do_typeclass(self, arg):
         """Prints a quick summary of a typeclass."""
@@ -314,6 +319,11 @@ class FunkyShell(CustomCmd):
         declarations = parsed[0].expression.declarations
 
         self.add_declarations(declarations)
+
+    def add_typedefs(self, typedefs):
+        for typedef in typedefs:
+            typedef = desugar(typedef)
+            self.global_types.append(typedef)
 
     def add_declarations(self, declarations):
         # copy the global let -- we work with this until we can be confident
@@ -388,8 +398,8 @@ def main():
     parser.add_argument('-e', '--show-exception-traces', action='store_true',
                         default=False,
                         help="Show full exception traces.")
-    parser.add_argument("files", type=argparse.FileType("r"),
-                        nargs="?",
+    parser.add_argument("files", type=str,
+                        nargs="*",
                         help="Load these programs into the REPL.")
 
     args = parser.parse_args()
@@ -401,6 +411,8 @@ def main():
 
     log.debug("Initialising REPL-shell...")
     shell = FunkyShell()
+    for imp_file in args.files:
+        shell.do_import("\"{}\"".format(imp_file)) # wrap in quotes to match import syntax
     log.debug("Done initialising REPL-shell...")
 
     log.debug("Entering REPL loop...")

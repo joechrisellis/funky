@@ -26,6 +26,20 @@ log = logging.getLogger(__name__)
 
 get_unique_varname = lambda: "v" + str(global_counter())
 
+def split_typedefs_and_code(toplevel_declarations):
+    """Separates type definitions from actual code.
+    
+    :param toplevel_declarations: declarations made at the toplevel
+    :return:                      a tuple (typedefs, code)
+    """
+    # separate type definitions from code
+    typedefs = [t for t in toplevel_declarations
+                if isinstance(t, NewTypeStatement)]
+    code     = [t for t in toplevel_declarations
+                if not (isinstance(t, NewTypeStatement))]
+
+    return typedefs, code
+
 desugar = get_registry_function()
 
 @desugar.register(Module)
@@ -36,12 +50,8 @@ def module_desugar(node):
 def program_body_desugar(node):
     # TODO: imports should already be in the parse tree by now, so no need to
     #       do anything with imports.
-    
-    # separate type definitions from code
-    typedefs = [t for t in node.toplevel_declarations
-                if isinstance(t, NewTypeStatement)]
-    code     = [t for t in node.toplevel_declarations
-                if not (isinstance(t, NewTypeStatement))]
+
+    typedefs, code = split_typedefs_and_code(node.toplevel_declarations)
 
     typedefs = [desugar(t) for t in typedefs]
     toplevel_declarations = [desugar(t) for t in code]

@@ -27,7 +27,10 @@ def get_imported_declarations(base_path, imports, imported=None):
         imported.add(base_path)
 
     base_path = os.path.abspath(base_path) # just in case...
-    base_dir = os.path.dirname(base_path)
+    if not os.path.isdir(base_path):
+        base_dir = os.path.dirname(base_path)
+    else:
+        base_dir = base_path
 
     decls = []
     parser = FunkyParser()

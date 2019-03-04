@@ -72,7 +72,8 @@ BUILTIN_FUNCTIONS = {
     "to_str"      :  FunctionType(Stringable, String),
     "to_int"      :  FunctionType(Intable, Integer),
     "to_float"    :  FunctionType(Floatable, Float),
-    "slice"       :  FunctionType(Integer, FunctionType(Integer, FunctionType(String, String))),
+    "slice_from"  :  FunctionType(Integer, FunctionType(String, String)),
+    "slice_to"    :  FunctionType(Integer, FunctionType(String, String)),
 }
 
 # All of the builtins form the default environment.

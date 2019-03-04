@@ -6,26 +6,27 @@ class PythonRuntime(Runtime):
         super().__init__()
 
         self.builtins = {
-            "=="        :  self.runtime_eq,
-            "!="        :  self.runtime_neq,
-            "<"         :  self.runtime_less,
-            "<="        :  self.runtime_leq,
-            ">"         :  self.runtime_greater,
-            ">="        :  self.runtime_geq,
-            "**"        :  self.runtime_pow,
-            "+"         :  self.runtime_add,
-            "++"        :  self.runtime_concat,
-            "-"         :  self.runtime_sub,
-            "negate"    :  self.runtime_negate,
-            "*"         :  self.runtime_mul,
-            "/"         :  self.runtime_div,
-            "%"         :  self.runtime_mod,
-            "and"       :  self.runtime_logical_and,
-            "or"        :  self.runtime_logical_or,
-            "to_str"    :  self.runtime_to_str,
-            "to_int"    :  self.runtime_to_int,
-            "to_float"  :  self.runtime_to_float,
-            "slice"     :  self.runtime_slice,
+            "=="          :  self.runtime_eq,
+            "!="          :  self.runtime_neq,
+            "<"           :  self.runtime_less,
+            "<="          :  self.runtime_leq,
+            ">"           :  self.runtime_greater,
+            ">="          :  self.runtime_geq,
+            "**"          :  self.runtime_pow,
+            "+"           :  self.runtime_add,
+            "++"          :  self.runtime_concat,
+            "-"           :  self.runtime_sub,
+            "negate"      :  self.runtime_negate,
+            "*"           :  self.runtime_mul,
+            "/"           :  self.runtime_div,
+            "%"           :  self.runtime_mod,
+            "and"         :  self.runtime_logical_and,
+            "or"          :  self.runtime_logical_or,
+            "to_str"      :  self.runtime_to_str,
+            "to_int"      :  self.runtime_to_int,
+            "to_float"    :  self.runtime_to_float,
+            "slice_from"  :  self.runtime_slice_from,
+            "slice_to"    :  self.runtime_slice_to,
         }
     
     @add_to_runtime
@@ -152,7 +153,13 @@ class PythonRuntime(Runtime):
         raise FunkyRuntimeError("Cannot convert '{{}}' to Float.".format(a))""".format(fname), fname
 
     @add_to_runtime
-    def runtime_slice(self):
-        fname = "__slice"
+    def runtime_slice_from(self):
+        fname = "__slice_from"
         return """def {}(a):
-    return lambda b: lambda s: s[a:b]""".format(fname), fname
+    return lambda s: s[a:]""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_slice_to(self):
+        fname = "__slice_to"
+        return """def {}(a):
+    return lambda s: s[:a]""".format(fname), fname

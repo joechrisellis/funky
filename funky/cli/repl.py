@@ -331,6 +331,8 @@ class FunkyShell(CustomCmd):
         # that the given lines don't have syntax/type errors, etc.
         new_global_let = copy.deepcopy(self.global_let)
 
+        new_global_let.expr = CoreLiteral(0)
+
         # rename and desugar each declaration one-by-one, and append each to
         # the (new_) global_let binds
         for decl in declarations:

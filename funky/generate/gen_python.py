@@ -250,6 +250,7 @@ class PythonCodeGenerator(CodeGenerator):
         :return:          the generated Python code as a string
         :rtype:           str
         """
+        super().do_generate_code(core_tree, typedefs)
 
         log.info("Generating {} code...".format(self.lang_name))
         self.program.reset()

@@ -8,8 +8,8 @@ verbosity_2_loglevel = {
     1   :  logging.INFO,     # <- -vv
     2   :  logging.DEBUG,    # <- -vvv
 }
-least_verbose  =  verbosity_2_loglevel[min(verbosity_2_loglevel)]
-most_verbose   =  verbosity_2_loglevel[max(verbosity_2_loglevel)]
+least_verbose_key  =  min(verbosity_2_loglevel)
+most_verbose_key   =  max(verbosity_2_loglevel)
 
 def set_loglevel(verbosity):
     """Sets the loglevel of the logger based on a verbosity number. I.e.
@@ -22,5 +22,6 @@ def set_loglevel(verbosity):
     try:
         desired_loglevel = verbosity_2_loglevel[verbosity]
     except KeyError:
-        desired_loglevel = max(least_verbose, min(verbosity, most_verbose))
+        verbosity = max(least_verbose_key, min(verbosity, most_verbose_key))
+        desired_loglevel = verbosity_2_loglevel[verbosity]
     logging.getLogger().setLevel(desired_loglevel)

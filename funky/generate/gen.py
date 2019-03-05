@@ -1,3 +1,5 @@
+from funky.generate import FunkyCodeGenerationError
+from funky.corelang.types import is_function
 import datetime
 
 class CodeGenerator:
@@ -31,7 +33,15 @@ class CodeGenerator:
         :param core_tree CoreNode:            the core tree to compile
         :param typedefs [CoreTypeDefinition]: a list of type definitions
         """
-        raise NotImplementedError("Code generation not defined for this target.")
+
+        # if the type of the core tree is a function, we cannot output it.
+        # technically, languages like Python can output a representation of it.
+        # but languages like Haskell can't, so we should prevent it ever
+        # happening for consistency.
+        if is_function(core_tree.inferred_type):
+            raise FunkyCodeGenerationError("Output type is a function. "
+                                           "Cannot generate code to output "
+                                           "function types.")
 
 class Program:
 

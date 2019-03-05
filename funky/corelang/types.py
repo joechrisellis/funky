@@ -10,6 +10,25 @@ def typename_generator():
 
 get_typename = typename_generator()
 
+def is_function(t):
+    """Checks if a given TypeVariable/TypeOperator is a function.
+    
+    :param t: the TypeVariable or TypeOperator to check
+    :return:  True if t is a function, False otherwise.
+    :rtype:   bool
+    """
+    if isinstance(t, TypeVariable):
+        if t.instance:
+            return is_function(t.instance)
+        return False
+    elif isinstance(t, FunctionType):
+        return True
+    elif isinstance(t, TypeOperator):
+        return t.type_name == "->"
+    else:
+        raise ValueError("is_function input is not TypeVariable or "
+                         "TypeOperator.")
+
 class TypeVariable:
     """A type variable. In type inference, this is used as a placeholder for a
     to-be-discovered type, or for parametric polymorphism.

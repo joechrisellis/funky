@@ -381,5 +381,6 @@ def do_type_inference(core_tree, typedefs):
         create_type(typedef, ctx)
 
     infer(core_tree, ctx, non_generic)
+
     log.info("Completed type inference.")
     log.info("The program has output type {}.".format(core_tree.inferred_type))

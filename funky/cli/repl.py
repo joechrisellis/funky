@@ -191,9 +191,10 @@ class FunkyShell(CustomCmd):
         try:
             while True:
                 inp = input(block_prompt)
-                if inp == end_block:
-                    break
-                lines.append(" " + inp)
+                if inp:
+                    if inp == end_block:
+                        break
+                    lines.append(" " + inp)
         except KeyboardInterrupt:
             print("^C\n{}".format(cred("Cancelled block.")))
             return

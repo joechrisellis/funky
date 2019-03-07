@@ -73,7 +73,7 @@ def infer_let(node, ctx, non_generic):
         for bind in group:
             new_type = TypeVariable()
             new_ctx[bind.identifier] = new_type
-            new_non_generic.add(new_type)
+            # new_non_generic.add(new_type)
             types.append(new_type)
 
         # then, for each bind and its type, infer the type and unify it.

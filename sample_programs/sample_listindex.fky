@@ -1,0 +1,15 @@
+module listindex where
+
+    import "stdlib.fky"
+
+    newtype List = Cons Integer List | Nil
+    newtype Maybe = Just Integer | Nothing
+
+    index e Nil = Nothing
+    index e (Cons x xs) given e == x    = Just 0
+                        given otherwise = match index e xs of
+                                            Just x -> Just (x + 1)
+                                            x      -> x
+
+    main = index 7 my_list
+           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

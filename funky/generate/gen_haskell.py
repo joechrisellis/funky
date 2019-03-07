@@ -20,23 +20,38 @@ class HaskellCodeGenerator(CodeGenerator):
         # we do not convert them to lowercase when compiling CoreVariables.
         self.constructor_names = set()
 
+    ADT_PREFIX = "ADT"
     def make_adts(self, typedefs):
         adts = CodeSection("algebraic data types")
+
+        adt_names = set()
         for typedef in typedefs:
             adt = typedef.typ
+            adt_names.add(adt.type_name)
 
             ind = 0
             for i, constructor in enumerate(adt.constructors):
-                params = " ".join(str(x) for x in constructor.parameters)
+                
+                params = []
+                for p in constructor.parameters:
+                    ident = str(p)
+                    if p in adt_names:
+                        ident = "{}{}".format(self.ADT_PREFIX, ident)
+                    params.append(ident)
+                params = " ".join(params)
+
                 if i == 0:
-                    definition = "data {}".format(adt.type_name)
+                    definition = "data {}{}".format(self.ADT_PREFIX, adt.type_name)
                     ind = len(definition) + 1
-                    line = "{} = {} {}".format(definition,
+                    line = "{} = {}{} {}".format(definition,
+                                               self.ADT_PREFIX,
                                                constructor.identifier,
                                                params)
                     adts.emit(line)
                 else:
-                    line = "| {} {}".format(constructor.identifier, params)
+                    line = "| {}{} {}".format(self.ADT_PREFIX,
+                                              constructor.identifier,
+                                              params)
                     adts.emit(line, d=ind)
                 self.constructor_names.add(constructor.identifier)
 
@@ -55,7 +70,7 @@ class HaskellCodeGenerator(CodeGenerator):
     @hs_compile.register(CoreCons)
     def hs_compile_cons(self, node):
         params = " ".join(self.hs_compile(p) for p in node.parameters)
-        return "{} {}".format(node.constructor, params)
+        return "{}{} {}".format(self.ADT_PREFIX, node.constructor, params)
 
     @hs_compile.register(CoreVariable)
     def hs_compile_variable(self, node):
@@ -65,6 +80,8 @@ class HaskellCodeGenerator(CodeGenerator):
         except KeyError:
             if node.identifier not in self.constructor_names:
                 ident = ident.lower()
+            else:
+                ident = "{}{}".format(self.ADT_PREFIX, ident)
             return ident
 
     @hs_compile.register(CoreLiteral)

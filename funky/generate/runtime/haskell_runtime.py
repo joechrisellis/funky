@@ -1,4 +1,4 @@
-from funky.generate.runtime import Runtime
+from funky.generate.runtime import Runtime, add_to_runtime
 
 class HaskellRuntime(Runtime):
 
@@ -6,22 +6,27 @@ class HaskellRuntime(Runtime):
         super().__init__()
 
         self.builtins = {
-            "=="      :  self.runtime_eq,
-            "!="      :  self.runtime_neq,
-            "<"       :  self.runtime_less,
-            "<="      :  self.runtime_leq,
-            ">"       :  self.runtime_greater,
-            ">="      :  self.runtime_geq,
-            "**"      :  self.runtime_pow,
-            "+"       :  self.runtime_add,
-            "++"      :  self.runtime_concat,
-            "-"       :  self.runtime_sub,
-            "negate"  :  self.runtime_negate,
-            "*"       :  self.runtime_mul,
-            "/"       :  self.runtime_div,
-            "%"       :  self.runtime_mod,
-            "and"     :  self.runtime_logical_and,
-            "or"      :  self.runtime_logical_or,
+            "=="          :  self.runtime_eq,
+            "!="          :  self.runtime_neq,
+            "<"           :  self.runtime_less,
+            "<="          :  self.runtime_leq,
+            ">"           :  self.runtime_greater,
+            ">="          :  self.runtime_geq,
+            "**"          :  self.runtime_pow,
+            "+"           :  self.runtime_add,
+            "++"          :  self.runtime_concat,
+            "-"           :  self.runtime_sub,
+            "negate"      :  self.runtime_negate,
+            "*"           :  self.runtime_mul,
+            "/"           :  self.runtime_div,
+            "%"           :  self.runtime_mod,
+            "and"         :  self.runtime_logical_and,
+            "or"          :  self.runtime_logical_or,
+            "to_str"      :  self.runtime_to_str,
+            "to_int"      :  self.runtime_to_int,
+            "to_float"    :  self.runtime_to_float,
+            "slice_from"  :  self.runtime_slice_from,
+            "slice_to"    :  self.runtime_slice_to,
         }
     
     def runtime_eq(self):
@@ -71,3 +76,30 @@ class HaskellRuntime(Runtime):
 
     def runtime_logical_or(self):
         return "||"
+
+    def runtime_to_str(self):
+        return "show"
+
+    @add_to_runtime
+    def runtime_to_int(self):
+        fname = "__to_int"
+        return """to_int x = read (show x) :: Integer""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_to_float(self):
+        fname = "__to_float"
+        return """def {}(a):
+    try:
+        return float(a)
+    except ValueError:
+        raise FunkyRuntimeError("Cannot convert '{{}}' to Float.".format(a))""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_slice_from(self):
+        fname = "runtime_slice_from"
+        return """{} n xs = drop n xs""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_slice_to(self):
+        fname = "runtime_slice_to"
+        return """{} n xs = take n xs""".format(fname), fname

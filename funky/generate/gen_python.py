@@ -271,7 +271,9 @@ class PythonCodeGenerator(CodeGenerator):
         main_section = self.make_main(main)
         log.info("Done.")
 
+        log.info("Creating used runtime section...")
         used_runtime_section = self.make_used_runtime()
+        log.info("Done.")
 
         for i, section in enumerate([header_section, base_runtime_section,
                                      used_runtime_section, adts_section,

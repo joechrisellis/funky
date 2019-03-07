@@ -60,6 +60,9 @@ class HaskellCodeGenerator(CodeGenerator):
 
         return adts
 
+    def make_used_runtime(self):
+        return self.runtime.get_runtime()
+
     hs_compile = get_registry_function(registered_index=1) # 1 to skip self
 
     @hs_compile.register(CoreBind)
@@ -149,6 +152,7 @@ class HaskellCodeGenerator(CodeGenerator):
 
         log.info("Generating {} code...".format(self.lang_name))
         self.program.reset()
+        self.runtime.reset()
 
         header_section = self.code_header()
 
@@ -164,8 +168,12 @@ class HaskellCodeGenerator(CodeGenerator):
         main_section = self.make_main_section(core_tree.expr)
         log.info("Done.")
 
-        for i, section in enumerate([header_section, adts, core_section,
-                                     main_section]):
+        log.info("Creating used runtime section...")
+        used_runtime_section = self.make_used_runtime()
+        log.info("Done.")
+
+        for i, section in enumerate([header_section, used_runtime_section,
+                                     adts, core_section, main_section]):
             self.program.add_section(section, i)
 
         log.info("Done generating {} code.".format(self.lang_name))

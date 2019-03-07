@@ -178,8 +178,14 @@ def pattern_definition_rename(node, scope):
 
 @rename.register(Alternative)
 def alternative_rename(node, scope):
-    rename(node.pattern, scope)
-    rename(node.expression, scope)
+    # alternatives in a match statement are able to override previously named
+    # variables implicitly if their pattern re-uses a name that has already
+    # been defined. The name would now refer to a more local item.  Therefore,
+    # we have to create a temporary scope to silence errors relating to name
+    # reuse.
+    tmp_scope = Scope(parent=scope)
+    rename(node.pattern, tmp_scope)
+    rename(node.expression, tmp_scope)
 
 @rename.register(Lambda)
 def lambda_rename(node, scope):

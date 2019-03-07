@@ -272,34 +272,28 @@ def operator_prefix(s):
     OP_PREFIX = "OP_"
     return "{}{}".format(OP_PREFIX, s)
 
-# Used to map constructors to their parent class. For instance:
-# newtype List = Cons Integer List | Nil
-# Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
-# prefix.
-typeclass_mapping = {}
-
-def get_constrained_var(typ):
+def get_constrained_var(typ, typeclass_mapping):
     t = TypeVariable()
     t.constraints = typeclass_mapping[typ]
     t.parent_class = typ
     return t
 
-def replace_strings(f, ctx):
+def replace_strings(f, ctx, typeclass_mapping):
     if isinstance(f.input_type, FunctionType):
-        replace_strings(f.input_type, ctx)
+        replace_strings(f.input_type, ctx, typeclass_mapping)
     elif isinstance(f.input_type, str):
         try:
             f.input_type = ctx[f.input_type]
         except KeyError:
-            f.input_type = get_constrained_var(f.input_type)
+            f.input_type = get_constrained_var(f.input_type, typeclass_mapping)
 
     if isinstance(f.output_type, FunctionType):
-        replace_strings(f.output_type, ctx)
+        replace_strings(f.output_type, ctx, typeclass_mapping)
     elif isinstance(f.output_type, str):
         try:
             f.output_type = ctx[f.output_type]
         except KeyError:
-            f.output_type = get_constrained_var(f.output_type)
+            f.output_type = get_constrained_var(f.output_type, typeclass_mapping)
 
     if isinstance(f, FunctionType):
         for i, typ in enumerate(f.types):
@@ -307,7 +301,7 @@ def replace_strings(f, ctx):
             try:
                 f.types[i] = ctx[typ]
             except KeyError:
-                f.types[i] = get_constrained_var(typ)
+                f.types[i] = get_constrained_var(typ, typeclass_mapping)
 
 def create_algebraic_data_structure(adt, ctx):
     """Creates an algebraic data structure within the given context.
@@ -324,6 +318,12 @@ def create_algebraic_data_structure(adt, ctx):
     :param adt: the algebraic data type object
     :param ctx: the context to create the algebraic data structure in
     """
+
+    # Used to map constructors to their parent class. For instance:
+    # newtype List = Cons Integer List | Nil
+    # Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator
+    # prefix.
+    typeclass_mapping = {}
 
     log.debug("Creating algebraic data type for {}...".format(adt))
 
@@ -348,7 +348,7 @@ def create_algebraic_data_structure(adt, ctx):
             if p in ctx:
                 unify(t, ctx[p])
             elif isinstance(p, FunctionType):
-                replace_strings(p, ctx)
+                replace_strings(p, ctx, typeclass_mapping)
                 unify(t, p)
             elif p not in typeclass_mapping:
                 raise FunkyTypeError("Type {} not defined.".format(p))

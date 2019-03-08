@@ -325,7 +325,6 @@ def replace_strings(f, ctx):
     :param f:   the function type to replace strings within
     :param ctx: typing context
     """
-
     if isinstance(f.input_type, FunctionType):
         replace_strings(f.input_type, ctx)
     elif isinstance(f.input_type, str):
@@ -363,7 +362,7 @@ def create_algebraic_data_structure(adt, ctx):
     :param ctx: the context to create the algebraic data structure in
     """
 
-    log.debug("Creating algebraic data type for {}...".format(adt))
+    log.debug("Creating algebraic data type for {}...".format(adt.type_name))
 
     for constructor in adt.constructors:
         prefixed = operator_prefix(constructor.identifier)

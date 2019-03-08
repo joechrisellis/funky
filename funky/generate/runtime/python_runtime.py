@@ -29,6 +29,7 @@ class PythonRuntime(Runtime):
             "slice_to"    :  self.runtime_slice_to,
 
             "error"       :  self.runtime_error,
+            "undefined"   :  self.runtime_undefined,
         }
     
     @add_to_runtime
@@ -171,3 +172,9 @@ class PythonRuntime(Runtime):
         fname = "__error"
         return """def {}(msg):
     raise FunkyRuntimeError(msg)""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_undefined(self):
+        fname = "__undefined"
+        return """def {}():
+    raise FunkyRuntimeError("undefined")""".format(fname), fname + "()"

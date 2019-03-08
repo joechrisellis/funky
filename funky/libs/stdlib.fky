@@ -1,6 +1,5 @@
 module stdlib where
 
-    undefined = error "undefined"
     otherwise = True
 
     # Identity function

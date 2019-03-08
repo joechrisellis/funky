@@ -85,7 +85,19 @@ class TypeOperator:
         self.types         =  types
         self.parent_class  =  None
 
+    def is_string_free(self):
+        for typ in self.types:
+            if isinstance(typ, str):
+                return False
+            elif isinstance(typ, TypeOperator):
+                if not typ.is_string_free():
+                    return False
+        return True
+
     def __str__(self):
+        if not self.is_string_free():
+            return "-- preprocessing required --"
+
         if self.parent_class:
             return self.parent_class
         elif len(self.types) == 0: # 0-ary constructor
@@ -108,6 +120,8 @@ class FunctionType(TypeOperator):
         self.output_type = output_type
 
     def __str__(self):
+        if not self.is_string_free():
+            return "-- preprocessing required --"
         wrap = "({})".format
         left = str(self.input_type)
         if is_function(self.input_type):

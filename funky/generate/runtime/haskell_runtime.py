@@ -27,7 +27,9 @@ class HaskellRuntime(Runtime):
             "to_float"    :  self.runtime_to_float,
             "slice_from"  :  self.runtime_slice_from,
             "slice_to"    :  self.runtime_slice_to,
+
             "error"       :  self.runtime_error,
+            "undefined"   :  self.runtime_undefined,
         }
     
     def runtime_eq(self):
@@ -115,3 +117,6 @@ class HaskellRuntime(Runtime):
 
     def runtime_error(self):
         return "error"
+
+    def runtime_undefined(self):
+        return "undefined"

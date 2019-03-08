@@ -52,9 +52,10 @@ TYPECLASSES = {
     "Stringable"  :  Stringable,
 }
 
+t = TypeVariable()
 BUILTIN_FUNCTIONS = {
-    "=="          :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
-    "!="          :  FunctionType(TypeVariable(), FunctionType(TypeVariable(), Bool)),
+    "=="          :  FunctionType(t, FunctionType(t, Bool)),
+    "!="          :  FunctionType(t, FunctionType(t, Bool)),
     "<"           :  FunctionType(Num, FunctionType(Num, Bool)),
     "<="          :  FunctionType(Num, FunctionType(Num, Bool)),
     ">"           :  FunctionType(Num, FunctionType(Num, Bool)),

@@ -1,3 +1,4 @@
+from funky.util.orderedset import OrderedSet
 from funky.generate.gen import CodeSection
 
 def add_to_runtime(f):
@@ -12,7 +13,7 @@ class Runtime:
     def __init__(self):
         # set of all runtime methods that are actually used. We keep track of
         # this so that we don't include unused methods.
-        self.used_runtime_methods = set()
+        self.used_runtime_methods = OrderedSet()
         self.builtins = None
 
     def runtime_method(self, op):

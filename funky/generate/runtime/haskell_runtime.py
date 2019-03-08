@@ -80,15 +80,27 @@ class HaskellRuntime(Runtime):
     def runtime_to_str(self):
         return "show"
 
+    IMPORT_TEXT = "import Text.Read"
+
     @add_to_runtime
     def runtime_to_int(self):
+        self.used_runtime_methods.add(self.IMPORT_TEXT)
         fname = "to_int"
-        return """{} x = read ((show x) :: Integer)""".format(fname), fname
+        return """{} :: Show a => a -> Integer
+{} x = case readMaybe (show x) :: Maybe Float of
+               Just x  -> round x
+               Nothing -> case readMaybe (show x) :: Maybe Bool of
+                            Just x -> if x then 1 else 0
+                            Nothing -> read (read (show x)) :: Integer""".format(fname, fname), fname
 
     @add_to_runtime
     def runtime_to_float(self):
-        fname = "__to_float"
-        return """{} x = read (show x) :: Float""".format(fname), fname
+        self.used_runtime_methods.add(self.IMPORT_TEXT)
+        fname = "to_float"
+        return """{} :: Show a => a -> Float
+{} x = case readMaybe (show x) :: Maybe Integer of
+               Just x -> fromIntegral x :: Float
+               Nothing -> read (read (show x)) :: Float""".format(fname, fname), fname
 
     @add_to_runtime
     def runtime_slice_from(self):

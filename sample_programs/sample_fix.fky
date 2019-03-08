@@ -1,0 +1,5 @@
+module fix where
+
+    fix f = f (fix f)
+
+    main = fix (lambda x -> 0)

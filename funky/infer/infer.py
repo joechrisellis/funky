@@ -62,30 +62,37 @@ def infer_let(node, ctx, non_generic):
     reverse dependency order. Then, for each grouping, we generalise. This
     ensures that all definitions have the most general type.
     """
-    new_ctx, new_non_generic = ctx.copy(), non_generic.copy()
-
+    new_ctx = ctx.copy()
     groups = reorder_bindings(node)
 
     # for each strongly-connected component/mutually recursive group...
     for group in groups:
-        # we assign a type-variable to each unique definition.
-        types = []
-        for bind in group:
-            new_type = TypeVariable()
-            new_ctx[bind.identifier] = new_type
-            # new_non_generic.add(new_type)
-            types.append(new_type)
-
-        # then, for each bind and its type, infer the type and unify it.
-        for bind, new_type in zip(group, types):
-            infer(bind.bindee, new_ctx, new_non_generic)
-            unify(new_type, bind.bindee.inferred_type)
+        new_non_generic = non_generic.copy()
+        infer_scc(group, new_ctx, new_non_generic)
 
     # given what we know about the let definitions, infer the type of the
     # expression
     infer(node.expr, new_ctx, non_generic)
     node.inferred_type = node.expr.inferred_type
     node.binds = list(flatten(groups))
+
+def infer_scc(group, ctx, non_generic):
+    """Infers the type of a strongly connected component. See the docstring for
+    infer_let to learn why we do this.
+    """
+
+    # we assign a type-variable to each unique definition.
+    types = []
+    for i, bind in enumerate(group):
+        new_type = TypeVariable()
+        ctx[bind.identifier] = new_type
+        non_generic.add(new_type)
+        types.append(new_type)
+
+    # then, for each bind and its type, infer the type and unify it.
+    for bind, new_type in zip(group, types):
+        infer(bind.bindee, ctx, non_generic)
+        unify(new_type, bind.bindee.inferred_type)
 
 @infer.register(CoreMatch)
 def infer_match(node, ctx, non_generic):

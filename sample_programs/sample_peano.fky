@@ -1,12 +1,14 @@
 # Implementation of Peano numbers in Funky
 module peano where
 
-    newtype Nat = Succ Nat | Zero
+    err_neg = "Cannot represent negative numbers with Nat."
 
+    newtype Nat = Succ Nat | Zero
     one = Succ Zero
 
     int_to_nat 0 = Zero
     int_to_nat n = Succ (int_to_nat (n - 1))
+    int_to_nat _ = error err_neg
 
     nat_to_int Zero     = 0
     nat_to_int (Succ m) = 1 + nat_to_int m
@@ -15,13 +17,16 @@ module peano where
     m `add` (Succ n) = add (Succ m) n
 
     m `sub` Zero            = m
-    Zero `sub` n            = error "Cannot represent negative numbers with Nat."
+    Zero `sub` n            = error err_neg
     (Succ m) `sub` (Succ n) = sub m n
 
     m `mul` Zero        = Zero
     m `mul` (Succ Zero) = m
     m `mul` (Succ n)    = m `add` (m `mul` n)
 
+    Zero `pow` Zero     = undefined
     m `pow` Zero        = one
     m `pow` (Succ Zero) = m
     m `pow` (Succ n)    = m `mul` (m `pow` n)
+
+    main = nat_to_int (pow (int_to_nat 2) (int_to_nat 5))

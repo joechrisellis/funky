@@ -4,7 +4,7 @@ module dictionary where
 
     newtype Maybe = Just String | Nothing
 
-    main = dict "asd"
+    main = dict "Pete"
            where dict = add_pair    "John"     (Just "Smith")    (
                         add_pair    "George"   (Just "Michael")  (
                         add_pair    "Pete"     (Just "Wentz")    (

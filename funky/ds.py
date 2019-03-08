@@ -108,7 +108,8 @@ class Graph:
         
         :param node: the label for the new node
         """
-        self.graph[node] = set()
+        if node not in self.graph:
+            self.graph[node] = set()
 
     def add_edges(self, edges):
         """Add some edges between two nodes in the graph.

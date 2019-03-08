@@ -121,6 +121,11 @@ class CoreLet(CoreNode):
         self.create_dependency_graph()
 
         if funky.globals.CURRENT_MODE != funky.globals.Mode.REPL:
+            # NOTE: we prune the definitions BEFORE we condense our function
+            # bindings. This might seem out of order, but there is a valid
+            # reason: by first pruning away bindings that are unused, we
+            # completely avoid performing Maranget's algorithm on bindings that
+            # are never used.
             self.prune_bindings()
 
     def create_dependency_graph(self):
@@ -147,7 +152,7 @@ class CoreLet(CoreNode):
 
         graph = Graph()
 
-        ids = [bind.identifier for bind in bindings]
+        ids = set([bind.identifier for bind in bindings])
         for bind in bindings:
             graph.add_node(bind.identifier)
             add_edges(bind.bindee, graph, bind.identifier, ids)

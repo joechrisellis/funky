@@ -81,7 +81,7 @@ BUILTIN_FUNCTIONS = {
     # errors, will type check.
     # This might seem a little strange, but it's how Haskell does it!
     "error"       :  FunctionType(String, TypeVariable()),
-    "undefined"   : TypeVariable(),
+    "undefined"   :  TypeVariable(),
 }
 
 # All of the builtins form the default environment.

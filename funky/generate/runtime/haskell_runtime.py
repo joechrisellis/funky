@@ -82,17 +82,13 @@ class HaskellRuntime(Runtime):
 
     @add_to_runtime
     def runtime_to_int(self):
-        fname = "__to_int"
-        return """to_int x = read (show x) :: Integer""".format(fname), fname
+        fname = "to_int"
+        return """{} x = read ((show x) :: Integer)""".format(fname), fname
 
     @add_to_runtime
     def runtime_to_float(self):
         fname = "__to_float"
-        return """def {}(a):
-    try:
-        return float(a)
-    except ValueError:
-        raise FunkyRuntimeError("Cannot convert '{{}}' to Float.".format(a))""".format(fname), fname
+        return """{} x = read (show x) :: Float""".format(fname), fname
 
     @add_to_runtime
     def runtime_slice_from(self):

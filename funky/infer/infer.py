@@ -155,6 +155,19 @@ def get_fresh(typ, non_generic):
                 return type_map[p]
             else:
                 return p
+        elif isinstance(p, FunctionType):
+            # although FunctionTypes are just specialised TypeOperators, if
+            # something has type FunctionType and we get_fresh it, we expect to
+            # get something back which is also of type FunctionType. Hence this
+            # special if statement.
+
+            # in theory, we can omit this entire elif and the code will work
+            # fine.  but any methods that are overridden in FunctionType from
+            # TypeOperator will not be maintained -- so if we have a special
+            # str() method for functions it will not be applied after the copy
+            # is made!
+            retval = FunctionType(aux(p.input_type), aux(p.output_type))
+            return retval
         elif isinstance(p, TypeOperator):
             retval = TypeOperator(p.type_name, [aux(x) for x in p.types])
             retval.parent_class = p.parent_class
@@ -278,6 +291,7 @@ def operator_prefix(s):
     """
     OP_PREFIX = "OP_"
     return "{}{}".format(OP_PREFIX, s)
+
 # Used to map constructors to their parent class. For instance:
 # newtype List = Cons Integer List | Nil
 # Will mean {"OP_Cons" : "List", "OP_Nil" : "List"}, where OP_ is the operator

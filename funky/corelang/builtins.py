@@ -26,25 +26,23 @@ python_to_funky = {
 }
 
 Stringable               =  TypeVariable()
-Stringable.constraints   =  [Float.type_name, Integer.type_name,
-                             Bool.type_name, String.type_name]
+Stringable.constraints   =  [Float.type_name,  Integer.type_name,  Bool.type_name]
 Stringable.parent_class  =  "Stringable"
 
-Intable               =  TypeVariable()
-Intable.constraints   =  [Float.type_name, Integer.type_name,
-                          Bool.type_name, String.type_name]
-Intable.parent_class  =  "Intable"
+Intable                  =  TypeVariable()
+Intable.constraints      =  [Float.type_name,  Bool.type_name,  String.type_name]
+Intable.parent_class     =  "Intable"
 
-Floatable               =  TypeVariable()
-Floatable.constraints   =  [Float.type_name, Integer.type_name,
-                            String.type_name]
-Floatable.parent_class  =  "Floatable"
+Floatable                =  TypeVariable()
+Floatable.constraints    =  [Integer.type_name,  String.type_name]
+Floatable.parent_class   =  "Floatable"
 
-Num               =  TypeVariable()
-Num.constraints   =  [Float.type_name, Integer.type_name]
-Num.parent_class  =  "Num"
+Num                      =  TypeVariable()
+Num.constraints          =  [Float.type_name, Integer.type_name]
+Num.parent_class         =  "Num"
 
 # hardly important -- kept for easy lookup of typeclasses where needed
+# used to give info about typeclasses with :typeclass command in REPL
 TYPECLASSES = {
     "Floatable"   :  Floatable,
     "Intable"     :  Intable,

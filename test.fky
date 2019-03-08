@@ -1,3 +1,0 @@
-module test where
-
-    main = 1 == "test"

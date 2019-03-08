@@ -108,7 +108,12 @@ class FunctionType(TypeOperator):
         self.output_type = output_type
 
     def __str__(self):
-        return "({} -> {})".format(str(self.input_type), str(self.output_type))
+        wrap = "({})".format
+        left = str(self.input_type)
+        if is_function(self.input_type):
+            left = wrap(left)
+        right = str(self.output_type)
+        return "{} -> {}".format(left, right)
 
 class AlgebraicDataType:
     """An algebraic data type defined with the 'newtype' keyword. These are

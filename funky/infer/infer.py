@@ -299,12 +299,33 @@ def operator_prefix(s):
 typeclass_mapping = {}
 
 def get_constrained_var(typ):
+    """Simple helper function. Creates a new type variable and constrains it
+    using the relevant information in typeclass_mapping.
+
+    :param typ: the name of the typeclass you want a new type variable to be
+                constrained to
+    :return:    a type variable constrained to the given typeclass
+    """
     t = TypeVariable()
     t.constraints = typeclass_mapping[typ]
     t.parent_class = typ
     return t
 
 def replace_strings(f, ctx):
+    """When the user declares a new type in the source code, the types they
+    refer to within it are passed to us as plain strings. This is done for a
+    few reasons; user-defined types may refer to other user-defined types, so
+    we must resolve them after the fact, and two, the parser shouldn't really
+    fill in builtin types because it shouldn't have anything to do with
+    creating types for modularity's sake. This function takes a FunctionType
+    (as passed in from earlier stages of compilation) and converts all of the
+    strings, i.e. 'Integer', to actual types, i.e. TypeOperator Integer.
+    Replaces the fields in-place.
+    
+    :param f:   the function type to replace strings within
+    :param ctx: typing context
+    """
+
     if isinstance(f.input_type, FunctionType):
         replace_strings(f.input_type, ctx)
     elif isinstance(f.input_type, str):

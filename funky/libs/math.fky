@@ -21,6 +21,8 @@ module math where
     lcm a b = (a / g) * b
               where g = gcd a b
 
+    coprime x y = gcd x y == 1
+
     recip x = 1.0 / x
 
     exp x = e ** x

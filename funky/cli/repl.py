@@ -131,7 +131,7 @@ def report_errors(f):
         except FunkyParsingError as ex:
             e, err = ex, "Failed to parse"
         except FunkyImportError as ex:
-            e, err = ex, "Failed to import"
+            e, err = ex, "Import failure"
         except FunkyRenamingError as ex:
             e, err = ex, "Renaming error"
             self.scope.pending_definition = {}

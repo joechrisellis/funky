@@ -11,7 +11,11 @@ from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
 
-base_runtime = """class ADT:
+base_runtime = """import sys
+REC_LIMIT = 10000
+sys.setrecursionlimit(REC_LIMIT)
+
+class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
 
     def __init__(self, params):
@@ -23,15 +27,28 @@ base_runtime = """class ADT:
         return all(x == y for x, y in zip(self.params, other.params))
 
     def __repr__(self):
+        return self.to_str()
+
+    def to_str(self, toplevel=True):
         name = type(self).__name__[3:]
 
-        vars = [repr(x) for x in self.params]
-        return \"({} {})\".format(name, \" \".join(vars))
+        if not self.params:
+            return name
 
-        return name
+        wrap = "({})".format
+        vars = [x.to_str(toplevel=False) if isinstance(x, ADT) else repr(x)
+                for x in self.params]
+        s = \"{} {}\".format(name, \" \".join(vars))
+        if not toplevel:
+            s = wrap(s) 
+
+        return s
 
 class FunkyRuntimeError(Exception):
-    pass
+
+    def __init__(self, message, *args, **kwargs):
+        message = "Funky runtime error: {}".format(message)
+        super().__init__(message, *args, **kwargs)
 
 class InexhaustivePatternMatchError(FunkyRuntimeError):
 

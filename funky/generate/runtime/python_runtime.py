@@ -27,6 +27,8 @@ class PythonRuntime(Runtime):
             "to_float"    :  self.runtime_to_float,
             "slice_from"  :  self.runtime_slice_from,
             "slice_to"    :  self.runtime_slice_to,
+
+            "error"       :  self.runtime_error,
         }
     
     @add_to_runtime
@@ -163,3 +165,9 @@ class PythonRuntime(Runtime):
         fname = "__slice_to"
         return """def {}(a):
     return lambda s: s[:a]""".format(fname), fname
+
+    @add_to_runtime
+    def runtime_error(self):
+        fname = "__error"
+        return """def {}(msg):
+    raise FunkyRuntimeError(msg)""".format(fname), fname

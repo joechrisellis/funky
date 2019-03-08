@@ -15,6 +15,7 @@ module peano where
     m `add` (Succ n) = add (Succ m) n
 
     m `sub` Zero            = m
+    Zero `sub` n            = error "Cannot represent negative numbers with Nat."
     (Succ m) `sub` (Succ n) = sub m n
 
     m `mul` Zero        = Zero

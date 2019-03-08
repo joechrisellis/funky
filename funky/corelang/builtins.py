@@ -73,6 +73,14 @@ BUILTIN_FUNCTIONS = {
     "to_float"    :  FunctionType(Floatable, Float),
     "slice_from"  :  FunctionType(Integer, FunctionType(String, String)),
     "slice_to"    :  FunctionType(Integer, FunctionType(String, String)),
+
+    # The error function accepts a string and returns an uninstantiated,
+    # unconstrained type variable. This will be successfully unified with
+    # ANYTHING -- meaning you can use the error function in place of any type.
+    # In practice this means a function which returns an integer, but sometimes
+    # errors, will type check.
+    # This might seem a little strange, but it's how Haskell does it!
+    "error"       :  FunctionType(String, TypeVariable()),
 }
 
 # All of the builtins form the default environment.

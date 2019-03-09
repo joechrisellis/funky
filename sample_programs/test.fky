@@ -1,0 +1,5 @@
+module test where
+
+    import "stdlib.fky"
+
+    x = id 1 2 3

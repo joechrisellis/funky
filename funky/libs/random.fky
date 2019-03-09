@@ -1,3 +1,4 @@
+# deterministic random number generator in funky
 module random where
 
     # linear congruential generator -- see:

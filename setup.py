@@ -22,8 +22,9 @@ kwargs = {
     "packages"         : find_packages(),
     "version"          : __version__,
     "entry_points"     : {
-        "console_scripts" : ["funky=funky.cli.compiler_cli:start",  # compiler
-                             "funkyi=funky.cli.repl:start" # repl
+        "console_scripts" : [
+            "funky=funky.cli.compiler_cli:start", # compiler
+            "funkyi=funky.cli.repl:start"         # repl
         ],
     },
     "install_requires" : [

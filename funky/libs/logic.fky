@@ -1,3 +1,4 @@
+# common logic operators in funky
 module logic where
 
     # XOR operator

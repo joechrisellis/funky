@@ -13,6 +13,7 @@ import funky.globals
 from funky.cli.verbosity import set_loglevel
 from funky.util.color import *
 
+from funky import FunkyError
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
 from funky.imports import FunkyImportError
 from funky.rename import FunkyRenamingError
@@ -43,7 +44,7 @@ class CustomCmd(cmd.Cmd):
     ideally for a REPL. What I mean by this is that there is no way to create a
     prefix, in our case ':', that specifies a command, with everything else
     just going to the default method.
-    
+
     What I've done here is strip some code from the library and modify it to
     support this functionality. If this is flagged for plagiarism PLEASE READ
     THIS COMMENT!
@@ -118,6 +119,18 @@ class CustomCmd(cmd.Cmd):
             except KeyboardInterrupt:
                 print("^C")
 
+def atomic(f):
+    def wrapper(self, *args, **kwargs):
+        state = self.get_state()
+        try:
+            return f(self, *args, **kwargs)
+        except FunkyError as e:
+            self.revert_state(state)
+            raise
+
+    wrapper.__doc__ = f.__doc__
+    return wrapper
+
 def report_errors(f):
     """This decorator is used to wrap do_* functions in the command prompt
     below with error-catching and reporting code. Instead of having to repeat
@@ -183,6 +196,7 @@ class FunkyShell(CustomCmd):
         self.reset()
 
     @report_errors
+    @atomic
     def do_begin_block(self, arg):
         """Start a block of definitions."""
         block_prompt = cyellow("block>  ")
@@ -201,6 +215,7 @@ class FunkyShell(CustomCmd):
         self.parse_and_add_declarations(lines)
 
     @report_errors
+    @atomic
     def do_type(self, arg):
         """Show the type of an expression. E.g.: :type 5"""
         expr = self.get_core(arg)
@@ -208,7 +223,6 @@ class FunkyShell(CustomCmd):
         do_type_inference(self.global_let, self.global_types)
         print("{} :: {}".format(arg, self.global_let.inferred_type))
 
-    @report_errors
     def do_list(self, arg):
         """List the current bindings in desuguared intermediate code."""
         if not (self.global_types or self.global_let.binds):
@@ -220,15 +234,17 @@ class FunkyShell(CustomCmd):
             print("\n".join(str(b) for b in self.global_types))
         if self.global_let.binds:
             print("\n".join(str(b) for b in self.global_let.binds))
-    
+
     @report_errors
+    @atomic
     def do_newtype(self, arg):
         """Create an ADT. E.g.: :newtype List = Cons Integer List | Nil"""
         parsed = self.newtype_parser.do_parse("newtype {}".format(arg))
         self.add_typedefs([parsed])
 
     @report_errors
-    def do_show(self, arg): 
+    @atomic
+    def do_show(self, arg):
         """Show the compiled code for an expression. E.g.: :show 1 + 1"""
         code = self.get_compiled(arg)
         print(code)
@@ -239,17 +255,25 @@ class FunkyShell(CustomCmd):
         self.setfix_parser.do_parse("setfix {}".format(arg))
 
     @report_errors
+    @atomic
     def do_import(self, arg):
-        import_stmt = self.import_parser.do_parse("import {}".format(arg))
+        try:
+            import_stmt = self.import_parser.do_parse("import {}".format(arg))
 
-        cwd = os.path.abspath(os.getcwd())
-        imports_source = get_imported_declarations(cwd, [import_stmt],
-                                                   imported=self.imported)
+            cwd = os.path.abspath(os.getcwd())
+            imports_source = get_imported_declarations(cwd, [import_stmt],
+                                                       imported=self.imported)
 
-        typedefs, code = split_typedefs_and_code(imports_source)
+            typedefs, code = split_typedefs_and_code(imports_source)
 
-        self.add_typedefs(typedefs)
-        self.add_declarations(code)
+            self.add_typedefs(typedefs)
+            self.add_declarations(code)
+        except FunkyError as e:
+            # if an error occurs, extend the error message to tell the user
+            # that the error occurred while importing *this* file.
+            new_msg = "{} (while importing {})".format(e.args[0], arg)
+            e.args = (new_msg,) + e.args[1:]
+            raise
 
     def do_typeclass(self, arg):
         """Prints a quick summary of a typeclass."""
@@ -277,9 +301,20 @@ class FunkyShell(CustomCmd):
         # recompiled as a new program to give the new result.
         self.global_let = CoreLet([], CoreLiteral(0))
 
+    def get_state(self):
+        return (
+            copy.deepcopy(self.imported),
+            copy.deepcopy(self.scope),
+            copy.deepcopy(self.global_types),
+            copy.deepcopy(self.global_let)
+        )
+
+    def revert_state(self, state):
+        self.imported, self.scope, self.global_types, self.global_let = state
+
     def get_core(self, source):
         """Converts a string of Funky code into the intermediate language.
-        
+
         :param source: the source code to convert to the intermediate language
         :return:       the core code
         """
@@ -292,7 +327,7 @@ class FunkyShell(CustomCmd):
 
     def get_compiled(self, source):
         """Converts a string of funky code into the target source language.
-        
+
         :param source: the source code to convert to the target source language
         :return:       the compiled code in the target source language
         """
@@ -306,7 +341,7 @@ class FunkyShell(CustomCmd):
 
     def parse_and_add_declarations(self, lines):
         """Add a new block of declarations to global_let.
-        
+
         :param lines: the Funky source code lines in the new block of
                       declarations
         """
@@ -330,27 +365,21 @@ class FunkyShell(CustomCmd):
     def add_declarations(self, declarations):
         # copy the global let -- we work with this until we can be confident
         # that the given lines don't have syntax/type errors, etc.
-        new_global_let = copy.deepcopy(self.global_let)
-
-        new_global_let.expr = CoreLiteral(0)
+        self.global_let.expr = CoreLiteral(0)
 
         # rename and desugar each declaration one-by-one, and append each to
         # the (new_) global_let binds
         for decl in declarations:
             rename(decl, self.scope)
             core_tree, _ = do_desugar(decl)
-            new_global_let.binds.append(core_tree)
+            self.global_let.binds.append(core_tree)
 
         check_scope_for_errors(self.scope)
-        new_global_let.binds = condense_function_binds(new_global_let.binds)
-        new_global_let.create_dependency_graph()
+        self.global_let.binds = condense_function_binds(self.global_let.binds)
+        self.global_let.create_dependency_graph()
 
         # type infer the new global let to check for inconsistencies
-        do_type_inference(new_global_let, self.global_types)
-
-        # if no errors were raised and delegated to the caller, we can safely
-        # replace our global_let with the new (modified) one.
-        self.global_let = new_global_let
+        do_type_inference(self.global_let, self.global_types)
 
     def do_EOF(self, line):
         """Exit safely."""
@@ -358,6 +387,7 @@ class FunkyShell(CustomCmd):
         exit(0)
 
     @report_errors
+    @atomic
     def default(self, arg):
         """This is called when the user does not type in any command in
         particular. Since this is a REPL, we should interpret the given

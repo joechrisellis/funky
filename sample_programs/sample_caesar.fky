@@ -1,0 +1,29 @@
+module caesar where
+
+    import "stdlib.fky"
+    import "string.fky"
+
+    newtype Maybe = Just Integer | Nothing
+
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+    index c ""                 = Nothing
+    index c st given c == h    = Just 0
+               given otherwise = match index c t of
+                                    Nothing -> Nothing
+                                    Just x  -> Just (x + 1)
+               where
+                h = str_head st
+                t = str_tail st
+
+    encode n "" = ""
+    encode n st = encoded ++ encode n t
+                  where h = str_head st
+                        t = str_tail st
+                        encoded = match index h alphabet of
+                                      Nothing -> h
+                                      Just i  -> char_at ((i + n) % (strlen alphabet)) alphabet
+
+    decode n = encode (-n)
+
+    rot13 = encode 13

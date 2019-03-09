@@ -1,3 +1,4 @@
+# common string operations in funky
 module string where
 
     import "stdlib.fky"

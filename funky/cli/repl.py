@@ -120,6 +120,13 @@ class CustomCmd(cmd.Cmd):
                 print("^C")
 
 def atomic(f):
+    """This decorator is used in the FunkyShell class to mark a function as
+    atomic. In this context, 'atomic' means that the operation either succeeds
+    entirely or fails entirely. By marking do_* functions in the REPL as
+    atomic, we ensure that if they fail, they do not leave the REPL in a broken
+    state. For example, if an import fails, the state of the REPL is reverted
+    to what it was before the user ever attempted the import.
+    """
     def wrapper(self, *args, **kwargs):
         state = self.get_state()
         try:
@@ -257,6 +264,7 @@ class FunkyShell(CustomCmd):
     @report_errors
     @atomic
     def do_import(self, arg):
+        """Import a .fky file into the REPL. E.g.: :import "stdlib.fky"."""
         try:
             import_stmt = self.import_parser.do_parse("import {}".format(arg))
 
@@ -303,7 +311,7 @@ class FunkyShell(CustomCmd):
 
     def get_state(self):
         return (
-            copy.deepcopy(self.imported),
+            copy.copy(self.imported),
             copy.deepcopy(self.scope),
             copy.deepcopy(self.global_types),
             copy.deepcopy(self.global_let)
@@ -363,8 +371,6 @@ class FunkyShell(CustomCmd):
             self.global_types.append(typedef)
 
     def add_declarations(self, declarations):
-        # copy the global let -- we work with this until we can be confident
-        # that the given lines don't have syntax/type errors, etc.
         self.global_let.expr = CoreLiteral(0)
 
         # rename and desugar each declaration one-by-one, and append each to

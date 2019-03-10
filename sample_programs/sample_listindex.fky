@@ -7,7 +7,7 @@ module listindex where
 
     index e Nil = Nothing
     index e (Cons x xs) given e == x    = Just 0
-                        given otherwise = match index e xs of
+                        given otherwise = match index e xs with
                                             Just x -> Just (x + 1)
                                             x      -> x
 

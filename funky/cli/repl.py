@@ -276,6 +276,8 @@ class FunkyShell(CustomCmd):
 
             self.add_typedefs(typedefs)
             self.add_declarations(code)
+
+            print(cgreen("Successfully imported {}.".format(arg)))
         except FunkyError as e:
             # if an error occurs, extend the error message to tell the user
             # that the error occurred while importing *this* file.

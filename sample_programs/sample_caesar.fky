@@ -1,6 +1,7 @@
 module caesar where
 
     import "stdlib.fky"
+    import "random.fky"
     import "string.fky"
 
     newtype Maybe = Just Integer | Nothing
@@ -9,7 +10,7 @@ module caesar where
 
     index c ""                 = Nothing
     index c st given c == h    = Just 0
-               given otherwise = match index c t of
+               given otherwise = match index c t with
                                     Nothing -> Nothing
                                     Just x  -> Just (x + 1)
                where
@@ -20,10 +21,13 @@ module caesar where
     encode n st = encoded ++ encode n t
                   where h = str_head st
                         t = str_tail st
-                        encoded = match index h alphabet of
+                        encoded = match index h alphabet with
                                       Nothing -> h
                                       Just i  -> char_at ((i + n) % (strlen alphabet)) alphabet
 
     decode n = encode (-n)
 
     rot13 = encode 13
+
+    main = encode key "this is a *secret message*"
+           where key = rand 51773

@@ -9,7 +9,7 @@ module lambdacalc where
                              | Var   Integer
                              | Const Integer
 
-    eval (App fun arg) = match eval fun of
+    eval (App fun arg) = match eval fun with
                              Abs body -> eval (sub 0 body)
                              x        -> App x arg
                          where sub n (App e1 e2) = App (sub n e1) (sub n e2)

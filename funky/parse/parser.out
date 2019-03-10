@@ -66,7 +66,7 @@ Rule 56    LEXP -> FUNCTION_EXPR
 Rule 57    LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP
 Rule 58    LET_EXPR -> LET DECLARATIONS IN EXP
 Rule 59    IF_EXPR -> EXP IF EXP ELSE EXP
-Rule 60    MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+Rule 60    MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
 Rule 61    FUNCTION_EXPR -> FUNCTION_EXPR AEXP
 Rule 62    FUNCTION_EXPR -> AEXP
 Rule 63    AEXP -> USED_VAR
@@ -152,7 +152,6 @@ MODULE               : 1
 MODULO               : 92
 NEWTYPE              : 11
 NONASSOC             : 30
-OF                   : 60
 OPEN_BRACE           : 2 3 17 18 60
 OPEN_PAREN           : 37 39 67 68 82
 OR                   : 102
@@ -166,6 +165,7 @@ TIMES                : 90
 TYPENAME             : 11 16 35 76 80 108
 WHERE                : 1 43 45
 WHITESPACE           : 
+WITH                 : 60
 error                : 
 
 Nonterminals, with rules where they appear
@@ -412,7 +412,7 @@ state 12
     IF              reduce using rule 106 (LITERAL -> STRING .)
     CLOSE_BRACE     reduce using rule 106 (LITERAL -> STRING .)
     ENDSTATEMENT    reduce using rule 106 (LITERAL -> STRING .)
-    OF              reduce using rule 106 (LITERAL -> STRING .)
+    WITH            reduce using rule 106 (LITERAL -> STRING .)
     ELSE            reduce using rule 106 (LITERAL -> STRING .)
 
 
@@ -576,7 +576,7 @@ state 23
     IF              reduce using rule 104 (LITERAL -> INTEGER .)
     CLOSE_BRACE     reduce using rule 104 (LITERAL -> INTEGER .)
     ENDSTATEMENT    reduce using rule 104 (LITERAL -> INTEGER .)
-    OF              reduce using rule 104 (LITERAL -> INTEGER .)
+    WITH            reduce using rule 104 (LITERAL -> INTEGER .)
     ELSE            reduce using rule 104 (LITERAL -> INTEGER .)
 
 
@@ -765,7 +765,7 @@ state 33
     IF              reduce using rule 103 (LITERAL -> FLOAT .)
     CLOSE_BRACE     reduce using rule 103 (LITERAL -> FLOAT .)
     ENDSTATEMENT    reduce using rule 103 (LITERAL -> FLOAT .)
-    OF              reduce using rule 103 (LITERAL -> FLOAT .)
+    WITH            reduce using rule 103 (LITERAL -> FLOAT .)
     ELSE            reduce using rule 103 (LITERAL -> FLOAT .)
 
 
@@ -804,7 +804,7 @@ state 34
     IF              reduce using rule 105 (LITERAL -> BOOL .)
     CLOSE_BRACE     reduce using rule 105 (LITERAL -> BOOL .)
     ENDSTATEMENT    reduce using rule 105 (LITERAL -> BOOL .)
-    OF              reduce using rule 105 (LITERAL -> BOOL .)
+    WITH            reduce using rule 105 (LITERAL -> BOOL .)
     ELSE            reduce using rule 105 (LITERAL -> BOOL .)
 
 
@@ -1108,7 +1108,7 @@ state 46
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -1176,7 +1176,7 @@ state 48
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -1472,7 +1472,7 @@ state 69
     CLOSE_BRACE     reduce using rule 48 (EXP -> INFIX_EXP .)
     ENDSTATEMENT    reduce using rule 48 (EXP -> INFIX_EXP .)
     EQUALS          reduce using rule 48 (EXP -> INFIX_EXP .)
-    OF              reduce using rule 48 (EXP -> INFIX_EXP .)
+    WITH            reduce using rule 48 (EXP -> INFIX_EXP .)
     CLOSE_PAREN     reduce using rule 48 (EXP -> INFIX_EXP .)
     ELSE            reduce using rule 48 (EXP -> INFIX_EXP .)
     GIVEN           reduce using rule 48 (EXP -> INFIX_EXP .)
@@ -1538,7 +1538,7 @@ state 70
     CLOSE_BRACE     reduce using rule 51 (INFIX_EXP -> LEXP .)
     ENDSTATEMENT    reduce using rule 51 (INFIX_EXP -> LEXP .)
     EQUALS          reduce using rule 51 (INFIX_EXP -> LEXP .)
-    OF              reduce using rule 51 (INFIX_EXP -> LEXP .)
+    WITH            reduce using rule 51 (INFIX_EXP -> LEXP .)
     ELSE            reduce using rule 51 (INFIX_EXP -> LEXP .)
     CLOSE_PAREN     reduce using rule 51 (INFIX_EXP -> LEXP .)
     GIVEN           reduce using rule 51 (INFIX_EXP -> LEXP .)
@@ -1594,7 +1594,7 @@ state 71
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (48) EXP -> . INFIX_EXP
@@ -1662,7 +1662,7 @@ state 72
     CLOSE_BRACE     reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
     ENDSTATEMENT    reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
     EQUALS          reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
-    OF              reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
+    WITH            reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
     ELSE            reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
     CLOSE_PAREN     reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
     GIVEN           reduce using rule 52 (LEXP -> LAMBDA_ABSTRACTION .)
@@ -1693,7 +1693,7 @@ state 73
     CLOSE_BRACE     reduce using rule 53 (LEXP -> LET_EXPR .)
     ENDSTATEMENT    reduce using rule 53 (LEXP -> LET_EXPR .)
     EQUALS          reduce using rule 53 (LEXP -> LET_EXPR .)
-    OF              reduce using rule 53 (LEXP -> LET_EXPR .)
+    WITH            reduce using rule 53 (LEXP -> LET_EXPR .)
     ELSE            reduce using rule 53 (LEXP -> LET_EXPR .)
     CLOSE_PAREN     reduce using rule 53 (LEXP -> LET_EXPR .)
     GIVEN           reduce using rule 53 (LEXP -> LET_EXPR .)
@@ -1724,7 +1724,7 @@ state 74
     CLOSE_BRACE     reduce using rule 54 (LEXP -> IF_EXPR .)
     ENDSTATEMENT    reduce using rule 54 (LEXP -> IF_EXPR .)
     EQUALS          reduce using rule 54 (LEXP -> IF_EXPR .)
-    OF              reduce using rule 54 (LEXP -> IF_EXPR .)
+    WITH            reduce using rule 54 (LEXP -> IF_EXPR .)
     ELSE            reduce using rule 54 (LEXP -> IF_EXPR .)
     CLOSE_PAREN     reduce using rule 54 (LEXP -> IF_EXPR .)
     GIVEN           reduce using rule 54 (LEXP -> IF_EXPR .)
@@ -1755,7 +1755,7 @@ state 75
     CLOSE_BRACE     reduce using rule 55 (LEXP -> MATCH_EXPR .)
     ENDSTATEMENT    reduce using rule 55 (LEXP -> MATCH_EXPR .)
     EQUALS          reduce using rule 55 (LEXP -> MATCH_EXPR .)
-    OF              reduce using rule 55 (LEXP -> MATCH_EXPR .)
+    WITH            reduce using rule 55 (LEXP -> MATCH_EXPR .)
     ELSE            reduce using rule 55 (LEXP -> MATCH_EXPR .)
     CLOSE_PAREN     reduce using rule 55 (LEXP -> MATCH_EXPR .)
     GIVEN           reduce using rule 55 (LEXP -> MATCH_EXPR .)
@@ -1799,7 +1799,7 @@ state 76
     CLOSE_BRACE     reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
     ENDSTATEMENT    reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
     EQUALS          reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
-    OF              reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
+    WITH            reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
     ELSE            reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
     CLOSE_PAREN     reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
     GIVEN           reduce using rule 56 (LEXP -> FUNCTION_EXPR .)
@@ -1854,7 +1854,7 @@ state 78
 
 state 79
 
-    (60) MATCH_EXPR -> MATCH . EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> MATCH . EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (48) EXP -> . INFIX_EXP
     (49) INFIX_EXP -> . LEXP OP INFIX_EXP
     (50) INFIX_EXP -> . MINUS INFIX_EXP
@@ -1867,7 +1867,7 @@ state 79
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -1941,7 +1941,7 @@ state 80
     CLOSE_BRACE     reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
     ENDSTATEMENT    reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
     EQUALS          reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
-    OF              reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
+    WITH            reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
     ELSE            reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
     CLOSE_PAREN     reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
     GIVEN           reduce using rule 62 (FUNCTION_EXPR -> AEXP .)
@@ -1979,7 +1979,7 @@ state 81
     CLOSE_BRACE     reduce using rule 63 (AEXP -> USED_VAR .)
     ENDSTATEMENT    reduce using rule 63 (AEXP -> USED_VAR .)
     EQUALS          reduce using rule 63 (AEXP -> USED_VAR .)
-    OF              reduce using rule 63 (AEXP -> USED_VAR .)
+    WITH            reduce using rule 63 (AEXP -> USED_VAR .)
     ELSE            reduce using rule 63 (AEXP -> USED_VAR .)
     CLOSE_PAREN     reduce using rule 63 (AEXP -> USED_VAR .)
     GIVEN           reduce using rule 63 (AEXP -> USED_VAR .)
@@ -2017,7 +2017,7 @@ state 82
     CLOSE_BRACE     reduce using rule 64 (AEXP -> USED_TYPENAME .)
     ENDSTATEMENT    reduce using rule 64 (AEXP -> USED_TYPENAME .)
     EQUALS          reduce using rule 64 (AEXP -> USED_TYPENAME .)
-    OF              reduce using rule 64 (AEXP -> USED_TYPENAME .)
+    WITH            reduce using rule 64 (AEXP -> USED_TYPENAME .)
     ELSE            reduce using rule 64 (AEXP -> USED_TYPENAME .)
     CLOSE_PAREN     reduce using rule 64 (AEXP -> USED_TYPENAME .)
     GIVEN           reduce using rule 64 (AEXP -> USED_TYPENAME .)
@@ -2055,7 +2055,7 @@ state 83
     CLOSE_BRACE     reduce using rule 65 (AEXP -> LITERAL .)
     ENDSTATEMENT    reduce using rule 65 (AEXP -> LITERAL .)
     EQUALS          reduce using rule 65 (AEXP -> LITERAL .)
-    OF              reduce using rule 65 (AEXP -> LITERAL .)
+    WITH            reduce using rule 65 (AEXP -> LITERAL .)
     ELSE            reduce using rule 65 (AEXP -> LITERAL .)
     CLOSE_PAREN     reduce using rule 65 (AEXP -> LITERAL .)
     GIVEN           reduce using rule 65 (AEXP -> LITERAL .)
@@ -2093,7 +2093,7 @@ state 84
     CLOSE_BRACE     reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
     ENDSTATEMENT    reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
     EQUALS          reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
-    OF              reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
+    WITH            reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
     ELSE            reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
     CLOSE_PAREN     reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
     GIVEN           reduce using rule 66 (AEXP -> OPERATOR_FUNC .)
@@ -2133,7 +2133,7 @@ state 85
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -2225,7 +2225,7 @@ state 86
     CLOSE_BRACE     reduce using rule 107 (USED_VAR -> IDENTIFIER .)
     ENDSTATEMENT    reduce using rule 107 (USED_VAR -> IDENTIFIER .)
     EQUALS          reduce using rule 107 (USED_VAR -> IDENTIFIER .)
-    OF              reduce using rule 107 (USED_VAR -> IDENTIFIER .)
+    WITH            reduce using rule 107 (USED_VAR -> IDENTIFIER .)
     ELSE            reduce using rule 107 (USED_VAR -> IDENTIFIER .)
     CLOSE_PAREN     reduce using rule 107 (USED_VAR -> IDENTIFIER .)
     GIVEN           reduce using rule 107 (USED_VAR -> IDENTIFIER .)
@@ -2263,7 +2263,7 @@ state 87
     CLOSE_BRACE     reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
     ENDSTATEMENT    reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
     EQUALS          reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
-    OF              reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
+    WITH            reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
     ELSE            reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
     CLOSE_PAREN     reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
     GIVEN           reduce using rule 108 (USED_TYPENAME -> TYPENAME .)
@@ -2463,7 +2463,7 @@ state 101
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -2519,7 +2519,7 @@ state 102
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (48) EXP -> . INFIX_EXP
@@ -2911,7 +2911,7 @@ state 120
     CLOSE_BRACE     reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
     ENDSTATEMENT    reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
     EQUALS          reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
-    OF              reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
+    WITH            reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
     ELSE            reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
     CLOSE_PAREN     reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
     GIVEN           reduce using rule 50 (INFIX_EXP -> MINUS INFIX_EXP .)
@@ -2975,7 +2975,7 @@ state 122
     CLOSE_BRACE     reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     ENDSTATEMENT    reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     EQUALS          reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
-    OF              reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
+    WITH            reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     ELSE            reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     CLOSE_PAREN     reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     GIVEN           reduce using rule 61 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
@@ -3081,10 +3081,10 @@ state 125
 
 state 126
 
-    (60) MATCH_EXPR -> MATCH EXP . OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> MATCH EXP . WITH OPEN_BRACE ALTS CLOSE_BRACE
     (59) IF_EXPR -> EXP . IF EXP ELSE EXP
 
-    OF              shift and go to state 146
+    WITH            shift and go to state 146
     IF              shift and go to state 101
 
 
@@ -3119,7 +3119,7 @@ state 129
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (48) EXP -> . INFIX_EXP
@@ -3187,7 +3187,7 @@ state 131
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -3349,7 +3349,7 @@ state 140
     CLOSE_BRACE     reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     ENDSTATEMENT    reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     EQUALS          reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    OF              reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
+    WITH            reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     ELSE            reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     CLOSE_PAREN     reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     GIVEN           reduce using rule 49 (INFIX_EXP -> LEXP OP INFIX_EXP .)
@@ -3396,7 +3396,7 @@ state 142
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -3465,7 +3465,7 @@ state 145
 
 state 146
 
-    (60) MATCH_EXPR -> MATCH EXP OF . OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> MATCH EXP WITH . OPEN_BRACE ALTS CLOSE_BRACE
 
     OPEN_BRACE      shift and go to state 158
 
@@ -3502,7 +3502,7 @@ state 147
     CLOSE_BRACE     reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     ENDSTATEMENT    reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     EQUALS          reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
-    OF              reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
+    WITH            reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     ELSE            reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     CLOSE_PAREN     reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     GIVEN           reduce using rule 67 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
@@ -3540,7 +3540,7 @@ state 148
     CLOSE_BRACE     reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     ENDSTATEMENT    reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     EQUALS          reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
-    OF              reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
+    WITH            reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     ELSE            reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     CLOSE_PAREN     reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     GIVEN           reduce using rule 68 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
@@ -3612,7 +3612,7 @@ state 153
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -3669,7 +3669,7 @@ state 154
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR
@@ -3737,7 +3737,7 @@ state 155
     CLOSE_BRACE     reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     ENDSTATEMENT    reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     EQUALS          reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
-    OF              reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
+    WITH            reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     ELSE            reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     CLOSE_PAREN     reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     GIVEN           reduce using rule 58 (LET_EXPR -> LET DECLARATIONS IN EXP .)
@@ -3815,7 +3815,7 @@ state 157
 
 state 158
 
-    (60) MATCH_EXPR -> MATCH EXP OF OPEN_BRACE . ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE . ALTS CLOSE_BRACE
     (69) ALTS -> . ALT ENDSTATEMENT ALTS
     (70) ALTS -> . ALT
     (71) ALT -> . LPAT ARROW EXP
@@ -3956,7 +3956,7 @@ state 165
     CLOSE_BRACE     reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     ENDSTATEMENT    reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     EQUALS          reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
-    OF              reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
+    WITH            reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     ELSE            reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     CLOSE_PAREN     reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     GIVEN           reduce using rule 59 (IF_EXPR -> EXP IF EXP ELSE EXP .)
@@ -3991,7 +3991,7 @@ state 166
     CLOSE_BRACE     reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     ENDSTATEMENT    reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     EQUALS          reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
-    OF              reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
+    WITH            reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     ELSE            reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     CLOSE_PAREN     reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     GIVEN           reduce using rule 57 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
@@ -4009,7 +4009,7 @@ state 167
 
 state 168
 
-    (60) MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS . CLOSE_BRACE
+    (60) MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS . CLOSE_BRACE
 
     CLOSE_BRACE     shift and go to state 173
 
@@ -4048,33 +4048,33 @@ state 172
 
 state 173
 
-    (60) MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .
+    (60) MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .
 
-    PLUS            reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    MINUS           reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    TIMES           reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    DIVIDE          reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    MODULO          reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    POW             reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    EQUALITY        reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    INEQUALITY      reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    LESS            reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    LEQ             reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    GREATER         reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    GEQ             reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    CONCAT          reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    AND             reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    OR              reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    BACKTICK        reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    WHERE           reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    IF              reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    CLOSE_BRACE     reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    ENDSTATEMENT    reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    EQUALS          reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    OF              reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    ELSE            reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    CLOSE_PAREN     reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
-    GIVEN           reduce using rule 60 (MATCH_EXPR -> MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE .)
+    PLUS            reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    MINUS           reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    TIMES           reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    DIVIDE          reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    MODULO          reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    POW             reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    EQUALITY        reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    INEQUALITY      reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    LESS            reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    LEQ             reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    GREATER         reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    GEQ             reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    CONCAT          reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    AND             reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    OR              reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    BACKTICK        reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    WHERE           reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    IF              reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    CLOSE_BRACE     reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    ENDSTATEMENT    reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    EQUALS          reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    WITH            reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    ELSE            reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    CLOSE_PAREN     reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
+    GIVEN           reduce using rule 60 (MATCH_EXPR -> MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE .)
 
 
 state 174
@@ -4135,7 +4135,7 @@ state 175
     (57) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
     (58) LET_EXPR -> . LET DECLARATIONS IN EXP
     (59) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (60) MATCH_EXPR -> . MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE
+    (60) MATCH_EXPR -> . MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE
     (61) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
     (62) FUNCTION_EXPR -> . AEXP
     (63) AEXP -> . USED_VAR

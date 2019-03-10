@@ -24,8 +24,8 @@ class FunkyLexer:
     # Reserved keywords -- variables are not permitted to have these names.
     reserved = [
         "and", "else", "given", "if", "import", "in", "lambda", "leftassoc",
-        "let", "match", "module", "newtype", "newtype", "nonassoc", "of", "or",
-        "rightassoc", "setfix", "where",
+        "let", "match", "module", "newtype", "nonassoc", "or", "rightassoc",
+        "setfix", "where", "with",
     ]
     reserved = {k : k.upper() for k in reserved}
 
@@ -209,7 +209,7 @@ class IndentationLexer:
         i = 0
         while i < len(tokens):
             tok = tokens[i]
-            if tok.type in ["WHERE", "LET", "OF"] and \
+            if tok.type in ["WHERE", "LET", "WITH"] and \
                tokens[i + 1].type != "OPEN_BRACE":
                 j = i + 1
                 while tokens[j].type == "WHITESPACE":

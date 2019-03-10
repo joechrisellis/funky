@@ -251,7 +251,7 @@ class FunkyParser:
         p[0] = If(p[3], p[1], p[5])
     
     def p_MATCH_EXPR(self, p):
-        """MATCH_EXPR : MATCH EXP OF OPEN_BRACE ALTS CLOSE_BRACE"""
+        """MATCH_EXPR : MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE"""
         p[0] = Match(p[2], p[5])
 
     def p_FUNCTION_EXPR(self, p):

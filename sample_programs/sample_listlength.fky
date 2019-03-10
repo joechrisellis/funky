@@ -1,3 +1,4 @@
+# Finding the length of a list in Funky.
 module listlength where
 
     newtype List = Cons Integer List | Nil

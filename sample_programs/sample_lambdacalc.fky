@@ -1,3 +1,4 @@
+# A interpreter for the lambda calculus in Funky.
 module lambdacalc where
 
     # Inspired by Jim Fisher's blog post code, available at:

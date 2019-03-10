@@ -1,3 +1,4 @@
+# Implementation of the classic interview question 'FizzBuzz' in Funky.
 module fizzbuzz_list where
 
     import "stdlib.fky"

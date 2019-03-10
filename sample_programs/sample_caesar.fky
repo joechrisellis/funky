@@ -1,3 +1,4 @@
+# Implementation of the Caesar cipher in Funky.
 module caesar where
 
     import "stdlib.fky"
@@ -22,8 +23,10 @@ module caesar where
                   where h = str_head st
                         t = str_tail st
                         encoded = match index h alphabet with
-                                      Nothing -> h
-                                      Just i  -> char_at ((i + n) % (strlen alphabet)) alphabet
+                                    Nothing -> h
+                                    Just i  -> char_at
+                                               ((i + n) % (strlen alphabet))
+                                               alphabet
 
     decode n = encode (-n)
 

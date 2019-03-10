@@ -1,3 +1,4 @@
+# Using Funky's standard dictionary module to create a dictionary of names.
 module dictionary where
 
     import "dict.fky"

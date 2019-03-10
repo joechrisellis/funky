@@ -1,3 +1,4 @@
+# The fixpoint operator in Funky.
 module fix where
 
     fix f = f (fix f)

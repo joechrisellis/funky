@@ -1,3 +1,4 @@
+# Searching a list for the index of a particular item in Funky.
 module listindex where
 
     import "stdlib.fky"

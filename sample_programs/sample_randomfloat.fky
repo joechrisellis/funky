@@ -1,3 +1,4 @@
+# Demonstrating the use of Funky's random library to generate a random float.
 module randomfloat where
 
     import "random.fky"

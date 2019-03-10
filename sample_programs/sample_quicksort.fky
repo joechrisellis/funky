@@ -1,3 +1,4 @@
+# The standard quicksort algorithm for integers in Funky.
 module quicksort where
 
     import "stdlib.fky"

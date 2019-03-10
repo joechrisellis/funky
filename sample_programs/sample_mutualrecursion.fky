@@ -1,3 +1,4 @@
+# Mutual recursion in Funky.
 module mutualrecursion where
 
     even 0 = True

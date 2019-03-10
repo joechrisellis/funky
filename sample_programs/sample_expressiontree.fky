@@ -1,8 +1,12 @@
+# Representing and evaluating expression trees in Funky.
 module expressiontree where
 
     newtype Expression = Const Float
-                       | BinOp Expression (Expression -> Expression -> Float) Expression
-                       | UnOp  (Expression -> Float) Expression
+                       | BinOp Expression
+                               (Expression -> Expression -> Float)
+                               Expression
+                       | UnOp  (Expression -> Float)
+                               Expression
 
     evaluate (Const x)     = x
     evaluate (BinOp a f b) = f a b
@@ -13,5 +17,7 @@ module expressiontree where
     mul  exp1  exp2  =  (evaluate  exp1)  *  (evaluate  exp2)
     div  exp1  exp2  =  (evaluate  exp1)  /  (evaluate  exp2)
 
-    main = evaluate my_expression
-           where my_expression = (BinOp (Const 5.0) add (BinOp (Const 3.0) div (Const 2.0)))
+    test_exp = (BinOp (Const 5.0) add (BinOp (Const 3.0) div (Const 2.0)))
+
+    main = evaluate test_exp
+

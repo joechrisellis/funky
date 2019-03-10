@@ -1,3 +1,4 @@
+# Treesort algorithm for integer in Funky.
 module treesort where
 
     import "stdlib.fky"

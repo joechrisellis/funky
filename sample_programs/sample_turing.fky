@@ -1,3 +1,4 @@
+# A sample implementation of a Turing machine in Funky.
 module turing_machine where
 
     newtype Alphabet = One | Zero | Blank

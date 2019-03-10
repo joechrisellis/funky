@@ -1,4 +1,4 @@
-# Implementation of Peano numbers in Funky
+# Implementation of Peano natural numbers in Funky.
 module peano where
 
     err_neg = "Cannot represent negative numbers with Nat."

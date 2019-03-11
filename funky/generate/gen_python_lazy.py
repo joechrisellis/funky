@@ -262,7 +262,7 @@ class LazyPythonCodeGenerator(CodeGenerator):
 
         return "Thunk(lambda: __match(trampoline({}), {{{}}}, {}))".format(
             scrutinee,
-            ", ".join("trampoline({}) : {}".format(k, v) for k, v in d.items()),
+            ", ".join("{} : {}".format(k, v) for k, v in d.items()),
             default,
         )
 

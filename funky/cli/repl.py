@@ -5,6 +5,7 @@ import cmd
 import copy
 import logging
 import os
+import time
 import traceback
 
 from funky._version import __version__
@@ -180,12 +181,17 @@ def report_errors(f):
 
 class FunkyShell(CustomCmd):
 
-    intro   =  cgreen("funkyi ({}) repl".format(__version__)) + \
-               "\nFor help, use the ':help' command.\n"
+    intro   =  cgreen("\nfunkyi ({}) repl".format(__version__)) + \
+               "\nReady!\nFor help, use the ':help' command.\n"
     prompt  =  cyellow("funkyi> ")
 
     def __init__(self, lazy=False):
+        start = time.time()
         super().__init__()
+
+        log.debug("Lazy mode {}.".format("enabled" if lazy else "disabled"))
+        if lazy:
+            print(cblue("Lazy evaluation is enabled."))
 
         # create the various parsers:
         log.debug("Creating required parsers...")
@@ -210,6 +216,9 @@ class FunkyShell(CustomCmd):
         log.debug("Done creating parsers.")
 
         self.reset()
+
+        end = time.time()
+        print(cblue("Startup completed ({0:.3f}s).".format(end - start)))
 
     @report_errors
     @atomic
@@ -274,6 +283,7 @@ class FunkyShell(CustomCmd):
     @atomic
     def do_import(self, arg):
         """Import a .fky file into the REPL. E.g.: :import "stdlib.fky"."""
+        start = time.time()
         try:
             import_stmt = self.import_parser.do_parse("import {}".format(arg))
 
@@ -286,7 +296,9 @@ class FunkyShell(CustomCmd):
             self.add_typedefs(typedefs)
             self.add_declarations(code)
 
-            print(cgreen("Successfully imported {}.".format(arg)))
+            end = time.time()
+            print(cgreen("Successfully imported {0} ({1:.3f}s).".format(arg,
+                                                                        end - start)))
         except FunkyError as e:
             # if an error occurs, extend the error message to tell the user
             # that the error occurred while importing *this* file.

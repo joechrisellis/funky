@@ -24,14 +24,15 @@ from funky.infer.infer import do_type_inference
 
 from funky.generate.gen_c import CCodeGenerator
 from funky.generate.gen_haskell import HaskellCodeGenerator
-from funky.generate.gen_python import PythonCodeGenerator
+from funky.generate.gen_python_strict import StrictPythonCodeGenerator
+from funky.generate.gen_python_lazy import LazyPythonCodeGenerator
 
 log = logging.getLogger(__name__)
 
 targets = {
-    "c"             :  CCodeGenerator,
     "haskell"       :  HaskellCodeGenerator,
-    "python"        :  PythonCodeGenerator,
+    "python"        :  StrictPythonCodeGenerator,
+    "python_lazy"   :  LazyPythonCodeGenerator,
 
     "intermediate"  :  None, # <-- handled by separate method!
 }

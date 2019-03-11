@@ -1,0 +1,11 @@
+# Defining lists lazily in Funky. Please compile with the --use-lazy flag.
+module lazy_lists where
+
+    import "intlist.fky"
+    import "math.fky"
+
+    ones = Cons 1 ones
+    nats = Cons 1 (map ((+) 1) nats)
+
+    evens = Cons 2 (map ((+) 2) evens)
+    odds  = Cons 1 (map ((+) 2) odds)

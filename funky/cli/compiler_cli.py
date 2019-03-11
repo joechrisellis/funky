@@ -29,8 +29,6 @@ def main():
                        help="File to write compiled program to.")
     group.add_argument("--execute", "-x", action="store_true",
                         help="Do not create an output file, execute directly.")
-    group.add_argument("--be-lazy", "-z", action="store_true",
-                        help="Generate lazy code where possible.")
 
     parser.add_argument("--dump-lexed", default=False, required=False,
                         action="store_true",
@@ -79,8 +77,7 @@ def main():
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))
-    output = compiler.compile(args.input, lazy=args.be_lazy,
-                                          dump_lexed=args.dump_lexed,
+    output = compiler.compile(args.input, dump_lexed=args.dump_lexed,
                                           dump_parsed=args.dump_parsed,
                                           dump_imports=args.dump_imports,
                                           dump_renamed=args.dump_renamed,

@@ -17,7 +17,8 @@ REC_LIMIT = 10000
 sys.setrecursionlimit(REC_LIMIT)
 
 def trampoline(bouncer):
-    while callable(bouncer) and not inspect.isclass(bouncer):
+    while callable(bouncer) and not inspect.isclass(bouncer) \\
+        and len(inspect.signature(bouncer).parameters) == 0:
         bouncer = bouncer()
     return bouncer
 
@@ -74,16 +75,16 @@ def __match(scrutinee, outcomes, default):
         if ans is not None:
             args = [p for p in scrutinee.params]
             if args:
-                return lambda: ans(*args)
+                return ans(*args)
             else:
-                return lambda: ans()
+                return ans()
     else:
         ans = __match_literal(scrutinee, outcomes)
         if ans is not None:
-            return lambda: ans()
+            return ans()
 
     if default:
-        return lambda: default()
+        return default()
     else:
         raise InexhaustivePatternMatchError("Inexhaustive pattern match, cannot "
                                             "continue.")
@@ -145,7 +146,7 @@ class PythonCodeGenerator(CodeGenerator):
                     py_name = "__{}".format(constructor.identifier)
                 else:
                     py_name = constructor.identifier
-                adts.emit("{} = {} lambda: {}({})".format(py_name,
+                adts.emit("{} = {}{}({})".format(py_name,
                                                  s,
                                                  constructor_name,
                                                  ", ".join(varnames)))
@@ -163,7 +164,7 @@ class PythonCodeGenerator(CodeGenerator):
                                            self.py_compile(lam.param, sect, indent)),
                       d=indent)
             return_statement = self.py_compile(lam.expr, sect, indent+4)
-            sect.emit("return {}".format(return_statement), d=indent+4)
+            sect.emit("return lambda: {}".format(return_statement), d=indent+4)
             sect.newline()
         else:
             # if it's not a function bind, it must be a value bind.
@@ -188,14 +189,14 @@ class PythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreLiteral)
     def py_compile_literal(self, node, sect, indent):
         if node.inferred_type == String:
-            return "lambda: \"{}\"".format(node.value)
+            return "\"{}\"".format(node.value)
         else:
-            return "lambda: {}".format(str(node.value))
+            return "{}".format(str(node.value))
 
     @py_compile.register(CoreApplication)
     def py_compile_application(self, node, sect, indent):
         f = self.py_compile(node.expr, sect, indent)
-        return "({})({})".format(f, self.py_compile(node.arg, sect, indent))
+        return "(trampoline({}))({})".format(f, self.py_compile(node.arg, sect, indent))
 
     @py_compile.register(CoreLambda)
     def py_compile_lambda(self, node, sect, indent):
@@ -245,7 +246,7 @@ class PythonCodeGenerator(CodeGenerator):
                 default = fname
             else:
                 d[k] = fname
-            sect.emit("return {}".format(v), d=indent+4)
+            sect.emit("return lambda: {}".format(v), d=indent+4)
 
         return "lambda: __match(trampoline({}), {{{}}}, {})".format(
             scrutinee,
@@ -289,7 +290,7 @@ class PythonCodeGenerator(CodeGenerator):
         header_section = self.code_header()
         base_runtime_section = self.make_base_runtime()
 
-        log.info("Creating user-defined data structres...")
+        log.info("Creating user-defined data structures...")
         adts_section = self.make_adts(typedefs)
         log.info("Done.")
         log.info("Compiling core tree...")

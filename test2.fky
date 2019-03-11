@@ -1,0 +1,16 @@
+module test where
+
+    newtype List = Cons Integer List | Nil
+
+    zipwith f (Cons x xs) (Cons y ys) = Cons (f x y) (zipwith f xs ys)
+    zipwith _ _ _ = Nil
+
+    tail (Cons _ xs) = xs
+    tail _           = Nil
+
+    fibs = Cons 0 (Cons 1 (zipwith (+) fibs (tail fibs)))
+
+    take 0 _ = Nil
+    take n (Cons x xs) = Cons x (take (n - 1) xs)
+
+    main = take 20 fibs

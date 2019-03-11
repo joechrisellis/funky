@@ -5,7 +5,7 @@ module test where
     newtype List = Cons Integer List | Nil
 
     ones = Cons 1 ones
-    # nats = Cons 1 (map ((+) 1) nats)
+    nats = Cons 1 (map ((+) 1) nats)
 
     take 0 xs          = Nil
     take n (Cons x xs) = Cons x (take (n - 1) xs)
@@ -18,4 +18,4 @@ module test where
                          given otherwise = rest
                          where rest = filter f xs
 
-    main = take 10 ones
+    main = take 13 nats

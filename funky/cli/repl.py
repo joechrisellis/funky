@@ -32,7 +32,9 @@ from funky.rename.rename import rename, check_scope_for_errors, MAIN
 from funky.desugar.desugar import do_desugar, desugar, condense_function_binds, \
                                   split_typedefs_and_code
 from funky.infer.infer import do_type_inference, infer
-from funky.generate.gen_python import PythonCodeGenerator
+
+from funky.generate.gen_python_strict import StrictPythonCodeGenerator
+from funky.generate.gen_python_lazy import LazyPythonCodeGenerator
 
 log = logging.getLogger(__name__)
 
@@ -182,7 +184,7 @@ class FunkyShell(CustomCmd):
                "\nFor help, use the ':help' command.\n"
     prompt  =  cyellow("funkyi> ")
 
-    def __init__(self):
+    def __init__(self, lazy=False):
         super().__init__()
 
         # create the various parsers:
@@ -197,7 +199,14 @@ class FunkyShell(CustomCmd):
         self.setfix_parser.build(start="FIXITY_DECLARATION")
         self.import_parser = FunkyParser()
         self.import_parser.build(start="IMPORT_DECLARATION")
-        self.py_generator = PythonCodeGenerator()
+
+        if lazy:
+            log.debug("Using lazy code generator for REPL.")
+            self.py_generator = LazyPythonCodeGenerator()
+        else:
+            log.debug("Using strict code generator for REPL.")
+            self.py_generator = StrictPythonCodeGenerator()
+
         log.debug("Done creating parsers.")
 
         self.reset()
@@ -440,6 +449,9 @@ def main():
     parser.add_argument('-e', '--show-exception-traces', action='store_true',
                         default=False,
                         help="Show full exception traces.")
+    parser.add_argument('-z', '--be-lazy', action='store_true',
+                        default=False,
+                        help="Generate lazy code where possible.")
     parser.add_argument("files", type=str,
                         nargs="*",
                         help="Load these programs into the REPL.")
@@ -452,7 +464,7 @@ def main():
     SHOW_EXCEPTION_TRACE = args.show_exception_traces
 
     log.debug("Initialising REPL-shell...")
-    shell = FunkyShell()
+    shell = FunkyShell(lazy=args.be_lazy)
     for imp_file in args.files:
         shell.do_import("\"{}\"".format(imp_file)) # wrap in quotes to match import syntax
     log.debug("Done initialising REPL-shell...")

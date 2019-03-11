@@ -6,7 +6,7 @@ import funky.globals
 from funky.corelang.coretree import *
 from funky.corelang.builtins import String
 from funky.generate.gen import CodeGenerator, CodeSection
-from funky.generate.runtime.python_runtime import PythonRuntime
+from funky.generate.runtime.python_runtime_lazy import LazyPythonRuntime
 from funky.util import get_registry_function, global_counter
 
 log = logging.getLogger(__name__)
@@ -109,11 +109,11 @@ def __match_literal(scrutinee, outcomes):
         if scrutinee == alt:
             return expr"""
 
-class PythonCodeGenerator(CodeGenerator):
+class LazyPythonCodeGenerator(CodeGenerator):
 
     def __init__(self):
         super().__init__("Python", "# {}".format)
-        self.runtime = PythonRuntime()
+        self.runtime = LazyPythonRuntime()
 
     def make_base_runtime(self):
         runtime_section = CodeSection("base runtime")

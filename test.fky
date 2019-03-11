@@ -1,0 +1,21 @@
+module test where
+
+    import "stdlib.fky"
+
+    newtype List = Cons Integer List | Nil
+
+    ones = Cons 1 ones
+    # nats = Cons 1 (map ((+) 1) nats)
+
+    take 0 xs          = Nil
+    take n (Cons x xs) = Cons x (take (n - 1) xs)
+
+    map f Nil         = Nil
+    map f (Cons x xs) = Cons (f x) (map f xs)
+
+    filter f Nil                         = Nil
+    filter f (Cons x xs) given f x       = Cons x rest
+                         given otherwise = rest
+                         where rest = filter f xs
+
+    main = take 10 ones

@@ -12,8 +12,14 @@ from funky.util import get_registry_function, global_counter
 log = logging.getLogger(__name__)
 
 base_runtime = """import sys
+import inspect
 REC_LIMIT = 10000
 sys.setrecursionlimit(REC_LIMIT)
+
+def trampoline(bouncer):
+    while callable(bouncer) and not inspect.isclass(bouncer):
+        bouncer = bouncer()
+    return bouncer
 
 class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
@@ -36,8 +42,15 @@ class ADT:
             return name
 
         wrap = "({})".format
-        vars = [x.to_str(toplevel=False) if isinstance(x, ADT) else repr(x)
-                for x in self.params]
+        
+        vars = []
+        for p in self.params:
+            p = trampoline(p)
+            if isinstance(p, ADT):
+                vars.append(p.to_str(toplevel=False))
+            else:
+                vars.append(repr(p))
+
         s = \"{} {}\".format(name, \" \".join(vars))
         if not toplevel:
             s = wrap(s) 
@@ -61,16 +74,16 @@ def __match(scrutinee, outcomes, default):
         if ans is not None:
             args = [p for p in scrutinee.params]
             if args:
-                return ans(*args)
+                return lambda: ans(*args)
             else:
-                return ans()
+                return lambda: ans()
     else:
         ans = __match_literal(scrutinee, outcomes)
         if ans is not None:
-            return ans()
+            return lambda: ans()
 
     if default:
-        return default()
+        return lambda: default()
     else:
         raise InexhaustivePatternMatchError("Inexhaustive pattern match, cannot "
                                             "continue.")
@@ -132,7 +145,7 @@ class PythonCodeGenerator(CodeGenerator):
                     py_name = "__{}".format(constructor.identifier)
                 else:
                     py_name = constructor.identifier
-                adts.emit("{} = {}{}({})".format(py_name,
+                adts.emit("{} = {} lambda: {}({})".format(py_name,
                                                  s,
                                                  constructor_name,
                                                  ", ".join(varnames)))
@@ -155,7 +168,7 @@ class PythonCodeGenerator(CodeGenerator):
         else:
             # if it's not a function bind, it must be a value bind.
             val = node.bindee
-            sect.emit("{} = {}".format(node.identifier,
+            sect.emit("{} = lambda: {}".format(node.identifier,
                                        self.py_compile(val, sect, indent)),
                       d=indent)
 
@@ -175,9 +188,9 @@ class PythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreLiteral)
     def py_compile_literal(self, node, sect, indent):
         if node.inferred_type == String:
-            return "\"{}\"".format(node.value)
+            return "lambda: \"{}\"".format(node.value)
         else:
-            return str(node.value)
+            return "lambda: {}".format(str(node.value))
 
     @py_compile.register(CoreApplication)
     def py_compile_application(self, node, sect, indent):
@@ -234,9 +247,9 @@ class PythonCodeGenerator(CodeGenerator):
                 d[k] = fname
             sect.emit("return {}".format(v), d=indent+4)
 
-        return "__match({}, {{{}}}, {})".format(
+        return "lambda: __match(trampoline({}), {{{}}}, {})".format(
             scrutinee,
-            ", ".join("{} : {}".format(k, v) for k, v in d.items()),
+            ", ".join("trampoline({}) : {}".format(k, v) for k, v in d.items()),
             default,
         )
 
@@ -249,9 +262,9 @@ class PythonCodeGenerator(CodeGenerator):
         # object.  this has the nice benefit of wrapping it in quotes, etc, if
         # need be
         if funky.globals.CURRENT_MODE == funky.globals.Mode.REPL:
-            main_section.emit("print(repr({}))".format(main), d=4)
+            main_section.emit("print(repr(trampoline({})))".format(main), d=4)
         else:
-            main_section.emit("print({})".format(main), d=4)
+            main_section.emit("print(trampoline({}))".format(main), d=4)
 
         main_section.newline()
         main_section.emit("if __name__ == \"__main__\":")

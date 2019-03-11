@@ -18,4 +18,4 @@ module test where
                          given otherwise = rest
                          where rest = filter f xs
 
-    main = take 13 nats
+    main = take 50 nats

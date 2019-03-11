@@ -175,10 +175,14 @@ class PythonRuntime(Runtime):
     def runtime_error(self):
         fname = "__error"
         return """def {}(msg):
-    return lambda: raise FunkyRuntimeError(trampoline(msg))""".format(fname), fname
+    def lam():
+        raise FunkyRuntimeError(trampoline(msg))
+    return lam""".format(fname), fname
 
     @add_to_runtime
     def runtime_undefined(self):
         fname = "__undefined"
         return """def {}():
-    return lambda: raise FunkyRuntimeError("undefined")""".format(fname), fname + "()"
+    def lam():
+        raise FunkyRuntimeError("undefined")
+    return lam""".format(fname), fname + "()"

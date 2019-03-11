@@ -22,6 +22,18 @@ def trampoline(bouncer):
         bouncer = bouncer()
     return bouncer
 
+class Thunk:
+
+    def __init__(self, thunk):
+        self.thunk = thunk
+        self.memo = None
+
+    def __call__(self):
+        if self.memo:
+            return self.memo
+        self.memo = trampoline(self.thunk)
+        return self.memo
+
 class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
 
@@ -31,7 +43,7 @@ class ADT:
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return all(x == y for x, y in zip(self.params, other.params))
+        return all(trampoline(x) == trampoline(y) for x, y in zip(self.params, other.params))
 
     def __repr__(self):
         return self.to_str()
@@ -164,12 +176,12 @@ class PythonCodeGenerator(CodeGenerator):
                                            self.py_compile(lam.param, sect, indent)),
                       d=indent)
             return_statement = self.py_compile(lam.expr, sect, indent+4)
-            sect.emit("return lambda: {}".format(return_statement), d=indent+4)
+            sect.emit("return Thunk(lambda: {})".format(return_statement), d=indent+4)
             sect.newline()
         else:
             # if it's not a function bind, it must be a value bind.
             val = node.bindee
-            sect.emit("{} = lambda: {}".format(node.identifier,
+            sect.emit("{} = Thunk(lambda: {})".format(node.identifier,
                                        self.py_compile(val, sect, indent)),
                       d=indent)
 
@@ -246,9 +258,9 @@ class PythonCodeGenerator(CodeGenerator):
                 default = fname
             else:
                 d[k] = fname
-            sect.emit("return lambda: {}".format(v), d=indent+4)
+            sect.emit("return Thunk(lambda: {})".format(v), d=indent+4)
 
-        return "lambda: __match(trampoline({}), {{{}}}, {})".format(
+        return "Thunk(lambda: __match(trampoline({}), {{{}}}, {}))".format(
             scrutinee,
             ", ".join("trampoline({}) : {}".format(k, v) for k, v in d.items()),
             default,

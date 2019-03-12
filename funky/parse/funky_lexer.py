@@ -11,6 +11,7 @@ that we handle this is very similar to the 'layout' rule in Haskell.
 import logging
 import ply.lex as lex
 
+from funky.util.color import *
 from funky.parse import FunkyLexingError
 
 log = logging.getLogger(__name__)
@@ -179,8 +180,8 @@ class IndentationLexer:
         self.new_tokens   =  self._insert_implicit_tokens(self.orig_tokens)
 
         if self.dump_lexed:
-            print("## DUMPED LEXED SOURCE")
-            print(" ".join(str(t.value) for t in self.new_tokens))
+            print(cblue("## DUMPED LEXED SOURCE"))
+            pprint_tokens(self.new_tokens)
             print("")
 
     def __iter__(self):
@@ -267,3 +268,75 @@ class IndentationLexer:
         """
         line_start = self.source.rfind("\n", 0, token.lexpos) + 1
         return (token.lexpos - line_start)
+
+def pprint_tokens(tokens):
+    indentation, first = 0, True
+    for token in tokens:
+        s = colored_str(token)
+        
+        if token.type == "CLOSE_BRACE":
+            indentation -= 4
+            first = True
+            print("")
+            print(" " * indentation + s, end="")
+        elif token.type == "OPEN_BRACE":
+            indentation += 4
+            first = True
+            print(" " + s)
+            print(" " * indentation, end="")
+        elif token.type == "ENDSTATEMENT":
+            first = True
+            print(s, end="")
+            print("\n" + " " * indentation, end="")
+        else:
+            if first:
+                print(s, end="")
+            else:
+                print(" " + s, end="")
+            first = False
+
+def colored_str(token):
+    """..."""
+    colors = {
+        "EQUALS"    :  COLOR_EQUALS,
+        "TYPENAME"  :  COLOR_TYPENAME,
+    }
+
+    colors.update({k : COLOR_CONSTANT for k in [
+        "STRING",
+        "INTEGER",
+        "FLOAT",
+        "BOOL",
+    ]})
+
+    # make all keywords yellow
+    colors.update({k.upper() : COLOR_KEYWORD for k in FunkyLexer.reserved})
+
+    # make all operators/misc symbols violet
+    colors.update({k : COLOR_OPERATOR for k in [
+        "EQUALITY",
+        "INEQUALITY",
+        "LESS",
+        "LEQ",
+        "GREATER",
+        "GEQ",
+        "EQUALS",
+        "POW",
+        "CONCAT",
+        "PLUS",
+        "MINUS",
+        "TIMES",
+        "DIVIDE",
+        "MODULO",
+        "BACKTICK",
+        "PIPE",
+        "ARROW",
+    ]})
+
+    try:
+        v = str(token.value)
+        if token.type == "STRING": # <- rewrap it with quotes
+            v = "'{}'".format(v)
+        return colors[token.type](v)
+    except KeyError:
+        return str(token.value)

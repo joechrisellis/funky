@@ -3,9 +3,11 @@ import logging
 import os
 import sys
 
+from funky.util import get_registry_function
+from funky.util.color import *
+
 from funky.exitcode import *
 
-from funky.util import get_registry_function
 import funky
 
 from funky.parse import FunkyParsingError, FunkyLexingError, FunkySyntaxError
@@ -52,7 +54,7 @@ def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
         # parser whether we want the lexer's output to be displayed
         parsed = parser.do_parse(source, dump_lexed=dump_lexed)
         if dump_parsed:
-            print("## DUMPED PARSE TREE")
+            print(cblue("## DUMPED PARSE TREE"))
             print(parsed)
             print("")
     except FunkyLexingError as e:
@@ -87,7 +89,7 @@ def include_imports(filename, parsed, dump_imports):
     parsed.body.toplevel_declarations[:0] = imports_source
 
     if dump_imports:
-        print("## DUMPED PARSE TREE (with imports)")
+        print(cblue("## DUMPED PARSE TREE (with imports)"))
         print(parsed)
         print("")
 
@@ -103,7 +105,7 @@ def compiler_rename(parsed, dump_renamed):
     try:
         do_rename(parsed)
         if dump_renamed:
-            print("## DUMPED RENAMED PARSE TREE")
+            print(cblue("## DUMPED RENAMED PARSE TREE"))
             print(parsed)
             print("")
     except FunkyRenamingError as e:
@@ -121,9 +123,9 @@ def compiler_desugar(parsed, dump_desugared):
     try:
         core_tree, typedefs = do_desugar(parsed)
         if dump_desugared:
-            print("## TYPE DEFINITIONS")
+            print(cblue("## TYPE DEFINITIONS"))
             print("\n".join(str(t) for t in typedefs))
-            print("\n## CORE (DESUGARED) CODE")
+            print(cblue("\n## CORE (DESUGARED) CODE"))
             print(core_tree)
             print("")
     except FunkyDesugarError as e:
@@ -143,7 +145,7 @@ def compiler_inference(core_tree, typedefs, dump_types):
     try:
         do_type_inference(core_tree, typedefs)
         if dump_types:
-            print("## CORE TYPES")
+            print(cblue("## CORE TYPES"))
             print(core_tree)
             print("")
     except FunkyTypeError as e:
@@ -167,7 +169,7 @@ def compiler_generate(core_tree, typedefs, target, dump_generated):
         target_generator = targets[target]()
         target_source = target_generator.do_generate_code(core_tree, typedefs)
         if dump_generated:
-            print("## GENERATED {} CODE".format(target.upper()))
+            print(cblue("## GENERATED {} CODE".format(target.upper())))
             print(target_source)
             print("")
     except FunkyCodeGenerationError:

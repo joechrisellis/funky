@@ -4,11 +4,12 @@ for the intermediate language.
 
 import funky.globals
 
-from funky.corelang.builtins import python_to_funky
+from funky.corelang.builtins import python_to_funky, BUILTIN_FUNCTIONS
 from funky.corelang.types import AlgebraicDataType
 from funky.ds import Graph
-from funky.util import get_registry_function
-from funky.util import output_attributes
+
+from funky.util.color import *
+from funky.util import get_registry_function, output_attributes
 
 class CoreNode:
     """Superclass."""
@@ -27,8 +28,7 @@ class CoreTypeDefinition(CoreNode):
         self.typ         =  typ
     
     def __str__(self):
-        # TODO
-        return "{} := {}".format(self.identifier, str(self.typ))
+        return "{}".format(str(self.typ))
 
 class CoreBind(CoreNode):
     """A bind -- assigning a name to an expression."""
@@ -40,7 +40,7 @@ class CoreBind(CoreNode):
     
     def __str__(self):
         bindee_str = str(self.bindee)
-        return "{} = {}".format(self.identifier, bindee_str)
+        return "{} {} {}".format(self.identifier, COLOR_EQUALS("="), bindee_str)
 
 class CoreCons(CoreNode):
     """A construction -- a constructor applied to a list of parameters."""
@@ -55,7 +55,7 @@ class CoreCons(CoreNode):
     
     def __str__(self):
         parameters_str = " ".join(str(param) for param in self.parameters)
-        return "({} {})".format(self.constructor,
+        return "({} {})".format(COLOR_TYPENAME(self.constructor),
                                 parameters_str)
 
 class CoreVariable(CoreNode):
@@ -66,6 +66,9 @@ class CoreVariable(CoreNode):
         self.identifier     =  identifier
 
     def __str__(self):
+        # if this is a builtin, color it accordingly
+        if self.identifier in BUILTIN_FUNCTIONS:
+            return COLOR_OPERATOR(str(self.identifier))
         return str(self.identifier)
 
 class CoreLiteral(CoreNode):
@@ -76,7 +79,7 @@ class CoreLiteral(CoreNode):
         self.value = value
 
     def __str__(self):
-        return repr(self.value)
+        return COLOR_CONSTANT(repr(self.value))
 
 class CoreApplication(CoreNode):
     """Application of an expression (of type function) to an argument."""
@@ -104,8 +107,10 @@ class CoreLambda(CoreNode):
         self.is_raw_lambda  =  False
     
     def __str__(self):
-        return "lambda {} -> {}".format(str(self.param),
-                                        str(self.expr))
+        return "{} {} {} {}".format(COLOR_KEYWORD("lambda"),
+                                    str(self.param),
+                                    COLOR_OPERATOR("->"),
+                                    str(self.expr))
 
 class CoreLet(CoreNode):
     """A recursive let binding. A series of (potentially recursive, or mutually
@@ -188,7 +193,8 @@ class CoreLet(CoreNode):
 
     def __str__(self):
         binds_str = "; ".join(str(bind) for bind in self.binds)
-        return "let {} in {}".format(binds_str, str(self.expr))
+        return "{} {} {} {}".format(COLOR_KEYWORD("let"), binds_str,
+                                    COLOR_KEYWORD("in"), str(self.expr))
 
 class CoreMatch(CoreNode):
     """A match statement -- matching a scrutinee against a series
@@ -202,7 +208,10 @@ class CoreMatch(CoreNode):
     
     def __str__(self):
         alts_str = "; ".join(str(alt) for alt in self.alts)
-        return "match {} of ({})".format(str(self.scrutinee), alts_str)
+        return "{} {} {} ({})".format(COLOR_KEYWORD("match"),
+                                      str(self.scrutinee),
+                                      COLOR_KEYWORD("with"),
+                                      alts_str)
 
 class CoreAlt(CoreNode):
     """An alternative in a match statement."""
@@ -213,7 +222,8 @@ class CoreAlt(CoreNode):
         self.expr     =  expr
     
     def __str__(self):
-        return "{} -> {}".format(str(self.altcon), str(self.expr))
+        return "{} {} {}".format(str(self.altcon), COLOR_OPERATOR("->"),
+                                 str(self.expr))
 
 add_edges = get_registry_function()
 

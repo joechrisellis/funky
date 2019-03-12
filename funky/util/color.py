@@ -26,3 +26,10 @@ def colorize(color, string):
 # create a nice function to easily colorize a string
 for color in colors:
     exec("{} = partial(colorize, \"{}\")".format(color.lower(), color))
+
+# color palette used when pretty printing things in the compiler
+COLOR_CONSTANT  =  cred
+COLOR_EQUALS    =  cviolet
+COLOR_KEYWORD   =  cyellow
+COLOR_OPERATOR  =  cviolet
+COLOR_TYPENAME  =  cbeige

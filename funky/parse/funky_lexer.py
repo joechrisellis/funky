@@ -296,7 +296,9 @@ def pprint_tokens(tokens):
             first = False
 
 def colored_str(token):
-    """..."""
+    """Given a token from the lexer, gets its coloured string representation.
+    
+    """
     colors = {
         "EQUALS"    :  COLOR_EQUALS,
         "TYPENAME"  :  COLOR_TYPENAME,
@@ -332,6 +334,9 @@ def colored_str(token):
         "PIPE",
         "ARROW",
     ]})
+
+    if token.type == "WHITESPACE":
+        return "\n" + " " * token.value
 
     try:
         v = str(token.value)

@@ -3,14 +3,17 @@
 from functools import partial
 
 colors = {
-    "CBLACK"   :  '\33[30m',
-    "CRED"     :  '\33[31m',
-    "CGREEN"   :  '\33[32m',
-    "CYELLOW"  :  '\33[33m',
-    "CBLUE"    :  '\33[34m',
-    "CVIOLET"  :  '\33[35m',
-    "CBEIGE"   :  '\33[36m',
-    "CWHITE"   :  '\33[37m',
+    "CBLACK"      :  '\33[30m',
+    "CRED"        :  '\33[31m',
+    "CGREEN"      :  '\33[32m',
+    "CYELLOW"     :  '\33[33m',
+    "CBLUE"       :  '\33[34m',
+    "CVIOLET"     :  '\33[35m',
+    "CBEIGE"      :  '\33[36m',
+    "CWHITE"      :  '\33[37m',
+
+    "SBOLD"       :  '\33[1m',
+    "SUNDERLINE"  :  '\33[4m',
 }
 ENDC = '\033[0m'
 

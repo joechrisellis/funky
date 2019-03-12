@@ -28,6 +28,9 @@ class CoreTypeDefinition(CoreNode):
         self.typ         =  typ
     
     def __str__(self):
+        return self.pprint(indent=0)
+    
+    def pprint(self, indent=0):
         return "{}".format(str(self.typ))
 
 class CoreBind(CoreNode):
@@ -39,7 +42,10 @@ class CoreBind(CoreNode):
         self.bindee      =  bindee
     
     def __str__(self):
-        bindee_str = str(self.bindee)
+        return self.pprint(indent=0)
+
+    def pprint(self, indent=0):
+        bindee_str = self.bindee.pprint(indent=indent)
         return "{} {} {}".format(self.identifier, COLOR_EQUALS("="), bindee_str)
 
 class CoreCons(CoreNode):
@@ -54,7 +60,11 @@ class CoreCons(CoreNode):
         self.pattern      =  pattern
     
     def __str__(self):
-        parameters_str = " ".join(str(param) for param in self.parameters)
+        return self.pprint(indent=0)
+
+    def pprint(self, indent=0):
+        parameters_str = " ".join(param.pprint(indent=indent)
+                                  for param in self.parameters)
         return "({} {})".format(COLOR_TYPENAME(self.constructor),
                                 parameters_str)
 
@@ -66,6 +76,9 @@ class CoreVariable(CoreNode):
         self.identifier     =  identifier
 
     def __str__(self):
+        return self.pprint(indent=0)
+
+    def pprint(self, indent=0):
         # if this is a builtin, color it accordingly
         if self.identifier in BUILTIN_FUNCTIONS:
             return COLOR_OPERATOR(str(self.identifier))
@@ -79,6 +92,9 @@ class CoreLiteral(CoreNode):
         self.value = value
 
     def __str__(self):
+        return self.pprint(indent=0)
+
+    def pprint(self, indent=0):
         return COLOR_CONSTANT(repr(self.value))
 
 class CoreApplication(CoreNode):
@@ -90,7 +106,11 @@ class CoreApplication(CoreNode):
         self.arg   =  arg
 
     def __str__(self):
-        return "({}) ({})".format(str(self.expr), str(self.arg))
+        return self.pprint(indent=0)
+
+    def pprint(self, indent=0):
+        return "({}) ({})".format(self.expr.pprint(indent=0),
+                                  self.arg.pprint(indent=0))
 
 class CoreLambda(CoreNode):
     """An anonymous lambda expression."""
@@ -107,10 +127,14 @@ class CoreLambda(CoreNode):
         self.is_raw_lambda  =  False
     
     def __str__(self):
-        return "{} {} {} {}".format(COLOR_KEYWORD("lambda"),
-                                    str(self.param),
-                                    COLOR_OPERATOR("->"),
-                                    str(self.expr))
+        return self.pprint(index=0)
+
+    def pprint(self, indent=0):
+        return "{} {} {}\n{}{}".format(COLOR_KEYWORD("lambda"),
+                                       self.param.pprint(indent=indent),
+                                       COLOR_OPERATOR("->"),
+                                       " " * (indent + 4),
+                                       self.expr.pprint(indent=indent+4))
 
 class CoreLet(CoreNode):
     """A recursive let binding. A series of (potentially recursive, or mutually
@@ -192,9 +216,17 @@ class CoreLet(CoreNode):
         self.dependency_graph = new_dependency_graph
 
     def __str__(self):
-        binds_str = "; ".join(str(bind) for bind in self.binds)
-        return "{} {} {} {}".format(COLOR_KEYWORD("let"), binds_str,
-                                    COLOR_KEYWORD("in"), str(self.expr))
+        return self.pprint(indent=0)
+
+    def pprint(self, indent=0):
+        binds_strs = [bind.pprint(indent=indent+4) for bind in self.binds]
+        binds_strs = [" " * (indent + 4) + bind_str for bind_str in binds_strs]
+        body = self.expr.pprint(indent=indent)
+        return "{}\n{}\n{}{} {}".format(COLOR_KEYWORD("let"),
+                                      "\n".join(binds_strs),
+                                      " " * indent,
+                                      COLOR_KEYWORD("in"),
+                                      body)
 
 class CoreMatch(CoreNode):
     """A match statement -- matching a scrutinee against a series
@@ -206,12 +238,13 @@ class CoreMatch(CoreNode):
         self.scrutinee  =  scrutinee
         self.alts       =  alts
     
-    def __str__(self):
-        alts_str = "; ".join(str(alt) for alt in self.alts)
-        return "{} {} {} ({})".format(COLOR_KEYWORD("match"),
-                                      str(self.scrutinee),
+    def pprint(self, indent=0):
+        alts_strs = [alt.pprint(indent=indent+4) for alt in self.alts]
+        alts_strs = [" " * (indent + 4) + alt_str for alt_str in alts_strs]
+        return "{} {} {} {{\n{}}}".format(COLOR_KEYWORD("match"),
+                                      self.scrutinee.pprint(indent=indent),
                                       COLOR_KEYWORD("with"),
-                                      alts_str)
+                                      "\n".join(alts_strs))
 
 class CoreAlt(CoreNode):
     """An alternative in a match statement."""
@@ -220,10 +253,16 @@ class CoreAlt(CoreNode):
         super().__init__()
         self.altcon   =  altcon
         self.expr     =  expr
-    
-    def __str__(self):
-        return "{} {} {}".format(str(self.altcon), COLOR_OPERATOR("->"),
-                                 str(self.expr))
+
+    def pprint(self, indent=0):
+        if not self.expr:
+            expr_str = cyellow(sunderline(sbold("undefined")))
+        else:
+            expr_str = self.expr.pprint(indent=indent)
+
+        return "{} {} {}".format(self.altcon.pprint(indent=indent),
+                                 COLOR_OPERATOR("->"),
+                                 expr_str)
 
 add_edges = get_registry_function()
 

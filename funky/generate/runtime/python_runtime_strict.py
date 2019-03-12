@@ -72,7 +72,12 @@ class StrictPythonRuntime(Runtime):
     def runtime_pow(self):
         fname = "__pow"
         return """def {}(a):
-    return lambda x: a ** x""".format(fname), fname
+    def lam(x):
+        if type(a) == int and type(x) == int:
+            return int(a ** x)
+        else:
+            return a ** x
+    return lam""".format(fname), fname
 
     @add_to_runtime
     def runtime_add(self):

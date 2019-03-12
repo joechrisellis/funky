@@ -72,7 +72,12 @@ class LazyPythonRuntime(Runtime):
     def runtime_pow(self):
         fname = "__pow"
         return """def {}(a):
-    return lambda x: Thunk(lambda: trampoline(a) ** trampoline(x))""".format(fname), fname
+    def lam(x):
+        if type(a) == int and type(x) == int:
+            return Thunk(lambda: int(trampoline(a) ** trampoline(x)))
+        else:
+            return Thunk(lambda: trampoline(a) ** trampoline(x))
+    return lam""".format(fname), fname
 
     @add_to_runtime
     def runtime_add(self):

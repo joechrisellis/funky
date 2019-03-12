@@ -21,16 +21,6 @@ class ASTNode:
 
     __repr__ = output_attributes
 
-    def __init__(self):
-        # These booleans represent the operations that have been performed on
-        # the parse tree thus far. They are used to ensure that we don't
-        # perform the stages in the incorrect order, which could give undefined
-        # results.
-        self.parsed             =  False
-        self.fixities_resolved  =  False
-        self.renamed            =  False
-        self.desugared          =  False
-
 class Module(ASTNode):
     """Node representing a module in Funky. Comprises a module ID and a program
     body.

@@ -191,7 +191,9 @@ class FunkyShell(CustomCmd):
 
         log.debug("Lazy mode {}.".format("enabled" if lazy else "disabled"))
         if lazy:
-            print(cblue("Lazy evaluation is enabled."))
+            print(cblue("Lazy evalation enabled."))
+        else:
+            print(cblue("Lazy evalation disabled."))
 
         # create the various parsers:
         log.debug("Creating required parsers...")
@@ -247,6 +249,29 @@ class FunkyShell(CustomCmd):
         self.global_let.expr = expr
         do_type_inference(self.global_let, self.global_types)
         print("{} :: {}".format(arg, self.global_let.inferred_type))
+
+    def do_lazy(self, arg):
+        """Use ':lazy on' to use lazy evaluation and ':lazy off' to use strict evaluation."""
+        SWAPPED = "Swapped to {} code generator.".format
+        ALREADY = "Already using {} code generator; ignoring.".format
+        if arg.lower() == "on":
+            log.debug("Now using lazy code generator for REPL.")
+            if isinstance(self.py_generator, StrictPythonCodeGenerator):
+                self.py_generator = LazyPythonCodeGenerator()
+                print(cgreen(SWAPPED("lazy")))
+            else:
+                print(ALREADY("lazy"))
+        elif arg.lower() == "off":
+            log.debug("Now using strict code generator for REPL.")
+            if isinstance(self.py_generator, LazyPythonCodeGenerator):
+                self.py_generator = StrictPythonCodeGenerator()
+                print(cgreen(SWAPPED("strict")))
+            else:
+                print(ALREADY("strict"))
+        else:
+            print(cred("Invalid option '{}'. Please specify 'on' or "
+                       "'off'.".format(arg)))
+
 
     def do_list(self, arg):
         """List the current bindings in desuguared intermediate code."""

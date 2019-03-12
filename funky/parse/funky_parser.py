@@ -388,18 +388,19 @@ class FunkyParser:
     def p_error(self, p):
         raise FunkySyntaxError("Parsing failed at token {}".format(repr(p)))
 
-    def build(self, dump_lexed=False, **kwargs):
+    def build(self, dump_pretty=False, dump_lexed=False, **kwargs):
         """Build the parser."""
         self.lexer = FunkyLexer()
         self.lexer.build()
-        self.lexer = IndentationLexer(self.lexer, dump_lexed=dump_lexed)
+        self.lexer = IndentationLexer(self.lexer, dump_pretty=dump_pretty,
+                                                  dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self,
                                 errorlog=yacc.NullLogger(),
                                 **kwargs)
         log.debug("Parser built.")
 
-    def do_parse(self, source, dump_lexed=False):
+    def do_parse(self, source):
         """Parse the given source code.
         
         :param source str: the source code as a raw string

@@ -154,7 +154,6 @@ class FunkyLexer:
         while True:
             tok = self.lexer.token()
             if not tok: break
-
             self.at_line_start = False
             tokens.append(tok)
 
@@ -168,16 +167,23 @@ class IndentationLexer:
     into the token stream.
     """
 
-    def __init__(self, lexer, dump_lexed=False):
-        self.lexer       =  lexer
-        self.new_tokens  =  []
-        self.source      =  ""
-        self.dump_lexed  =  dump_lexed
+    def __init__(self, lexer, dump_pretty=False, dump_lexed=False):
+        self.lexer        =  lexer
+        self.new_tokens   =  []
+        self.source       =  ""
+        self.dump_pretty  =  dump_pretty
+        self.dump_lexed   =  dump_lexed
 
     def input(self, source, *args, **kwargs):
         self.source       =  source
         self.orig_tokens  =  self.lexer.do_lex(source, *args, **kwargs)
         self.new_tokens   =  self._insert_implicit_tokens(self.orig_tokens)
+
+        if self.dump_pretty:
+            print(cblue("## PRETTIFIED SOURCE"))
+            print(self.orig_tokens)
+            pprint_tokens(self.orig_tokens)
+            print("")
 
         if self.dump_lexed:
             print(cblue("## DUMPED LEXED SOURCE"))
@@ -214,10 +220,11 @@ class IndentationLexer:
                tokens[i + 1].type != "OPEN_BRACE":
                 j = i + 1
                 while tokens[j].type == "WHITESPACE":
-                    tokens.pop(j)
+                    j += 1
                 ind_stack.append(self._find_column(tokens[j]))
                 new_tokens.append(tok)
                 new_tokens.append(self._make_token("OPEN_BRACE", value="{"))
+                i = j
             elif tok.type == "WHITESPACE":
                 if ind_stack:
                     if tok.value == ind_stack[-1]:
@@ -228,10 +235,10 @@ class IndentationLexer:
                                                            value="}"))
                         ind_stack.pop()
                         continue
+                i += 1
             else:
                 new_tokens.append(tok)
-
-            i += 1
+                i += 1
 
         while ind_stack:
             new_tokens.append(self._make_token("CLOSE_BRACE", value="}"))

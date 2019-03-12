@@ -39,20 +39,22 @@ targets = {
     "intermediate"  :  None, # <-- handled by separate method!
 }
 
-def compiler_lex_and_parse(source, dump_lexed, dump_parsed):
+def compiler_lex_and_parse(source, dump_pretty, dump_lexed, dump_parsed):
     """Lexes and parses the source code to get the syntax tree.
     
     :param source str:       the Funky source code
+    :param dump_pretty bool: if true, dump the syntax-highlighted, prettified
+                             code to stdout
     :param dump_lexed bool:  if true, dump the lexed code to stdout
     :param dump_parsed bool: if true, dump the syntax tree to stdout
     """
     # lex and parse code
     try:
         parser = FunkyParser()
-        parser.build(dump_lexed=dump_lexed)
+        parser.build(dump_pretty=dump_pretty, dump_lexed=dump_lexed)
         # lexing is done in the same step as parsing -- so we have to tell the
         # parser whether we want the lexer's output to be displayed
-        parsed = parser.do_parse(source, dump_lexed=dump_lexed)
+        parsed = parser.do_parse(source)
         if dump_parsed:
             print(cblue("## DUMPED PARSE TREE"))
             print(parsed)
@@ -185,7 +187,8 @@ def just_dump_desugared(core_tree, typedefs):
     data = (core_tree, typedefs)
     return pickle.dumps(data)
 
-def compile(infile, dump_lexed=False,
+def compile(infile, dump_pretty=False,
+                    dump_lexed=False,
                     dump_parsed=False,
                     dump_imports=False,
                     dump_renamed=False,
@@ -196,6 +199,8 @@ def compile(infile, dump_lexed=False,
     """Compiles funky source code.
 
     :param source str:          the source code for the program as a raw string
+    :param dump_pretty bool:    dump the syntax-highlighted, prettified source
+                                code to stdout.
     :param dump_lexed bool:     dump the output of the lexer to stdout
     :param dump_parsed bool:    dump the output of the parser to stdout
     :param dump_imports bool:   dump the output of the parser (with imports) to
@@ -215,7 +220,7 @@ def compile(infile, dump_lexed=False,
     log.info("Input file has {} lines.".format(len(lines)))
     source = "".join(lines)
 
-    parsed = compiler_lex_and_parse(source, dump_lexed, dump_parsed)
+    parsed = compiler_lex_and_parse(source, dump_pretty, dump_lexed, dump_parsed)
     include_imports(filename, parsed, dump_imports)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)

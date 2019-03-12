@@ -30,9 +30,13 @@ def main():
     group.add_argument("--execute", "-x", action="store_true",
                         help="Do not create an output file, execute directly.")
 
+    parser.add_argument("--dump-pretty", default=False, required=False,
+                        action="store_true",
+                        help="Dump the prettified source code to stdout with "
+                             "syntax highlighting.")
     parser.add_argument("--dump-lexed", default=False, required=False,
                         action="store_true",
-                        help="Dump the lexed source code to stdout.")
+                        help="Dump the lexed (disambiguated) source code to stdout.")
     parser.add_argument("--dump-parsed", default=False, required=False,
                         action="store_true",
                         help="Dump the parse tree to stdout.")
@@ -77,7 +81,8 @@ def main():
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))
-    output = compiler.compile(args.input, dump_lexed=args.dump_lexed,
+    output = compiler.compile(args.input, dump_pretty=args.dump_pretty,
+                                          dump_lexed=args.dump_lexed,
                                           dump_parsed=args.dump_parsed,
                                           dump_imports=args.dump_imports,
                                           dump_renamed=args.dump_renamed,

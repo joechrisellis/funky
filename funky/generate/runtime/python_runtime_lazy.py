@@ -36,106 +36,106 @@ class LazyPythonRuntime(Runtime):
     def runtime_eq(self):
         fname = "__eq"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) == trampoline(x)""".format(fname, fname, fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) == trampoline(x))""".format(fname, fname, fname), fname
 
     @add_to_runtime
     def runtime_neq(self):
         fname = "__neq"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) != trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) != trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_less(self):
         fname = "__less"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) < trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) < trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_leq(self):
         fname = "__leq"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) <= trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) <= trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_greater(self):
         fname = "__greater"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) > trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) > trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_geq(self):
         fname = "__geq"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) > trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) > trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_pow(self):
         fname = "__pow"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) ** trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) ** trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_add(self):
         fname = "__add"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) + trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) + trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_concat(self):
         fname = "__concat"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) + trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) + trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_sub(self):
         fname = "__sub"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) - trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) - trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_negate(self):
         fname = "__negate"
         return """def {}(a):
-    return lambda: -trampoline(a)""".format(fname), fname
+    return Thunk(lambda: -trampoline(a))""".format(fname), fname
 
     @add_to_runtime
     def runtime_mul(self):
         fname = "__mul"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) * trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) * trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_div(self):
         fname = "__div"
         return """def {}(a):
     if isinstance(a, int):
-        return lambda x: lambda: trampoline(a) // trampoline(x)
+        return lambda x: Thunk(lambda: trampoline(a) // trampoline(x))
     else:
-        return lambda x: lambda: trampoline(a) / trampoline(x)""".format(fname), fname
+        return lambda x: Thunk(lambda: trampoline(a) / trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_mod(self):
         fname = "__mod"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) % trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) % trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_logical_and(self):
         fname = "__logical_and"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) and trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) and trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_logical_or(self):
         fname = "__logical_or"
         return """def {}(a):
-    return lambda x: lambda: trampoline(a) or trampoline(x)""".format(fname), fname
+    return lambda x: Thunk(lambda: trampoline(a) or trampoline(x))""".format(fname), fname
 
     @add_to_runtime
     def runtime_to_str(self):
         fname = "__to_str"
         return """def {}(a):
-    return lambda: str(trampoline(a))""".format(fname), fname
+    return Thunk(lambda: str(trampoline(a)))""".format(fname), fname
 
     @add_to_runtime
     def runtime_to_int(self):
@@ -163,13 +163,13 @@ class LazyPythonRuntime(Runtime):
     def runtime_slice_from(self):
         fname = "__slice_from"
         return """def {}(a):
-    return lambda s: lambda: trampoline(s)[trampoline(a):]""".format(fname), fname
+    return lambda s: Thunk(lambda: trampoline(s)[trampoline(a):])""".format(fname), fname
 
     @add_to_runtime
     def runtime_slice_to(self):
         fname = "__slice_to"
         return """def {}(a):
-    return lambda s: lambda: trampoline(s)[:trampoline(a)]""".format(fname), fname
+    return lambda s: Thunk(lambda: trampoline(s)[:trampoline(a)])""".format(fname), fname
 
     @add_to_runtime
     def runtime_error(self):

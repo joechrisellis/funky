@@ -217,7 +217,7 @@ class LazyPythonCodeGenerator(CodeGenerator):
         lam_name = "lam{}".format(differentiator)
         sect.emit("def {}({}):".format(lam_name, param), d=indent)
         expr = self.py_compile(node.expr, sect, indent + 4)
-        sect.emit("return {}".format(expr), d=indent+4)
+        sect.emit("return Thunk(lambda: {})".format(expr), d=indent+4)
         return lam_name
 
     @py_compile.register(CoreLet)

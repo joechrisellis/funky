@@ -9,3 +9,5 @@ module lazy_lists where
 
     evens = Cons 2 (map ((+) 2) evens)
     odds  = Cons 1 (map ((+) 2) odds)
+
+    main = take 20 evens

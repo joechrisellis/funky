@@ -89,3 +89,5 @@ module intlist where
 
     zipwith f (Cons x xs) (Cons y ys) = Cons (f x y) (zipwith f xs ys)
     zipwith _ _ _                     = Nil
+
+    iterate f x = Cons x (iterate f (f x))

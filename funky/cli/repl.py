@@ -185,7 +185,6 @@ class FunkyShell(CustomCmd):
         start = time.time()
         super().__init__()
 
-
         self.intro   =  cgreen("\nfunkyi ({}) repl".format(__version__)) + \
                         "\nReady!\nFor help, use the ':help' command.\n"
         self.prompt  =  cyellow("funkyi> ")

@@ -18,3 +18,7 @@ module lists where
 
     primes = sieve (tail nats)
              where sieve (Cons p xs) = Cons p (sieve (filter (lambda x -> x % p > 0) xs))
+
+    squares = zipwith (*) nats nats
+
+    flip_flop = Cons 0 (Cons 1 flip_flop)

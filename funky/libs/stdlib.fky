@@ -17,3 +17,8 @@ module stdlib where
 
     # Function composition
     compose f g x = f (g x)
+
+    # Repetition
+    frepeat f 0 x = x
+    frepeat f n x given n < 0     = error "Cannot repeat for n < 0."
+                  given otherwise = f (frepeat f (n - 1) x)

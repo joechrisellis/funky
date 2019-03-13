@@ -8,6 +8,7 @@ from funky.corelang.builtins import python_to_funky, BUILTIN_FUNCTIONS
 from funky.corelang.types import AlgebraicDataType
 from funky.ds import Graph
 
+import funky.util.specialchars as chars
 from funky.util.color import *
 from funky.util import get_registry_function, output_attributes
 
@@ -130,9 +131,9 @@ class CoreLambda(CoreNode):
         return self.pprint(index=0)
 
     def pprint(self, indent=0):
-        return "{} {} {}\n{}{}".format(COLOR_KEYWORD("lambda"),
+        return "{} {} {}\n{}{}".format(COLOR_KEYWORD(chars.C_LAMBDA),
                                        self.param.pprint(indent=indent),
-                                       COLOR_OPERATOR("->"),
+                                       COLOR_OPERATOR(chars.C_RIGHTARROW),
                                        " " * (indent + 4),
                                        self.expr.pprint(indent=indent+4))
 
@@ -261,7 +262,7 @@ class CoreAlt(CoreNode):
             expr_str = self.expr.pprint(indent=indent)
 
         return "{} {} {}".format(self.altcon.pprint(indent=indent),
-                                 COLOR_OPERATOR("->"),
+                                 COLOR_OPERATOR(chars.C_RIGHTARROW),
                                  expr_str)
 
 add_edges = get_registry_function()

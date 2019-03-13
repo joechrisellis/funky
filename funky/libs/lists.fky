@@ -1,0 +1,20 @@
+# Useful lists in Funky.
+module lists where
+    
+    import "intlist.fky"
+    import "math.fky"
+
+    ones  = Cons 1 ones
+    nats  = iterate ((+) 1) 1
+    znats = Cons 0 nats
+    negs  = map negate nats
+
+    evens = iterate ((+) 2) 0
+    odds  = iterate ((+) 2) 1
+
+    powers_of_two = iterate ((*) 2) 1
+
+    fibs = Cons 0 (Cons 1 (zipwith (+) fibs (tail fibs)))
+
+    primes = sieve (tail nats)
+             where sieve (Cons p xs) = Cons p (sieve (filter (lambda x -> x % p > 0) xs))

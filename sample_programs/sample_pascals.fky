@@ -1,0 +1,10 @@
+# Computes the nth row of Pascal's triangle in Funky.
+module pascals where
+
+    import "stdlib.fky"
+    import "intlist.fky"
+
+    next_row vs = Cons 1 ((zipwith (+) vs (tail vs)) `concatenate` (Cons 1 Nil))
+    nth_row n = frepeat next_row n (Cons 1 Nil)
+
+    main = nth_row 30

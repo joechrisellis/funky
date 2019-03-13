@@ -2,6 +2,9 @@
 contains a consistent representation for them.
 """
 from itertools import count
+
+import funky.util.specialchars as chars
+from funky.util.color import *
 from funky.util import output_attributes
 
 def typename_generator():
@@ -70,10 +73,10 @@ class TypeVariable:
         if self.instance:
             return str(self.instance)
         if self.parent_class:
-            return self.parent_class
+            return COLOR_TYPECLASS(self.parent_class)
         if self.constraints:
             return self.constraints_str()
-        return self.type_name
+        return COLOR_TYPEVARIABLE(self.type_name)
 
 class TypeOperator:
     """An n-ary type constructor."""
@@ -98,15 +101,25 @@ class TypeOperator:
         if not self.is_string_free():
             return "-- preprocessing required --"
 
+        # If this is a function (by some inconsistency elsewhere -- I've had
+        # troubles making sure that FunctionTypes don't generalise to
+        # TypeOperators where they shouldn't!) delegate to the FunctionType str
+        # method.
+        # This is more a failsafe than anything.
+        if is_function(self):
+            return FunctionType.__str__(self)
+
         if self.parent_class:
-            return self.parent_class
+            return COLOR_TYPECLASS(self.parent_class)
         elif len(self.types) == 0: # 0-ary constructor
-            return self.type_name
+            return COLOR_TYPENAME(self.type_name)
         elif len(self.types) == 2: # binary constructor
-            return "({} {} {})".format(str(self.types[0]), self.type_name,
+            return "({} {} {})".format(str(self.types[0]),
+                                       COLOR_TYPENAME(self.type_name),
                                        str(self.types[1]))
         else:
-            return "({} {})".format(self.type_name, " ".join(str(x) for x in self.types))
+            return "({} {})".format(COLOR_TYPENAME(self.type_name),
+                                    " ".join(str(x) for x in self.types))
 
 class FunctionType(TypeOperator):
     """A function type. Really, a function type is just a slightly extended
@@ -127,7 +140,7 @@ class FunctionType(TypeOperator):
         if is_function(self.input_type):
             left = wrap(left)
         right = str(self.output_type)
-        return "{} -> {}".format(left, right)
+        return "{} {} {}".format(left, COLOR_OPERATOR(chars.C_RIGHTARROW), right)
 
 class AlgebraicDataType:
     """An algebraic data type defined with the 'newtype' keyword. These are

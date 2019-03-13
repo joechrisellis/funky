@@ -3,14 +3,15 @@
 from functools import partial
 
 colors = {
-    "CBLACK"      :  '\33[30m',
-    "CRED"        :  '\33[31m',
-    "CGREEN"      :  '\33[32m',
-    "CYELLOW"     :  '\33[33m',
-    "CBLUE"       :  '\33[34m',
-    "CVIOLET"     :  '\33[35m',
-    "CBEIGE"      :  '\33[36m',
-    "CWHITE"      :  '\33[37m',
+    "CBLACK"        :  '\33[30m',
+    "CRED"          :  '\33[31m',
+    "CGREEN"        :  '\33[32m',
+    "CYELLOW"       :  '\33[33m',
+    "CBLUE"         :  '\33[34m',
+    "CVIOLET"       :  '\33[35m',
+    "CBEIGE"        :  '\33[36m',
+    "CWHITE"        :  '\33[37m',
+    "CLIGHTYELLOW"  :  '\33[93m',
 
     "SBOLD"       :  '\33[1m',
     "SUNDERLINE"  :  '\33[4m',
@@ -31,8 +32,10 @@ for color in colors:
     exec("{} = partial(colorize, \"{}\")".format(color.lower(), color))
 
 # color palette used when pretty printing things in the compiler
-COLOR_CONSTANT  =  cred
-COLOR_EQUALS    =  cviolet
-COLOR_KEYWORD   =  cyellow
-COLOR_OPERATOR  =  cviolet
-COLOR_TYPENAME  =  cbeige
+COLOR_CONSTANT      =  cred
+COLOR_EQUALS        =  cviolet
+COLOR_KEYWORD       =  cyellow
+COLOR_OPERATOR      =  cviolet
+COLOR_TYPENAME      =  cbeige
+COLOR_TYPECLASS     =  lambda s: sbold(sunderline(COLOR_TYPENAME(s)))
+COLOR_TYPEVARIABLE  =  lambda s: sbold(COLOR_TYPENAME(s))

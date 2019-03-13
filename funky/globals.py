@@ -7,5 +7,9 @@ class Mode(Enum):
 CURRENT_MODE = None
 
 # If True, permit the use of pretty unicode characters in output. Change this
-# to false if you want plain ASCII (perhaps for older terminals.
+# to False if you want plain ASCII (perhaps for older terminals.
 USE_UNICODE = True
+
+# If True, permit the use of colorised output. Change this to False if you want
+# all of your output to be mono and boring. :)
+USE_COLORS = True

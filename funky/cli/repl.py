@@ -486,6 +486,8 @@ def main():
     parser.add_argument('-u', '--no-unicode', action='store_true',
                         help="Do not use unicode characters in output (for old "
                              "terminals).")
+    parser.add_argument('-c', '--no-colors', action='store_true',
+                        help="Do not use coloured output (for boring people).")
     parser.add_argument('-e', '--show-exception-traces', action='store_true',
                         default=False,
                         help="Show full exception traces.")
@@ -498,6 +500,7 @@ def main():
 
     args = parser.parse_args()
     funky.globals.USE_UNICODE = not args.no_unicode
+    funky.globals.USE_COLORS  = not args.no_colors
 
     verbosity = args.verbose - args.quiet
     set_loglevel(verbosity)

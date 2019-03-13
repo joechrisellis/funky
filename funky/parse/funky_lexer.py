@@ -181,7 +181,6 @@ class IndentationLexer:
 
         if self.dump_pretty:
             print(cblue("## PRETTIFIED SOURCE"))
-            print(self.orig_tokens)
             pprint_tokens(self.orig_tokens)
             print("")
 

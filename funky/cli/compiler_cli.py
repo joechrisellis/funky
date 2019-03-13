@@ -27,6 +27,8 @@ def main():
     parser.add_argument('-u', '--no-unicode', action='store_true',
                         help="Do not use unicode characters in output (for old "
                              "terminals).")
+    parser.add_argument('-c', '--no-colors', action='store_true',
+                        help="Do not use coloured output (for boring people).")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--output", "-o", metavar="output_filename",
@@ -73,6 +75,7 @@ def main():
     args = parser.parse_args()
 
     funky.globals.USE_UNICODE = not args.no_unicode
+    funky.globals.USE_COLORS  = not args.no_colors
 
     if not (args.execute or args.target):
         print("Please specify a target, e.g. --target=python")

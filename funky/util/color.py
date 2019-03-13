@@ -2,6 +2,8 @@
 
 from functools import partial
 
+import funky.globals
+
 colors = {
     "CBLACK"        :  '\33[30m',
     "CRED"          :  '\33[31m',
@@ -23,6 +25,10 @@ def colorize(color, string):
     
     :param color:  the color, which must be in the colors dictionary
     :param string: the string you want to colorize"""
+
+    if not funky.globals.USE_COLORS:
+        return string
+
     if color not in colors:
         raise ValueError("Undefined color '{}'.".format(color))
     return colors[color] + string + ENDC

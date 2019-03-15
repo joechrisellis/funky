@@ -1,0 +1,31 @@
+# Basics of Funky.
+module basics_00 where
+
+    # Comments are denoted with a '#' symbol -- this is a comment!
+
+    # Function definitions can be declared using function application notation,
+    # or by using lambdas.
+    double x = x + x
+    double_lam = lambda x -> x + x
+
+    # Functions can be defined in terms of other functions. Function
+    # application is by juxtaposition. Like usual, function application is
+    # right associative.
+    quadruple x = double (double x)
+
+    # Functions can be called recursively.
+    # TODO...
+
+    # Implicit pattern matching can be used for control flow in a natural
+    # manner.
+    is_zero 0 = "Yep, that's a zero alright."
+    is_zero _ = "That's not a zero!"
+
+    # Pattern matching is robust!
+    xor True  False = True
+    xor False True  = True
+    xor _     _     = False
+
+    # Guard statements are possible using the 'given' keyword.
+    minor age given age <  18 = "You are a minor."
+              given age >= 18 = "You are an adult."

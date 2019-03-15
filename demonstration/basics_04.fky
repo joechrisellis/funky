@@ -1,0 +1,22 @@
+
+module basics_04 where
+
+    # You can declare a new data type with the 'newtype' keyword.
+    newtype Vector = P Float Float
+
+    # Pattern matching can be performed against user-defined data types.
+    fst (P x _) = x
+    snd (P _ y) = y
+    sum (P a b) (P x y) = P (a + x) (b + y)
+
+    # Data types can be recursive (or even infinite, as we will see later!)
+    newtype IntList = Cons Integer IntList | Nil
+
+    total Nil         = 0
+    total (Cons x xs) = x + total xs
+
+    max Nil = error "No maximum in empty list!"
+    max (Cons x Nil) = x
+    max (Cons x xs) given x > m  = x
+                    given x <= m = m
+                    where m = max xs

@@ -1,0 +1,14 @@
+# Slightly more advanced stuff in Funky.
+module basics_01 where
+
+    # Conditional expressions can be used with the if-else construct. The
+    # syntax is the same as Python syntax.
+    abs n = n if n >= 0 else -n
+
+    # Guard statements are possible using the 'given' keyword.
+    minor age given age <  18 = "You are a minor."
+              given age >= 18 = "You are an adult."
+
+    signum n given n <  0 = -1
+             given n == 0 = 0
+             given n >  0 = 1

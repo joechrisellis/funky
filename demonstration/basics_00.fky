@@ -1,4 +1,4 @@
-# Basics of Funky.
+# The very basics of Funky.
 module basics_00 where
 
     # Comments are denoted with a '#' symbol -- this is a comment!
@@ -15,17 +15,3 @@ module basics_00 where
 
     # Functions can be called recursively.
     # TODO...
-
-    # Implicit pattern matching can be used for control flow in a natural
-    # manner.
-    is_zero 0 = "Yep, that's a zero alright."
-    is_zero _ = "That's not a zero!"
-
-    # Pattern matching is robust!
-    xor True  False = True
-    xor False True  = True
-    xor _     _     = False
-
-    # Guard statements are possible using the 'given' keyword.
-    minor age given age <  18 = "You are a minor."
-              given age >= 18 = "You are an adult."

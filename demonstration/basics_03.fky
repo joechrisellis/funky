@@ -1,0 +1,12 @@
+# Pattern matching with literals.
+module basics_03 where
+
+    # Implicit pattern matching can be used for control flow in a more natural
+    # manner.
+    is_zero 0 = "Yep, that's a zero alright."
+    is_zero _ = "That's not a zero!"
+
+    # Pattern matching is robust!
+    xor True  False = True
+    xor False True  = True
+    xor _     _     = False

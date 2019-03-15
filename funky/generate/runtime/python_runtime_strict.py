@@ -66,7 +66,7 @@ class StrictPythonRuntime(Runtime):
     def runtime_geq(self):
         fname = "__geq"
         return """def {}(a):
-    return lambda x: a > x""".format(fname), fname
+    return lambda x: a >= x""".format(fname), fname
 
     @add_to_runtime
     def runtime_pow(self):

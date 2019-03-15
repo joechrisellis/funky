@@ -110,8 +110,12 @@ class CoreApplication(CoreNode):
         return self.pprint(indent=0)
 
     def pprint(self, indent=0):
-        return "({}) ({})".format(self.expr.pprint(indent=0),
-                                  self.arg.pprint(indent=0))
+        wrap = "({})".format
+        pretty_expr = self.expr.pprint(indent=0)
+        pretty_arg  = self.arg.pprint(indent=0)
+        if not (isinstance(self.arg, CoreVariable) or isinstance(self.arg, CoreLiteral)):
+            pretty_arg = wrap(pretty_arg)
+        return "{} {}".format(pretty_expr, pretty_arg)
 
 class CoreLambda(CoreNode):
     """An anonymous lambda expression."""

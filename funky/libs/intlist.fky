@@ -5,6 +5,8 @@ module intlist where
 
     newtype IntList = Cons Integer IntList | Nil
 
+    unit x = Cons x Nil
+
     # basic functions
     Nil         `concatenate` ys = ys
     (Cons x xs) `concatenate` ys = Cons x (xs `concatenate` ys)
@@ -97,3 +99,5 @@ module intlist where
     join Nil          _     = ""
     join (Cons x Nil) delim = to_str x
     join (Cons x xs)  delim = to_str x ++ delim ++ join xs delim
+
+    pprint list = "[" ++ join list ", " ++ "]"

@@ -272,6 +272,51 @@ class FunkyShell(CustomCmd):
             print(cred("Invalid option '{}'. Please specify 'on' or "
                        "'off'.".format(arg)))
 
+    def do_color(self, arg):
+        """Use ':color on' to enable colors and ':color off' to disable them."""
+        SWAPPED = "Turned colors {}.".format
+        ALREADY = "Colors are already {}.".format
+        
+        if arg.lower() == "on":
+            log.debug("Enabling colors.")
+            if not funky.globals.USE_COLORS:
+                funky.globals.USE_COLORS = True
+                print(cgreen(SWAPPED("on")))
+            else:
+                print(ALREADY("on"))
+        elif arg.lower() == "off":
+            log.debug("Disabling colors.")
+            if funky.globals.USE_COLORS:
+                funky.globals.USE_COLORS = False
+                print(cgreen(SWAPPED("off")))
+            else:
+                print(ALREADY("off"))
+        else:
+            print(cred("Invalid option '{}'. Please specify 'on' or "
+                       "'off'.".format(arg)))
+
+    def do_unicode(self, arg):
+        """Use ':unicode on' to enable unicode characters and ':unicode off' to disable them."""
+        SWAPPED = "Unicode printing is now {}.".format
+        ALREADY = "Unicode printing is already {}.".format
+        
+        if arg.lower() == "on":
+            log.debug("Enabling unicode printing.")
+            if not funky.globals.USE_UNICODE:
+                funky.globals.USE_UNICODE = True
+                print(cgreen(SWAPPED("on")))
+            else:
+                print(ALREADY("on"))
+        elif arg.lower() == "off":
+            log.debug("Disabling unicode printing.")
+            if funky.globals.USE_UNICODE:
+                funky.globals.USE_UNICODE = False
+                print(cgreen(SWAPPED("off")))
+            else:
+                print(ALREADY("off"))
+        else:
+            print(cred("Invalid option '{}'. Please specify 'on' or "
+                       "'off'.".format(arg)))
 
     def do_list(self, arg):
         """List the current bindings in desuguared intermediate code."""

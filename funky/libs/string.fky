@@ -15,3 +15,6 @@ module string where
 
     reverse "" = ""
     reverse st = reverse (str_tail st) ++ str_head st
+
+    # 'comfort' function for Python users.
+    print = id

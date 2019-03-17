@@ -1,0 +1,24 @@
+# The standard quicksort algorithm for integers in Funky.
+module quicksort where
+
+    import "stdlib.fky"
+    import "intlist.fky"
+
+    newtype List is Cons Integer List | Nil
+
+    concatenate (Cons x xs) ys  is Cons x (xs `concatenate` ys)
+    concatenate xs          Nil is xs
+    concatenate Nil         ys  is ys
+
+    filter p Nil                         is Nil
+    filter p (Cons x xs) given p x       is Cons x rest
+                         given otherwise is rest
+                         where rest is filter p xs
+
+    quicksort Nil         is Nil
+    quicksort (Cons x xs) is lesser `concatenate` unit x `concatenate` greater
+                              where lesser  is filter ((>)  x) xs
+                                    greater is filter ((<=) x) xs
+
+    main is quicksort my_list
+            where my_list is Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

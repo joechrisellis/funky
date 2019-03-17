@@ -7,6 +7,6 @@ module basics_03 where
     is_zero _ = "That's not a zero!"
 
     # Pattern matching is robust!
-    xor True  False = True
-    xor False True  = True
-    xor _     _     = False
+    True  `xor` False = True
+    False `xor` True  = True
+    _     `xor` _     = False

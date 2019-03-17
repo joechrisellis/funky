@@ -28,7 +28,7 @@ class LazyPythonRuntime(Runtime):
             "slice_from"  :  self.runtime_slice_from,
             "slice_to"    :  self.runtime_slice_to,
 
-            "error"       :  self.runtime_error,
+            "fail"        :  self.runtime_fail,
             "undefined"   :  self.runtime_undefined,
         }
     
@@ -177,8 +177,8 @@ class LazyPythonRuntime(Runtime):
     return lambda s: Thunk(lambda: trampoline(s)[:trampoline(a)])""".format(fname), fname
 
     @add_to_runtime
-    def runtime_error(self):
-        fname = "__error"
+    def runtime_fail(self):
+        fname = "__fail"
         return """def {}(msg):
     def lam():
         raise FunkyRuntimeError(trampoline(msg))

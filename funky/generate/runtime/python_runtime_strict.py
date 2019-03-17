@@ -28,7 +28,7 @@ class StrictPythonRuntime(Runtime):
             "slice_from"  :  self.runtime_slice_from,
             "slice_to"    :  self.runtime_slice_to,
 
-            "error"       :  self.runtime_error,
+            "fail"        :  self.runtime_fail,
             "undefined"   :  self.runtime_undefined,
         }
     
@@ -173,8 +173,8 @@ class StrictPythonRuntime(Runtime):
     return lambda s: s[:a]""".format(fname), fname
 
     @add_to_runtime
-    def runtime_error(self):
-        fname = "__error"
+    def runtime_fail(self):
+        fname = "__fail"
         return """def {}(msg):
     raise FunkyRuntimeError(msg)""".format(fname), fname
 

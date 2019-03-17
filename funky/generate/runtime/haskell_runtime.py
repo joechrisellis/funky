@@ -28,7 +28,7 @@ class HaskellRuntime(Runtime):
             "slice_from"  :  self.runtime_slice_from,
             "slice_to"    :  self.runtime_slice_to,
 
-            "error"       :  self.runtime_error,
+            "fail"        :  self.runtime_fail,
             "undefined"   :  self.runtime_undefined,
         }
     
@@ -115,7 +115,7 @@ class HaskellRuntime(Runtime):
         fname = "runtime_slice_to"
         return """{} n xs = take n xs""".format(fname), fname
 
-    def runtime_error(self):
+    def runtime_fail(self):
         return "error"
 
     def runtime_undefined(self):

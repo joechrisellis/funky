@@ -2,27 +2,20 @@
 module treesort where
 
     import "stdlib.fky"
+    import "intlist.fky"
 
-    newtype List = Cons Integer List | Nil
     newtype Tree = Branch Tree Integer Tree | Empty
-
-    concatenate (Cons x xs) ys  = Cons x (xs `concatenate` ys)
-    concatenate xs          Nil = xs
-    concatenate Nil         ys  = ys
-
-    fold f z Nil         = z
-    fold f z (Cons x xs) = f x (fold f z xs)
 
     insert e Empty                          = Branch Empty e Empty
     insert e (Branch l v r) given e <= v    = Branch (insert e l) v r
                             given otherwise = Branch l v (insert e r)
     
     inorder Empty = Nil
-    inorder (Branch l v r) = inorder l    `concatenate`
-                             (Cons v Nil) `concatenate`
+    inorder (Branch l v r) = inorder l `concatenate`
+                             unit v    `concatenate`
                              inorder r
 
-    treesort list = inorder (fold insert Empty list)
+    treesort list = inorder (foldr insert Empty list)
 
     main = treesort my_list
            where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

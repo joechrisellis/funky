@@ -12,14 +12,14 @@ module intlist where
     (Cons x xs) `concatenate` ys = Cons x (xs `concatenate` ys)
 
     head (Cons x _) = x
-    head _          = error "No head element of empty list!"
+    head _          = fail "No head element of empty list!"
 
     tail (Cons _ xs) = xs
-    tail _           = error "No tail of empty list!"
+    tail _           = fail "No tail of empty list!"
 
     last (Cons x Nil) = x
     last (Cons _ xs)  = last xs
-    last _            = error "No last element of empty list!"
+    last _            = fail "No last element of empty list!"
 
     init (Cons x Nil) = Nil
     init (Cons x xs)  = Cons x (init xs)
@@ -63,7 +63,7 @@ module intlist where
     replicate n x = Cons x (replicate (n - 1) x)
 
     take 0 _           = Nil
-    take n Nil         = error "Not enough elements in list."
+    take n Nil         = fail "Not enough elements in list."
     take n (Cons x xs) = Cons x (take (n - 1) xs)
 
     drop 0 xs          = xs
@@ -84,10 +84,10 @@ module intlist where
                          given otherwise = rest
                          where rest = filter p xs
 
-    nth 0 (Cons x xs) = x
+    nth 0 (Cons x xs)                 = x
     nth n (Cons x xs) given n > 0     = nth (n - 1) xs
-                      given otherwise = error "Negative list index."
-    nth _ _           = error "List index out of bounds."
+                      given otherwise = fail "Negative list index."
+    nth _ _                           = fail "List index out of bounds."
 
     zipwith f (Cons x xs) (Cons y ys) = Cons (f x y) (zipwith f xs ys)
     zipwith _ _ _                     = Nil

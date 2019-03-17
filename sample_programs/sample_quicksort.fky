@@ -2,22 +2,10 @@
 module quicksort where
 
     import "stdlib.fky"
-
-    newtype List = Cons Integer List | Nil
-
-    concatenate (Cons x xs) ys  = Cons x (xs `concatenate` ys)
-    concatenate xs          Nil = xs
-    concatenate Nil         ys  = ys
-
-    filter p Nil                         = Nil
-    filter p (Cons x xs) given p x       = Cons x rest
-                         given otherwise = rest
-                         where rest = filter p xs
+    import "intlist.fky"
 
     quicksort Nil         = Nil
-    quicksort (Cons x xs) = lesser       `concatenate`
-                            (Cons x Nil) `concatenate`
-                            greater
+    quicksort (Cons x xs) = lesser `concatenate` unit x `concatenate` greater
                             where lesser  = filter ((>)  x) xs
                                   greater = filter ((<=) x) xs
 

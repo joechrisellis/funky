@@ -12,3 +12,5 @@ module basics_01 where
     signum n given n <  0 = -1
              given n == 0 = 0
              given n >  0 = 1
+
+    

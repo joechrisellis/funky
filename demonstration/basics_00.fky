@@ -1,17 +1,35 @@
-# The very basics of Funky.
+# Module are used to tell the compiler 'this is a Funky source file'
 module basics_00 where
 
     # Comments are denoted with a '#' symbol -- this is a comment!
+    
+    # Variables are defined as you would expect from any high-level programming
+    # language.
+    name  =  "Bob"
+    age   =  20
+    pi    =  3.14
 
-    # Function definitions can be declared using function application notation,
-    # or by using lambdas.
-    double x = x + x
+    # Named function definitions can be declared using function application
+    # notation, or equivalently, by creating a variable using a lambda
+    # expression.
+    double x   = x + x
     double_lam = lambda x -> x + x
+
+    # For readability, named function definitions can use binary function
+    # application syntax, as shown below
+    x `samesign` y = x * y > 0
 
     # Functions can be defined in terms of other functions. Function
     # application is by juxtaposition. Like usual, function application is
     # right associative.
     quadruple x = double (double x)
 
-    # Functions can be called recursively.
-    # TODO...
+    # Functions can be applied in binary notation for readability.
+    some_variable = 10 `samesign` (-10)
+
+    # Built-in operators are just infix functions! We can convert them to
+    # postfix (i.e. a normal function) by wrapping them in parenthesis.
+    example = 10 + 10 == (+) 10 10
+
+    # Functions are first-class values -- they can be curried!
+    increment = (+) 1

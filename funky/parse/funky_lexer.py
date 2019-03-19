@@ -134,7 +134,7 @@ class FunkyLexer:
          return t
 
     # Typenames are always capitalised, as in Haskell.
-    t_TYPENAME  =  r"[A-Z][A-Za-z]*"
+    t_TYPENAME  =  r"[A-Z][A-Za-z0-9]*"
 
     def t_error(self, t):
         raise FunkyLexingError(

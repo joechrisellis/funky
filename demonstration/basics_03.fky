@@ -10,3 +10,12 @@ module basics_03 where
     True  `xor` False = True
     False `xor` True  = True
     _     `xor` _     = False
+
+    True `implies` False = False
+    _    `implies` _     = True
+
+    # Lots of flexibility below.
+    f _     False True  = 1
+    f False True  _     = 2
+    f _     _     False = 3
+    f _     _     True  = 4

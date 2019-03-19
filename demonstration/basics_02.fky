@@ -1,0 +1,29 @@
+# Pattern matching with literals.
+module basics_02 where
+
+    # Pattern matching can be performed in-expression with the match keyword.
+    to_words n = match n with
+                    0 -> "zero"
+                    1 -> "one"
+                    2 -> "two"
+                    _ -> fail "I can't count that high!"
+
+    # Or alternatively, implicit pattern matching can be used for control flow
+    # in a more natural manner.
+    is_zero 0 = "Yep, that's a zero alright."
+    is_zero _ = "That's not a zero!"
+
+    # Pattern matching is robust!
+    True  `xor` False = True
+    False `xor` True  = True
+    _     `xor` _     = False
+
+    True `implies` False = False
+    _    `implies` _     = True
+
+    # Lots of flexibility due to wildcards below -- the compiler handles it
+    # just fine.
+    f _     False True  = 1
+    f False True  _     = 2
+    f _     _     False = 3
+    f _     _     True  = 4

@@ -1,0 +1,49 @@
+
+module lists where
+
+    import "stdlib.fky"
+    import "intlist.fky"
+
+    # Problem one: Find the last element of a list.
+    my_last Nil          = fail "No last element of empty list."
+    my_last (Cons x Nil) = x
+    my_last (Cons _ xs)  = my_last xs
+
+    # Problem two: Find the last but one element of a list.
+    my_but_last (Cons x (Cons _ Nil)) = x
+    my_but_last (Cons x xs)           = my_last xs
+    my_but_last _                     = fail "Not enough list elements."
+
+    # Problem three: Find the K'th element of a list. The first element in the
+    # list is number 1.
+    element_at (Cons x xs) 1                 = x
+    element_at (Cons x xs) n given n > 1     = element_at xs (n - 1)
+                             given otherwise = fail "Out of range."
+    element_at _ _                           = fail "Out of range."
+
+    # Problem four: Find the number of elements in a list.
+    my_length Nil         = 0
+    my_length (Cons _ xs) = 1 + length xs
+
+    # Problem five: Reverse a list.
+    reverse Nil         = Nil
+    reverse (Cons x xs) = reverse xs `concatenate` unit x
+
+    # Problem six: Find out whether a list is a palindrome. A palindrome can be
+    # read forward or backward; e.g. (x a m a x).
+    is_palindrome l = l == reverse l
+
+    # Problem seven: Flatten a nested list structure.
+    # Requires a nested list structure; we're limited here.
+
+    # Problem eight: Eliminate consecutive duplicates of list elements.
+    compress Nil = Nil
+    compress (Cons x (Cons y ys)) given x == y    = rest
+                                  given otherwise = Cons x rest
+                                  where rest = compress (Cons y ys)
+    compress xs = xs
+
+    # Problen nine: Pack consecutive duplicates of list elements into sublists.
+    # If a list contains repeated elements they should be placed in separate
+    # sublists.
+    # Requires a nested list structure; we're limited here.

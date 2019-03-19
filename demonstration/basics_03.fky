@@ -1,21 +1,28 @@
-# Pattern matching with literals.
+# Creating algebraic data types.
 module basics_03 where
 
-    # Implicit pattern matching can be used for control flow in a more natural
-    # manner.
-    is_zero 0 = "Yep, that's a zero alright."
-    is_zero _ = "That's not a zero!"
+    # You can declare a new data type with the 'newtype' keyword.
+    newtype Vector2D = V Float Float
 
-    # Pattern matching is robust!
-    True  `xor` False = True
-    False `xor` True  = True
-    _     `xor` _     = False
+    test_vector = V 5.2 6.1
 
-    True `implies` False = False
-    _    `implies` _     = True
+    # Pattern matching can be performed against user-defined data types.
+    fst (V x _) = x
+    snd (V _ y) = y
+    sum (V a b) (V x y) = V (a + x) (b + y)
 
-    # Lots of flexibility below.
-    f _     False True  = 1
-    f False True  _     = 2
-    f _     _     False = 3
-    f _     _     True  = 4
+    # Data types can be recursive (or even infinite, as we will see later!)
+    newtype IntList = Cons Integer IntList | Nil
+
+    test_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+
+    # Given an IntList, find the total
+    total Nil         = 0
+    total (Cons x xs) = x + total xs
+
+    # Given an IntList, find the maximum
+    max Nil                      = fail "No maximum in empty list!"
+    max (Cons x Nil)             = x
+    max (Cons x xs) given x > m  = x
+                    given x <= m = m
+                    where m = max xs

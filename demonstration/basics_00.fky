@@ -30,6 +30,3 @@ module basics_00 where
     # Built-in operators are just infix functions! We can convert them to
     # postfix (i.e. a normal function) by wrapping them in parenthesis.
     example = 10 + 10 == (+) 10 10
-
-    # Functions are first-class values -- they can be curried!
-    increment = (+) 1

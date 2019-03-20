@@ -2,14 +2,26 @@
 
 import logging
 
+QUIET           =  -1
+VERBOSE         =  0
+DOUBLE_VERBOSE  =  1
+TRIPLE_VERBOSE  =  2
+
 verbosity_2_loglevel = {
-    -1  :  logging.CRITICAL, # <- -q
-    0   :  logging.WARNING,  # <- -v
-    1   :  logging.INFO,     # <- -vv
-    2   :  logging.DEBUG,    # <- -vvv
+    QUIET           :  logging.CRITICAL,  # <- -q
+    VERBOSE         :  logging.WARNING,   # <- -v
+    DOUBLE_VERBOSE  :  logging.INFO,      # <- -vv
+    TRIPLE_VERBOSE  :  logging.DEBUG,     # <- -vvv
 }
 least_verbose_key  =  min(verbosity_2_loglevel)
 most_verbose_key   =  max(verbosity_2_loglevel)
+
+def get_loglevel():
+    """Gets the current loglevel.
+    
+    :return: the current loglevel
+    """
+    return logging.getLogger().getEffectiveLevel()
 
 def set_loglevel(verbosity):
     """Sets the loglevel of the logger based on a verbosity number. I.e.

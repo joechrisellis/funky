@@ -1,40 +1,51 @@
-from io import StringIO
-import contextlib
-import sys
-
-from funky.cli.verbosity import set_loglevel
+import funky.cli.verbosity as verbosity
 import funky.compiler as compiler
 
-@contextlib.contextmanager
-def stdoutIO(stdout=None):
-    """Context manager to capture stdout."""
-    old = sys.stdout
-    if stdout is None: stdout = StringIO()
-    sys.stdout = stdout
-    yield stdout
-    sys.stdout = old
-
 class FunkyCallable:
+    """Container for a Funky program compiled to Python code. When called, this
+    object will run the Python code and return its result. We call the 'result'
+    function within the compiled program, which returns the *raw data* used
+    internally in Funky (not guaranteed to be any specific representation, like
+    a string!). In other words, if the result of the main method in the given
+    Funky program is an ADT, this callable will return the ADT in Funks's
+    internal representation.
+    """
 
     def __init__(self, py_code):
         self.py_code = py_code
+        self.memo    = None
 
     def __call__(self):
-        with stdoutIO() as s:
-            exec(self.py_code, {"__name__" : "__main__"})
-        return s.getvalue().strip()
+        """Check if we have a memo -- if we do, this has already been run, so
+        just return the cached result. If we don't, compute it and save the
+        memo.
+        """
+        if self.memo:
+            return self.memo
+        g = {}
+        exec(self.py_code, g)
+        self.memo = g["result"]()
+        return self.memo
 
-def funky_prog(source, lazy=False):
+def funky_prog(source, lazy=False, loglevel=verbosity.QUIET):
+    """Creates a FunkyCallable object whose code is the result of compiling the
+    given source code. If lazy is True, we use the lazy Python code generator.
+    If lazy is False, we use the strict Python code generator.
+    
+    The result of this function can be called (as if it were a function!), which
+    will then return the result of executing the Funky code.
+    
+    :param source: the Funky source code to compile
+    :param lazy:   whether or not to use the lazy Python code generator
+    :return:       a FunkyCallable object that, when called, will compile the
+                   Funky source into Python, run it, and return the result
+    """
     target = "python_lazy" if lazy else "python"
-    py_code = compiler.do_compile(source, filename=".", target=target)
-    return FunkyCallable(py_code)
 
-prog = funky_prog("""
-module test with
-    
-    import "lists.fky"
-    
-    main = nth 20 fibs
-""", lazy=True)
-x = prog()
-print(x)
+    # Be quiet while compiling
+    old_loglevel = verbosity.get_loglevel()
+    verbosity.set_loglevel(loglevel)
+    py_code = compiler.do_compile(source, filename=".", target=target)
+
+    verbosity.set_loglevel(old_loglevel)
+    return FunkyCallable(py_code)

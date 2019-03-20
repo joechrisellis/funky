@@ -243,15 +243,19 @@ class StrictPythonCodeGenerator(CodeGenerator):
     def make_main(self, main):
         main_section = CodeSection("main method")
 
+        main_section.emit("def result():")
+        main_section.emit("return {}".format(main), d=4)
+        main_section.emit("")
+
         main_section.emit("def main():")
 
         # are we in the REPL?  if so, we want to show the representation of an
         # object.  this has the nice benefit of wrapping it in quotes, etc, if
         # need be
         if funky.globals.CURRENT_MODE == funky.globals.Mode.REPL:
-            main_section.emit("print(repr({}))".format(main), d=4)
+            main_section.emit("print(repr(result()))", d=4)
         else:
-            main_section.emit("print({})".format(main), d=4)
+            main_section.emit("print(result())", d=4)
 
         main_section.newline()
         main_section.emit("if __name__ == \"__main__\":")

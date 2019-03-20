@@ -27,7 +27,7 @@ module lists where
 
     # Problem five: Reverse a list.
     reverse Nil         = Nil
-    reverse (Cons x xs) = reverse xs `concatenate` unit x
+    reverse (Cons x xs) = reverse xs ~concatenate~ unit x
 
     # Problem six: Find out whether a list is a palindrome. A palindrome can be
     # read forward or backward; e.g. (x a m a x).

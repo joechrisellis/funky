@@ -13,20 +13,20 @@ module peano where
     nat_to_int Zero     = 0
     nat_to_int (Succ m) = 1 + nat_to_int m
 
-    m `add` Zero     = m
-    m `add` (Succ n) = add (Succ m) n
+    m ~add~ Zero     = m
+    m ~add~ (Succ n) = add (Succ m) n
 
-    m        `sub` Zero     = m
-    Zero     `sub` n        = fail err_neg
-    (Succ m) `sub` (Succ n) = sub m n
+    m        ~sub~ Zero     = m
+    Zero     ~sub~ n        = fail err_neg
+    (Succ m) ~sub~ (Succ n) = sub m n
 
-    m `mul` Zero        = Zero
-    m `mul` (Succ Zero) = m
-    m `mul` (Succ n)    = m `add` (m `mul` n)
+    m ~mul~ Zero        = Zero
+    m ~mul~ (Succ Zero) = m
+    m ~mul~ (Succ n)    = m ~add~ (m ~mul~ n)
 
-    Zero `pow` Zero        = undefined
-    m    `pow` Zero        = one
-    m    `pow` (Succ Zero) = m
-    m    `pow` (Succ n)    = m `mul` (m `pow` n)
+    Zero ~pow~ Zero        = undefined
+    m    ~pow~ Zero        = one
+    m    ~pow~ (Succ Zero) = m
+    m    ~pow~ (Succ n)    = m ~mul~ (m ~pow~ n)
 
     main = nat_to_int (pow (int_to_nat 2) (int_to_nat 5))

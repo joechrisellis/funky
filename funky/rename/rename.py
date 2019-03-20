@@ -118,6 +118,9 @@ def function_type_rename(node, scope):
 
 @rename.register(FunctionDefinition)
 def function_definition_rename(node, scope):
+    if node.lhs.identifier in BUILTIN_FUNCTIONS:
+        raise FunkyRenamingError("Cannot redefine builtin function '{}'.".format(node.lhs.identifier))
+
     if node.lhs.identifier not in scope.local:
         if scope.is_pending_definition(node.lhs.identifier):
             newid = scope.get_pending_name(node.lhs.identifier)
@@ -169,6 +172,9 @@ def guarded_expression_rename(node, scope):
 
 @rename.register(VariableDefinition)
 def pattern_definition_rename(node, scope):
+    if node.variable.name in BUILTIN_FUNCTIONS:
+        raise FunkyRenamingError("Cannot redefine built-in function '{}'.".format(node.variable.name))
+
     rename(node.variable, scope, is_main=isinstance(node.variable, Parameter) and \
            node.variable.name == "main")
 

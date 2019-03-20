@@ -3,7 +3,7 @@ module string where
 
     import "stdlib.fky"
 
-    slice m n = (slice_from m) `compose` (slice_to n)
+    slice m n = (slice_from m) ~compose~ (slice_to n)
 
     str_head = slice_to 1
     str_tail = slice_from 1

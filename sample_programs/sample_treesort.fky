@@ -11,8 +11,8 @@ module treesort where
                             given otherwise = Branch l v (insert e r)
     
     inorder Empty = Nil
-    inorder (Branch l v r) = inorder l `concatenate`
-                             unit v    `concatenate`
+    inorder (Branch l v r) = inorder l ~concatenate~
+                             unit v    ~concatenate~
                              inorder r
 
     treesort list = inorder (foldr insert Empty list)

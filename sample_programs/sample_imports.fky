@@ -7,6 +7,6 @@ module test where
     increment = (+) 1
 
     # The 'compose' function is provided by stdlib.fky
-    double_and_increment = increment `compose` double
+    double_and_increment = increment ~compose~ double
 
     main = double_and_increment 100

@@ -8,8 +8,8 @@ module intlist where
     unit x = Cons x Nil
 
     # basic functions
-    Nil         `concatenate` ys = ys
-    (Cons x xs) `concatenate` ys = Cons x (xs `concatenate` ys)
+    Nil         ~concatenate~ ys = ys
+    (Cons x xs) ~concatenate~ ys = Cons x (xs ~concatenate~ ys)
 
     head (Cons x _) = x
     head _          = fail "No head element of empty list!"
@@ -34,7 +34,7 @@ module intlist where
     map f Nil         = Nil
     map f (Cons x xs) = Cons (f x) (map f xs)
 
-    reverse (Cons x xs) = reverse xs `concatenate` (Cons x Nil)
+    reverse (Cons x xs) = reverse xs ~concatenate~ (Cons x Nil)
 
     # list folds
     foldr f z Nil         = z 
@@ -76,8 +76,8 @@ module intlist where
 
     dropwhile p xs = drop (length (takewhile p xs)) xs
 
-    x `elem`    ys = any ((==) x) ys
-    x `notelem` ys = not (x `elem` ys)
+    x ~elem~    ys = any ((==) x) ys
+    x ~notelem~ ys = not (x ~elem~ ys)
 
     filter p Nil = Nil
     filter p (Cons x xs) given p x       = Cons x rest
@@ -94,7 +94,7 @@ module intlist where
 
     iterate f x = Cons x (iterate f (f x))
     
-    loop xs = xs `concatenate` (loop xs)
+    loop xs = xs ~concatenate~ (loop xs)
 
     join Nil          _     = ""
     join (Cons x Nil) delim = to_str x

@@ -6,7 +6,7 @@ module math where
     # mathematical constants
     e   = 2.718281828459045
     pi  = 3.141592653589793
-    tau = 2 * pi
+    tau = 2.0 * pi
 
     abs n given n >= 0    = n
           given otherwise = -n
@@ -33,7 +33,7 @@ module math where
     sqrt = flip (**) 0.5
 
     even n = n % 2 == 0
-    odd    = not `compose` even
+    odd    = not ~compose~ even
 
     max a b given a >= b    = a
             given otherwise = b

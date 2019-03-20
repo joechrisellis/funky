@@ -332,7 +332,7 @@ class FunkyParser:
         p[0] = p[1]
 
     def p_INFIX_FUNCTION(self, p):
-        """INFIX_FUNCTION : BACKTICK IDENTIFIER BACKTICK"""
+        """INFIX_FUNCTION : TILDE IDENTIFIER TILDE"""
         if p[2] not in fixity.fixities:
             fixity.set_fixity(p[2], *fixity.DEFAULT_FIXITY)
         p[0] = p[2]

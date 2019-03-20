@@ -34,7 +34,7 @@ class FunkyLexer:
     tokens = [
         "WHITESPACE",
 
-        "BACKTICK", "PIPE", "ARROW", "ENDSTATEMENT",
+        "TILDE", "PIPE", "ARROW", "ENDSTATEMENT",
 
         "FLOAT", "INTEGER", "BOOL", "STRING",
 
@@ -79,7 +79,7 @@ class FunkyLexer:
         t.lineno += len(t.value)
 
     # Regexes for the control characters.
-    t_BACKTICK      =  r"`"
+    t_TILDE         =  r"~"
     t_PIPE          =  r"\|"
     t_ARROW         =  r"->"
     t_ENDSTATEMENT  =  r";"
@@ -336,7 +336,7 @@ def colored_str(token):
         "TIMES",
         "DIVIDE",
         "MODULO",
-        "BACKTICK",
+        "TILDE",
         "PIPE",
         "ARROW",
     ]})

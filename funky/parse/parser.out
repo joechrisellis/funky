@@ -91,7 +91,7 @@ Rule 81    APAT -> LITERAL
 Rule 82    APAT -> OPEN_PAREN LPAT CLOSE_PAREN
 Rule 83    OP -> VARSYM
 Rule 84    OP -> INFIX_FUNCTION
-Rule 85    INFIX_FUNCTION -> BACKTICK IDENTIFIER BACKTICK
+Rule 85    INFIX_FUNCTION -> TILDE IDENTIFIER TILDE
 Rule 86    APATS -> APAT APATS
 Rule 87    APATS -> <empty>
 Rule 88    VARSYM -> PLUS
@@ -121,7 +121,6 @@ Terminals, with rules where they appear
 
 AND                  : 101
 ARROW                : 32 57 71
-BACKTICK             : 85 85
 BOOL                 : 105
 CLOSE_BRACE          : 2 3 17 18 60
 CLOSE_PAREN          : 37 39 67 68 82
@@ -161,6 +160,7 @@ POW                  : 93
 RIGHTASSOC           : 29
 SETFIX               : 27
 STRING               : 6 106
+TILDE                : 85 85
 TIMES                : 90
 TYPENAME             : 11 16 35 76 80 108
 WHERE                : 1 43 45

@@ -1,5 +1,5 @@
 
-module intlist where
+module intlist with
 
     import "stdlib.fky"
 
@@ -82,7 +82,7 @@ module intlist where
     filter p Nil = Nil
     filter p (Cons x xs) given p x       = Cons x rest
                          given otherwise = rest
-                         where rest = filter p xs
+                         with rest = filter p xs
 
     nth 0 (Cons x xs)                 = x
     nth n (Cons x xs) given n > 0     = nth (n - 1) xs

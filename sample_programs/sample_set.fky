@@ -1,5 +1,5 @@
 # Using Funky's standard dictionary library to implement a basic set.
-module sample_set where
+module sample_set with
 
     import "dict.fky"
 
@@ -10,16 +10,16 @@ module sample_set where
     newtype List = Cons Integer List | Nil
 
     has_duplicates list = aux list empty_set
-                          where aux Nil s                         = False
-                                aux (Cons x xs) s given s x       = True
-                                                  given otherwise =
-                                                      aux xs (add x s)
+                          with aux Nil s                         = False
+                               aux (Cons x xs) s given s x       = True
+                                                 given otherwise =
+                                                     aux xs (add x s)
 
     main = "has_duplicates my_list1 is " ++ to_str (has_duplicates my_list1)
            ++ "\n" ++
            "has_duplicates my_list2 is " ++ to_str (has_duplicates my_list2)
            ++ "\n" ++
            "has_duplicates my_list3 is " ++ to_str (has_duplicates my_list3)
-           where my_list1 = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
-                 my_list2 = Cons 1 (Cons 2 (Cons 3 Nil))
-                 my_list3 = Cons 2 (Cons 1 (Cons 6 (Cons 1 Nil)))
+           with my_list1 = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+                my_list2 = Cons 1 (Cons 2 (Cons 3 Nil))
+                my_list3 = Cons 2 (Cons 1 (Cons 6 (Cons 1 Nil)))

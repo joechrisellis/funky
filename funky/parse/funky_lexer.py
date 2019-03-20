@@ -26,7 +26,7 @@ class FunkyLexer:
     reserved = [
         "and", "else", "given", "if", "import", "in", "lambda", "leftassoc",
         "let", "match", "module", "newtype", "nonassoc", "or", "rightassoc",
-        "setfix", "where", "with",
+        "setfix", "with", "on",
     ]
     reserved = {k : k.upper() for k in reserved}
 
@@ -215,7 +215,7 @@ class IndentationLexer:
         i = 0
         while i < len(tokens):
             tok = tokens[i]
-            if tok.type in ["WHERE", "LET", "WITH"] and \
+            if tok.type in ["WITH", "LET", "ON"] and \
                tokens[i + 1].type != "OPEN_BRACE":
                 j = i + 1
                 while tokens[j].type == "WHITESPACE":

@@ -1,5 +1,5 @@
 # Searching a list for the index of a particular item in Funky.
-module listindex where
+module listindex with
 
     import "stdlib.fky"
 
@@ -8,9 +8,9 @@ module listindex where
 
     index e Nil = Nothing
     index e (Cons x xs) given e == x    = Just 0
-                        given otherwise = match index e xs with
+                        given otherwise = match index e xs on
                                             Just x -> Just (x + 1)
                                             x      -> x
 
     main = index 7 my_list
-           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+           with my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

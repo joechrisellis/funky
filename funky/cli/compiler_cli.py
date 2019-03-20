@@ -90,15 +90,15 @@ def main():
 
     start = time.time()
     log.info("Started compilation at UNIX timestamp {}.".format(start))
-    output = compiler.compile(args.input, dump_pretty=args.dump_pretty,
-                                          dump_lexed=args.dump_lexed,
-                                          dump_parsed=args.dump_parsed,
-                                          dump_imports=args.dump_imports,
-                                          dump_renamed=args.dump_renamed,
-                                          dump_desugared=args.dump_desugared,
-                                          dump_types=args.dump_types,
-                                          dump_generated=args.dump_generated,
-                                          target=args.target)
+    output = compiler.compile_file(args.input, dump_pretty=args.dump_pretty,
+                                               dump_lexed=args.dump_lexed,
+                                               dump_parsed=args.dump_parsed,
+                                               dump_imports=args.dump_imports,
+                                               dump_renamed=args.dump_renamed,
+                                               dump_desugared=args.dump_desugared,
+                                               dump_types=args.dump_types,
+                                               dump_generated=args.dump_generated,
+                                               target=args.target)
     finish = time.time()
     log.info("Finished compilation at UNIX timestamp {}.".format(finish))
     log.info("Compilation completed in {0:.3f} seconds.".format(finish - start))

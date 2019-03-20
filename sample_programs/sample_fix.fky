@@ -1,5 +1,5 @@
 # The fixpoint operator in Funky.
-module fix where
+module fix with
 
     fix f = f (fix f)
 

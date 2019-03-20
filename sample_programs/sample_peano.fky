@@ -1,5 +1,5 @@
 # Implementation of Peano natural numbers in Funky.
-module peano where
+module peano with
 
     err_neg = "Cannot represent negative numbers with Nat."
 

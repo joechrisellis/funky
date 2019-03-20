@@ -1,5 +1,5 @@
 # deterministic random number generator in funky
-module random where
+module random with
 
     # linear congruential generator -- see:
     # http://en.wikipedia.org/wiki/Linear_congruential_generator
@@ -13,4 +13,4 @@ module random where
     randint seed lbound ubound = (rand seed) % (ubound - lbound) + lbound
 
     randfloat seed = to_float (randint seed 1 big_num) / to_float big_num
-                     where big_num = 2 ** 31
+                     with big_num = 2 ** 31

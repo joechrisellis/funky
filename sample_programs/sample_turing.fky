@@ -1,5 +1,5 @@
 # A sample implementation of a Turing machine in Funky.
-module turing_machine where
+module turing_machine with
 
     newtype Alphabet = One | Zero | Blank
     newtype Tape = TapeCons Alphabet Tape | TapeEnd
@@ -26,12 +26,12 @@ module turing_machine where
     run (ProgramCons i is) machine = run is (i machine)
 
     main = run instructions fresh_machine
-           where instructions = ProgramCons (write One) (
-                                ProgramCons shift_right (
-                                ProgramCons (write One) (
-                                ProgramCons shift_right (
-                                ProgramCons (write One) (
-                                ProgramCons instruction_swap (
-                                ProgramCons shift_left (
-                                ProgramCons instruction_swap (
-                                ProgramCons shift_left ProgramEnd))))))))
+           with instructions = ProgramCons (write One) (
+                               ProgramCons shift_right (
+                               ProgramCons (write One) (
+                               ProgramCons shift_right (
+                               ProgramCons (write One) (
+                               ProgramCons instruction_swap (
+                               ProgramCons shift_left (
+                               ProgramCons instruction_swap (
+                               ProgramCons shift_left ProgramEnd))))))))

@@ -1,5 +1,5 @@
 # common logic operators in funky
-module logic where
+module logic with
 
     # XOR operator
     True   ~xor~  False  =  True

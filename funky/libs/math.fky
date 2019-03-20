@@ -1,5 +1,5 @@
 # standard math functions in funky
-module math where
+module math with
 
     import "stdlib.fky"
 
@@ -22,7 +22,7 @@ module math where
     gcd a b = gcd b (a % b)
 
     lcm a b = (a / g) * b
-              where g = gcd a b
+              with g = gcd a b
 
     coprime x y = gcd x y == 1
 

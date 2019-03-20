@@ -1,5 +1,5 @@
 # Finding the length of a list in Funky.
-module listlength where
+module listlength with
 
     newtype List = Cons Integer List | Nil
 
@@ -7,4 +7,4 @@ module listlength where
     length (Cons _ xs) = 1 + length xs
 
     main = length my_list
-           where my_list = Cons 1 (Cons 2 (Cons 3 Nil))
+           with my_list = Cons 1 (Cons 2 (Cons 3 Nil))

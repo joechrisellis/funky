@@ -1,5 +1,5 @@
 # Implementation of the Caesar cipher in Funky.
-module caesar where
+module caesar with
 
     import "stdlib.fky"
     import "random.fky"
@@ -11,26 +11,26 @@ module caesar where
 
     index c ""                 = Nothing
     index c st given c == h    = Just 0
-               given otherwise = match index c t with
+               given otherwise = match index c t on
                                     Nothing -> Nothing
                                     Just x  -> Just (x + 1)
-               where
+               with
                 h = str_head st
                 t = str_tail st
 
     encode n "" = ""
     encode n st = encoded ++ encode n t
-                  where h = str_head st
-                        t = str_tail st
-                        encoded = match index h alphabet with
-                                    Nothing -> h
-                                    Just i  -> char_at
-                                               ((i + n) % (strlen alphabet))
-                                               alphabet
+                  with h = str_head st
+                       t = str_tail st
+                       encoded = match index h alphabet on
+                                   Nothing -> h
+                                   Just i  -> char_at
+                                              ((i + n) % (strlen alphabet))
+                                              alphabet
 
     decode n = encode (-n)
 
     rot13 = encode 13
 
     main = encode key "this is a *secret message*"
-           where key = rand 51773
+           with key = rand 51773

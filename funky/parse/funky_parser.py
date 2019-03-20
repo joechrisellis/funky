@@ -15,7 +15,7 @@ class FunkyParser:
     tokens  =  FunkyLexer.tokens
 
     def p_MODULE_DEFINITION(self, p):
-        """MODULE_DEFINITION : MODULE IDENTIFIER WHERE BODY
+        """MODULE_DEFINITION : MODULE IDENTIFIER WITH BODY
         """
         module_id, body = p[2], p[4]
         p[0] = Module(module_id, body)
@@ -181,9 +181,9 @@ class FunkyParser:
 
     def p_RHS(self, p):
         """RHS : EQUALS EXP
-               | EQUALS EXP WHERE DECLARATIONS
+               | EQUALS EXP WITH DECLARATIONS
                | GDRHS
-               | GDRHS WHERE DECLARATIONS
+               | GDRHS WITH DECLARATIONS
         """
         if len(p) == 3:
             p[0] = FunctionRHS([p[2]])
@@ -251,7 +251,7 @@ class FunkyParser:
         p[0] = If(p[3], p[1], p[5])
     
     def p_MATCH_EXPR(self, p):
-        """MATCH_EXPR : MATCH EXP WITH OPEN_BRACE ALTS CLOSE_BRACE"""
+        """MATCH_EXPR : MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE"""
         p[0] = Match(p[2], p[5])
 
     def p_FUNCTION_EXPR(self, p):

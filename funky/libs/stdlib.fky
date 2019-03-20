@@ -1,4 +1,4 @@
-module stdlib where
+module stdlib with
 
     otherwise = True
 
@@ -22,3 +22,6 @@ module stdlib where
     frepeat f 0 x = x
     frepeat f n x given n < 0     = fail "Cannot repeat for n < 0."
                   given otherwise = f (frepeat f (n - 1) x)
+
+    # Fixpoint operator
+    fix f = f (fix f)

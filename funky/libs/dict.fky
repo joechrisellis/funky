@@ -1,6 +1,6 @@
 # module providing basic dictionary functionality.
 # dictionaries are implemented as first-class functions.
-module dict where
+module dict with
 
     import "stdlib.fky"
 

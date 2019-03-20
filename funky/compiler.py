@@ -49,26 +49,17 @@ def compiler_lex_and_parse(source, dump_pretty, dump_lexed, dump_parsed):
     :param dump_parsed bool: if true, dump the syntax tree to stdout
     """
     # lex and parse code
-    try:
-        parser = FunkyParser()
-        parser.build(dump_pretty=dump_pretty, dump_lexed=dump_lexed)
-        # lexing is done in the same step as parsing -- so we have to tell the
-        # parser whether we want the lexer's output to be displayed
-        parsed = parser.do_parse(source)
-        if dump_parsed:
-            print(cblue("## DUMPED PARSE TREE"))
-            print(parsed)
-            print("")
-    except FunkyLexingError as e:
-        err_and_exit("Failed to lex source code.", e, LEXING_ERROR)
-    except FunkySyntaxError as e:
-        err_and_exit("Syntax error in given program.", e, SYNTAX_ERROR)
-    except FunkyParsingError as e:
-        err_and_exit("Parsing error occurred during syntax analysis.", e,
-                     GENERIC_PARSING_ERROR)
+    parser = FunkyParser()
+    parser.build(dump_pretty=dump_pretty, dump_lexed=dump_lexed)
+    # lexing is done in the same step as parsing -- so we have to tell the
+    # parser whether we want the lexer's output to be displayed
+    parsed = parser.do_parse(source)
+    if dump_parsed:
+        print(cblue("## DUMPED PARSE TREE"))
+        print(parsed)
+        print("")
 
     log.info("Parsing source code completed.")
-
     return parsed
 
 def include_imports(filename, parsed, dump_imports):
@@ -104,15 +95,11 @@ def compiler_rename(parsed, dump_renamed):
     :param dump_renamed bool: if true, dump the renamed tree to stdout
     """
     # rename variables
-    try:
-        do_rename(parsed)
-        if dump_renamed:
-            print(cblue("## DUMPED RENAMED PARSE TREE"))
-            print(parsed)
-            print("")
-    except FunkyRenamingError as e:
-        err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
-
+    do_rename(parsed)
+    if dump_renamed:
+        print(cblue("## DUMPED RENAMED PARSE TREE"))
+        print(parsed)
+        print("")
     log.info("Renaming source code completed.")
 
 def compiler_desugar(parsed, dump_desugared):
@@ -122,16 +109,13 @@ def compiler_desugar(parsed, dump_desugared):
     :param dump_desugared bool: if true, dump the core tree to stdout
     :return:                    the core tree
     """
-    try:
-        core_tree, typedefs = do_desugar(parsed)
-        if dump_desugared:
-            print(cblue("## TYPE DEFINITIONS"))
-            print("\n".join(str(t) for t in typedefs))
-            print(cblue("\n## CORE (DESUGARED) CODE"))
-            print(core_tree)
-            print("")
-    except FunkyDesugarError as e:
-        err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
+    core_tree, typedefs = do_desugar(parsed)
+    if dump_desugared:
+        print(cblue("## TYPE DEFINITIONS"))
+        print("\n".join(str(t) for t in typedefs))
+        print(cblue("\n## CORE (DESUGARED) CODE"))
+        print(core_tree)
+        print("")
     
     log.info("Desugaring source code completed.")
     return core_tree, typedefs
@@ -144,15 +128,11 @@ def compiler_inference(core_tree, typedefs, dump_types):
     :param typedefs:        the core type definitions
     :param dump_types bool: if true, dump the typed tree to stdout
     """
-    try:
-        do_type_inference(core_tree, typedefs)
-        if dump_types:
-            print(cblue("## CORE TYPES"))
-            print(core_tree)
-            print("")
-    except FunkyTypeError as e:
-        err_and_exit("Your program failed type checks, will not compile.",
-                     e, TYPE_ERROR)
+    do_type_inference(core_tree, typedefs)
+    if dump_types:
+        print(cblue("## CORE TYPES"))
+        print(core_tree)
+        print("")
 
     log.info("Type inference completed.")
 
@@ -167,15 +147,12 @@ def compiler_generate(core_tree, typedefs, target, dump_generated):
     :return:                    the compiled target code as a string
     :rtype:                     str
     """
-    try:
-        target_generator = targets[target]()
-        target_source = target_generator.do_generate_code(core_tree, typedefs)
-        if dump_generated:
-            print(cblue("## GENERATED {} CODE".format(target.upper())))
-            print(target_source)
-            print("")
-    except FunkyCodeGenerationError:
-        err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)
+    target_generator = targets[target]()
+    target_source = target_generator.do_generate_code(core_tree, typedefs)
+    if dump_generated:
+        print(cblue("## GENERATED {} CODE".format(target.upper())))
+        print(target_source)
+        print("")
 
     return target_source
 
@@ -187,15 +164,57 @@ def just_dump_desugared(core_tree, typedefs):
     data = (core_tree, typedefs)
     return pickle.dumps(data)
 
-def compile(infile, dump_pretty=False,
-                    dump_lexed=False,
-                    dump_parsed=False,
-                    dump_imports=False,
-                    dump_renamed=False,
-                    dump_desugared=False,
-                    dump_types=False,
-                    dump_generated=False,
-                    target=None):
+def compile_file(infile, *args, **kwargs):
+    """Given an input file, extracts the source code and compiles it. This is
+    a wrapper function for compile_source below -- instead of taking the source
+    as a string, it takes the source as a file. *args and **kwargs are passed
+    to compile_source without modification.
+
+    :param infile: the Funky source file to compile
+    :return:       the target source code, ready to be written to a file
+    """
+    filename = infile.name
+    lines = infile.readlines()
+    log.info("Input file has {} lines.".format(len(lines)))
+    source = "".join(lines)
+    return compile_source(source, *args, filename=filename, **kwargs)
+
+def compile_source(*args, **kwargs):
+    """Compiles a Funky program, catching and reporting all errors as they
+    occur. If an error occurs, we terminate. *args and **kwargs are passed to
+    do_compile without modification.
+    
+    :return: the target source code, ready to be written to a file
+    """
+    try:
+        return do_compile(*args, **kwargs)
+    except FunkyLexingError as e:
+        err_and_exit("Failed to lex source code.", e, LEXING_ERROR)
+    except FunkySyntaxError as e:
+        err_and_exit("Syntax error in given program.", e, SYNTAX_ERROR)
+    except FunkyParsingError as e:
+        err_and_exit("Parsing error occurred during syntax analysis.", e,
+                     GENERIC_PARSING_ERROR)
+    except FunkyRenamingError as e:
+        err_and_exit("Renaming your code failed.", e, RENAMING_ERROR)
+    except FunkyDesugarError as e:
+        err_and_exit("Desugaring failed.", e, DESUGAR_ERROR)
+    except FunkyTypeError as e:
+        err_and_exit("Your program failed type checks, will not compile.",
+                     e, TYPE_ERROR)
+    except FunkyCodeGenerationError:
+        err_and_exit("Code generation failed.", e, CODE_GENERATION_ERROR)
+
+def do_compile(source, dump_pretty=False,
+                       dump_lexed=False,
+                       dump_parsed=False,
+                       dump_imports=False,
+                       dump_renamed=False,
+                       dump_desugared=False,
+                       dump_types=False,
+                       dump_generated=False,
+                       target=None,
+                       filename=None):
     """Compiles funky source code.
 
     :param source str:          the source code for the program as a raw string
@@ -214,17 +233,10 @@ def compile(infile, dump_pretty=False,
                                 a file
     :rtype:                     str
     """
-
-    filename = infile.name
-    lines = infile.readlines()
-    log.info("Input file has {} lines.".format(len(lines)))
-    source = "".join(lines)
-
     parsed = compiler_lex_and_parse(source, dump_pretty, dump_lexed, dump_parsed)
     include_imports(filename, parsed, dump_imports)
     compiler_rename(parsed, dump_renamed)
     core_tree, typedefs = compiler_desugar(parsed, dump_desugared)
-
     compiler_inference(core_tree, typedefs, dump_types)
 
     if target == "intermediate":

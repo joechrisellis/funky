@@ -1,5 +1,5 @@
 # Demonstrating the use of Funky's random library to generate a random sequence.
-module random_sequence where
+module random_sequence with
 
     import "random.fky"
 

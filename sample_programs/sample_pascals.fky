@@ -1,5 +1,5 @@
 # Computes the nth row of Pascal's triangle in Funky.
-module pascals where
+module pascals with
 
     import "stdlib.fky"
     import "intlist.fky"

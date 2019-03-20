@@ -1,5 +1,5 @@
 # A interpreter for the lambda calculus in Funky.
-module lambdacalc where
+module lambdacalc with
 
     # Inspired by Jim Fisher's blog post code, available at:
     # https://jameshfisher.com/2018/03/15/a-lambda-calculus-interpreter
@@ -10,14 +10,14 @@ module lambdacalc where
                              | Var   Integer
                              | Const Integer
 
-    eval (App fun arg) = match eval fun with
+    eval (App fun arg) = match eval fun on
                              Abs body -> eval (sub 0 body)
                              x        -> App x arg
-                         where sub n (App e1 e2) = App (sub n e1) (sub n e2)
-                               sub n (Abs e)     = Abs (sub (n + 1) e)
-                               sub n (Var y)     = arg if n == y else Var y
-                               sub n x           = x
+                         with sub n (App e1 e2) = App (sub n e1) (sub n e2)
+                              sub n (Abs e)     = Abs (sub (n + 1) e)
+                              sub n (Var y)     = arg if n == y else Var y
+                              sub n x           = x
     eval x = x
 
     main = eval my_expr
-           where my_expr = App (App (Abs (Abs (Var 1))) (Const 4)) (Const 5)
+           with my_expr = App (App (Abs (Abs (Var 1))) (Const 4)) (Const 5)

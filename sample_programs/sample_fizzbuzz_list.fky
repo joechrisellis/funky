@@ -1,5 +1,5 @@
 # Implementation of the classic interview question 'FizzBuzz' in Funky.
-module fizzbuzz_list where
+module fizzbuzz_list with
 
     import "stdlib.fky"
 

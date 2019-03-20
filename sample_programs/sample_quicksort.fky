@@ -1,13 +1,13 @@
 # The standard quicksort algorithm for integers in Funky.
-module quicksort where
+module quicksort with
 
     import "stdlib.fky"
     import "intlist.fky"
 
     quicksort Nil         = Nil
     quicksort (Cons x xs) = lesser ~concatenate~ unit x ~concatenate~ greater
-                            where lesser  = filter ((>)  x) xs
-                                  greater = filter ((<=) x) xs
+                            with lesser  = filter ((>)  x) xs
+                                 greater = filter ((<=) x) xs
 
-    main = quicksort my_list
-           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+    main = pprint (quicksort my_list)
+           with my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

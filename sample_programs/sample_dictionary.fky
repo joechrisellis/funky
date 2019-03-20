@@ -1,14 +1,14 @@
 # Using Funky's standard dictionary module to create a dictionary of names.
-module dictionary where
+module dictionary with
 
     import "dict.fky"
 
     newtype Maybe = Just String | Nothing
 
     main = dict "Pete"
-           where dict = add_pair    "John"     (Just "Smith")    (
-                        add_pair    "George"   (Just "Michael")  (
-                        add_pair    "Pete"     (Just "Wentz")    (
-                        add_pair    "Michael"  (Just "Jackson")  (
-                        empty_dict Nothing
-                        ))))
+           with dict = add_pair    "John"     (Just "Smith")    (
+                       add_pair    "George"   (Just "Michael")  (
+                       add_pair    "Pete"     (Just "Wentz")    (
+                       add_pair    "Michael"  (Just "Jackson")  (
+                       empty_dict Nothing
+                       ))))

@@ -1,5 +1,5 @@
 # Mutual recursion in Funky.
-module mutualrecursion where
+module mutualrecursion with
 
     even 0 = True
     even n = odd  (n - 1)

@@ -1,5 +1,5 @@
 # common string operations in funky
-module string where
+module string with
 
     import "stdlib.fky"
 

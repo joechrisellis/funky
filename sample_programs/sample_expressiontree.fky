@@ -1,5 +1,5 @@
 # Representing and evaluating expression trees in Funky.
-module expressiontree where
+module expressiontree with
 
     newtype Expression = Const Float
                        | BinOp Expression

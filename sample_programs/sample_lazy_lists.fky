@@ -1,5 +1,5 @@
 # Defining lists lazily in Funky. Please compile with the --use-lazy flag.
-module lazy_lists where
+module lazy_lists with
 
     import "intlist.fky"
     import "math.fky"

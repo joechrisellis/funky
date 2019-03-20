@@ -1,5 +1,5 @@
 # Demonstrating the use of Funky's random library to generate a random float.
-module randomfloat where
+module randomfloat with
 
     import "random.fky"
 

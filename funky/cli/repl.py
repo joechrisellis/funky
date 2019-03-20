@@ -464,13 +464,12 @@ class FunkyShell(CustomCmd):
         :param lines: the Funky source code lines in the new block of
                       declarations
         """
-        # shoehorn the lines into a 'fake' where clause so that they can
-        # be parsed correctly.
-        parsed = self.decl_parser.do_parse("func = 0 where\n{}".format(
+        # shoehorn the lines into a 'fake' with clause so that they can be
+        # parsed correctly.
+        parsed = self.decl_parser.do_parse("func = 0 with\n{}".format(
                                         "\n".join(lines)))
 
-        # extract the parsed declarations back out from our 'fake' where
-        # clause.
+        # extract the parsed declarations back out from our 'fake' with clause.
         declarations = parsed[0].expression.declarations
 
         self.add_declarations(declarations)

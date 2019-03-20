@@ -1,5 +1,5 @@
 # Using imports from the standard library in Funky.
-module test where
+module test with
 
     import "stdlib.fky"
 

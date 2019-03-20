@@ -1,5 +1,5 @@
 # Treesort algorithm for integer in Funky.
-module treesort where
+module treesort with
 
     import "stdlib.fky"
     import "intlist.fky"
@@ -18,4 +18,4 @@ module treesort where
     treesort list = inorder (foldr insert Empty list)
 
     main = treesort my_list
-           where my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))
+           with my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

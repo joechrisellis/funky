@@ -331,6 +331,7 @@ class FunkyShell(CustomCmd):
             print("\n".join(str(b) for b in self.global_let.binds))
 
     def do_binds(self, arg):
+        """List the available bindings."""
         if not self.scope.local:
             print("No bindings.")
             return

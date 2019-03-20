@@ -1,0 +1,29 @@
+# Imports, etc
+module basics_04 where
+
+    # Funky has an import system -- you can use it to import definitions from
+    # other files. There is a standard library available, which currently contains:
+    #
+    # dict.fky    -- a utility for creating key-value mappings
+    # intlist.fky -- defines list of integers and useful functions for working
+    #                with them
+    # lists.fky   -- various infinite lists
+    # logic.fky   -- logical operators, i.e. xor, logical implication
+    # math.fky    -- math functions and constants
+    # random.fky  -- pseudorandom number generator
+    # stdlib.fky  -- standard library of basic utility functions
+    # string.fky  -- string manipulation functions
+    import "stdlib.fky"
+    import "math.fky"
+
+    # Imports can also be performed relative to the current file. For instance,
+    # we can import one of the previous demo files:
+    import "./basics_00.fky"
+
+    # We can now use the definitions above in our code!
+    import_test = gcd (double 15) (quadruple 7)
+    #             ^    ^           ^
+    #             |    |           |
+    #             |    +-----------+-- from basics_00.fky
+    #             |
+    #             +- from math.fky

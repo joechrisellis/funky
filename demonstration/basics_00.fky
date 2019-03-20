@@ -5,9 +5,9 @@ module basics_00 where
     
     # Variables are defined as you would expect from any high-level programming
     # language.
-    name  =  "Bob"
-    age   =  20
-    pi    =  3.14
+    name   =  "Bob"
+    age    =  20
+    third  =  0.33
 
     # Named function definitions can be declared using function application
     # notation, or equivalently, by creating a variable using a lambda

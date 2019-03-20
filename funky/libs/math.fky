@@ -4,8 +4,9 @@ module math where
     import "stdlib.fky"
 
     # mathematical constants
-    e  = 2.718281828459045
-    pi = 3.141592653589793
+    e   = 2.718281828459045
+    pi  = 3.141592653589793
+    tau = 2 * pi
 
     abs n given n >= 0    = n
           given otherwise = -n

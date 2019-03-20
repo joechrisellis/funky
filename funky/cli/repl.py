@@ -330,6 +330,23 @@ class FunkyShell(CustomCmd):
         if self.global_let.binds:
             print("\n".join(str(b) for b in self.global_let.binds))
 
+    def do_binds(self, arg):
+        if not self.scope.local:
+            print("No bindings.")
+            return
+
+        print(cgreen("Available bindings:"))
+        pad_length = len(max(self.scope.local, key=len)) + 2
+        for k, v in self.scope.local.items():
+            renamer_name = v
+            if isinstance(v, str):
+                renamer_name = v
+            elif isinstance(v, dict):
+                renamer_name = v["id"]
+            
+            renamed = "(renamed to {})".format(cblue(renamer_name))
+            print("{}{}{}".format(cblue(k), " " * (pad_length - len(k)), renamed))
+
     @report_errors
     @atomic
     def do_newtype(self, arg):

@@ -1,0 +1,4 @@
+# Laziness!
+module basics_04 where
+
+    import "intlist.fky"

@@ -34,6 +34,28 @@ class Thunk:
         self.memo = trampoline(self.thunk)
         return self.memo
 
+class LazyString:
+    
+    def __init__(self, hd, tl):
+        self.hd = hd
+        self.tl = tl
+
+    def __str__(self):
+        return trampoline(self.hd) + (str(trampoline(self.tl)) if self.tl else "")
+
+    def __repr__(self):
+        wrap = "'{}'".format
+        return wrap(str(self))
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+def make_lazy_string(string):
+    ls = ""
+    for c in string[::-1]:
+        ls = LazyString(c, ls)
+    return ls
+
 class ADT:
     \"\"\"Superclass for all ADTs.\"\"\"
 
@@ -201,7 +223,7 @@ class LazyPythonCodeGenerator(CodeGenerator):
     @py_compile.register(CoreLiteral)
     def py_compile_literal(self, node, sect, indent):
         if node.inferred_type == String:
-            return "\"{}\"".format(node.value)
+            return "make_lazy_string(\"{}\")".format(node.value)
         else:
             return "{}".format(str(node.value))
 

@@ -89,7 +89,14 @@ class LazyPythonRuntime(Runtime):
     def runtime_concat(self):
         fname = "__concat"
         return """def {}(a):
-    return lambda x: Thunk(lambda: trampoline(a) + trampoline(x))""".format(fname), fname
+    def inner(a, x):
+        a = trampoline(a)
+        if a:
+            return Thunk(lambda: LazyString(a.hd, {}(a.tl)(x)))
+        else:
+            return x
+    return lambda x: Thunk(lambda: inner(a, x))
+    """.format(fname, fname), fname
 
     @add_to_runtime
     def runtime_sub(self):
@@ -168,13 +175,23 @@ class LazyPythonRuntime(Runtime):
     def runtime_slice_from(self):
         fname = "__slice_from"
         return """def {}(a):
-    return lambda s: Thunk(lambda: trampoline(s)[trampoline(a):])""".format(fname), fname
+    def inner(a, s):
+        a = trampoline(a)
+        if a <= 0: return s
+        s = trampoline(s)
+        return Thunk(lambda: inner(a - 1, s.tl))
+    return lambda s: inner(a, s)""".format(fname), fname
 
     @add_to_runtime
     def runtime_slice_to(self):
         fname = "__slice_to"
         return """def {}(a):
-    return lambda s: Thunk(lambda: trampoline(s)[:trampoline(a)])""".format(fname), fname
+    def inner(a, s):
+        a = trampoline(a)
+        if a <= 0: return make_lazy_string("")
+        s = trampoline(s)
+        return Thunk(lambda: LazyString(s.hd, inner(a - 1, s.tl)))
+    return lambda s: Thunk(lambda: inner(a, s))""".format(fname), fname
 
     @add_to_runtime
     def runtime_fail(self):

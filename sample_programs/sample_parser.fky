@@ -1,0 +1,77 @@
+
+module parser with
+
+    import "string.fky"
+
+    newtype StringPair = P String String | Fail
+
+    fst Fail = fail "Fail"
+    fst (P s _) = s
+    snd Fail = fail "Fail"
+    snd (P _ s) = s
+
+    return v = lambda inp -> P v inp
+    failure  = lambda inp -> Fail
+
+    item = lambda inp -> match inp on
+                            "" -> Fail
+                            _  -> P (str_head inp) (str_tail inp)
+
+    parse p inp = p inp
+
+    p ~sequence~ f = lambda inp -> match parse p inp on
+                                        Fail    -> Fail
+                                        P v out -> parse (f v) out
+
+    p ~alt~ f = lambda inp -> match parse p inp on
+                                Fail    -> parse f inp
+                                P v out -> P v out
+
+    sat p = item ~sequence~ (lambda x ->
+            return x if p x else failure)
+
+    digit = sat is_digit
+            with is_digit "0" = True
+                 is_digit "1" = True
+                 is_digit "2" = True
+                 is_digit "3" = True
+                 is_digit "4" = True
+                 is_digit "5" = True
+                 is_digit "6" = True
+                 is_digit "7" = True
+                 is_digit "8" = True
+                 is_digit "9" = True
+                 is_digit _   = False
+
+    char x = sat ((==) x)
+
+    string "" = return ""
+    string st = char h ~sequence~ (lambda v0 ->
+                string t ~sequence~ (lambda v1 ->
+                return (h ++ t)
+                ))
+                with h = str_head st
+                     t = str_tail st
+
+    open_brace  = sat ((==) "[")
+    close_brace = sat ((==) "[")
+    comma       = sat ((==) ",")
+
+    many p = many1 p ~alt~ return ""
+
+    many1 p = p ~sequence~ (lambda v ->
+              many p ~sequence~ (lambda vs ->
+              return (v ++ vs)))
+
+    nat = many1 digit ~sequence~ (lambda xs ->
+          return xs)
+
+    parse_intlist = char "[" ~sequence~ (lambda _ ->
+                    nat ~sequence~ (lambda _ ->
+                    many (
+                        char "," ~sequence~ (lambda _ ->
+                        nat))
+                    ) ~sequence~ (lambda y ->
+                    char "]" ~sequence~ (lambda z ->
+                    return "10"
+                    )))

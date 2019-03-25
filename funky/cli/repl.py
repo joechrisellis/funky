@@ -568,7 +568,7 @@ def main():
     set_loglevel(verbosity)
 
     global SHOW_EXCEPTION_TRACES
-    SHOW_EXCEPTION_TRACE = args.show_exception_traces
+    SHOW_EXCEPTION_TRACES = args.show_exception_traces
 
     log.debug("Initialising REPL-shell...")
     shell = FunkyShell(lazy=args.be_lazy)

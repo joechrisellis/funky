@@ -1,5 +1,5 @@
 # Slightly more advanced stuff in Funky.
-module basics_01 where
+module basics_01 with
 
     # Conditional expressions can be used with the if-else construct. The
     # syntax is the same as Python syntax.
@@ -23,5 +23,5 @@ module basics_01 where
              in  pi * r ** 2.0
 
     energy wavelength = (h * c) / wavelength
-                        where h = 6.62 * 10.0 ** (-34.0) # Planck's constant
-                              c = 299792458.0            # Speed of light
+                        with h = 6.62 * 10.0 ** (-34.0) # Planck's constant
+                             c = 299792458.0            # Speed of light

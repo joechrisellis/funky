@@ -1,5 +1,5 @@
 # Module are used to tell the compiler 'this is a Funky source file'
-module basics_00 where
+module basics_00 with
 
     # Comments are denoted with a '#' symbol -- this is a comment!
     
@@ -17,7 +17,7 @@ module basics_00 where
 
     # For readability, named function definitions can use binary function
     # application syntax, as shown below
-    x `samesign` y = x * y > 0
+    x ~samesign~ y = x * y > 0
 
     # Functions can be defined in terms of other functions. Function
     # application is by juxtaposition. Like usual, function application is
@@ -25,7 +25,7 @@ module basics_00 where
     quadruple x = double (double x)
 
     # Functions can be applied in binary notation for readability.
-    some_variable = 10 `samesign` (-10)
+    some_variable = 10 ~samesign~ (-10)
 
     # Built-in operators are just infix functions! We can convert them to
     # postfix (i.e. a normal function) by wrapping them in parenthesis.

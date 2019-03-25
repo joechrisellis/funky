@@ -1,4 +1,27 @@
 # Laziness!
-module basics_04 where
+module basics_05 with
 
     import "intlist.fky"
+
+    # The list of ones is ONE followed by the list of ones.
+    ones = Cons 1 ones
+
+    # The head of the list of natural numbers is 1, and the tail
+    # is the list of natural numbers, mapped with ((+) 1).
+    nats  = Cons 1 (map ((+) 1) nats)
+
+    # The list of natural numbers, but starting from zero.
+    znats = Cons 0 nats
+
+    # Even and odd numbers.
+    evens = Cons 0 (map ((+) 2) evens)
+    odds  = Cons 1 (map ((+) 2) odds)
+
+    # Fibonacci sequence
+    fibs = Cons 0 (Cons 1 (zipwith (+) fibs (tail fibs)))
+
+    # List of prime numbers
+    primes = sieve (tail nats)
+             with sieve (Cons p xs) = Cons p (sieve (filter (lambda x -> x % p > 0) xs))
+
+    squares = zipwith (*) nats nats

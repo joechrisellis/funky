@@ -1,5 +1,5 @@
 # Imports, etc
-module basics_04 where
+module basics_04 with
 
     # Funky has an import system -- you can use it to import definitions from
     # other files. There is a standard library available, which currently contains:
@@ -21,7 +21,7 @@ module basics_04 where
     import "./basics_00.fky"
 
     # We can now use the definitions above in our code!
-    import_test = gcd (double 15) (quadruple 7)
+    import_test = gcd (double 15) (quadruple 7) #  = 2
     #             ^    ^           ^
     #             |    |           |
     #             |    +-----------+-- from basics_00.fky

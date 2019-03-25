@@ -13,8 +13,8 @@ module string with
 
     char_at n = slice n (n + 1)
 
-    reverse "" = ""
-    reverse st = reverse (str_tail st) ++ str_head st
+    str_reverse "" = ""
+    str_reverse st = str_reverse (str_tail st) ++ str_head st
 
     # 'comfort' function for Python users.
     print = id

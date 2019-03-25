@@ -5,7 +5,7 @@ module quicksort with
     import "intlist.fky"
 
     quicksort Nil         = Nil
-    quicksort (Cons x xs) = lesser ~concatenate~ unit x ~concatenate~ greater
+    quicksort (Cons x xs) = (quicksort lesser) ~concatenate~ unit x ~concatenate~ (quicksort greater)
                             with lesser  = filter ((>)  x) xs
                                  greater = filter ((<=) x) xs
 

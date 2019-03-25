@@ -1,8 +1,8 @@
 # Pattern matching with literals.
-module basics_02 where
+module basics_02 with
 
     # Pattern matching can be performed in-expression with the match keyword.
-    to_words n = match n with
+    to_words n = match n on
                     0 -> "zero"
                     1 -> "one"
                     2 -> "two"
@@ -14,12 +14,12 @@ module basics_02 where
     is_zero _ = "That's not a zero!"
 
     # Pattern matching is robust!
-    True  `xor` False = True
-    False `xor` True  = True
-    _     `xor` _     = False
+    True  ~xor~ False = True
+    False ~xor~ True  = True
+    _     ~xor~ _     = False
 
-    True `implies` False = False
-    _    `implies` _     = True
+    True ~implies~ False = False
+    _    ~implies~ _     = True
 
     # Lots of flexibility due to wildcards below -- the compiler handles it
     # just fine.

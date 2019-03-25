@@ -179,7 +179,10 @@ class LazyPythonRuntime(Runtime):
         a = trampoline(a)
         if a <= 0: return s
         s = trampoline(s)
-        return Thunk(lambda: inner(a - 1, s.tl))
+        if s:
+            return Thunk(lambda: inner(a - 1, s.tl))
+        else:
+            return Thunk(lambda: make_lazy_string(""))
     return lambda s: inner(a, s)""".format(fname), fname
 
     @add_to_runtime
@@ -190,7 +193,10 @@ class LazyPythonRuntime(Runtime):
         a = trampoline(a)
         if a <= 0: return make_lazy_string("")
         s = trampoline(s)
-        return Thunk(lambda: LazyString(s.hd, inner(a - 1, s.tl)))
+        if s:
+            return Thunk(lambda: LazyString(s.hd, inner(a - 1, s.tl)))
+        else:
+            return Thunk(lambda: make_lazy_string(""))
     return lambda s: Thunk(lambda: inner(a, s))""".format(fname), fname
 
     @add_to_runtime

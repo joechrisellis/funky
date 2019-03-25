@@ -164,13 +164,13 @@ class StrictPythonRuntime(Runtime):
     def runtime_slice_from(self):
         fname = "__slice_from"
         return """def {}(a):
-    return lambda s: s[a:]""".format(fname), fname
+    return lambda s: s[max(a, 0):]""".format(fname), fname
 
     @add_to_runtime
     def runtime_slice_to(self):
         fname = "__slice_to"
         return """def {}(a):
-    return lambda s: s[:a]""".format(fname), fname
+    return lambda s: s[:max(a, 0)]""".format(fname), fname
 
     @add_to_runtime
     def runtime_fail(self):

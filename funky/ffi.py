@@ -1,3 +1,12 @@
+"""Python foreign function interface for Funky. Allows a programmer to embed
+Funky code in a Python program, compile it, and run it.
+
+To use:
+from funky.ffi import funky_prog # <- in your Python program
+prog = funky_prog(<FUNKY CODE AS A STRING>)
+x = prog() # <- compile and run
+"""
+
 import logging
 
 import funky.cli.verbosity as verbosity

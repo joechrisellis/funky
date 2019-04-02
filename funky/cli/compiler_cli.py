@@ -29,6 +29,8 @@ def main():
                              "terminals).")
     parser.add_argument('-c', '--no-colors', action='store_true',
                         help="Do not use coloured output (for boring people).")
+    parser.add_argument('-e', '--show-exception-traces', action='store_true',
+                        help="Show full exception traces.")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--output", "-o", metavar="output_filename",
@@ -74,8 +76,9 @@ def main():
 
     args = parser.parse_args()
 
-    funky.globals.USE_UNICODE = not args.no_unicode
-    funky.globals.USE_COLORS  = not args.no_colors
+    funky.globals.USE_UNICODE           = not args.no_unicode
+    funky.globals.USE_COLORS            = not args.no_colors
+    funky.globals.SHOW_EXCEPTION_TRACES = args.show_exception_traces
 
     if not (args.execute or args.target):
         print("Please specify a target, e.g. --target=python")

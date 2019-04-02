@@ -1,5 +1,7 @@
 """The variables defined in this module map causes of failure to exit codes."""
 import logging
+import funky.globals
+from funky.util.color import *
 
 log = logging.getLogger(__name__)
 
@@ -20,6 +22,10 @@ def err_and_exit(msg, exception, exit_code):
     :param exception Exception: the exception that lead to this
     :param exit_code int:       the exit code to quit with
     """
-    log.error(msg)
-    log.error("Exception message: \"{}\"".format(exception.args[0]))
+    if funky.globals.SHOW_EXCEPTION_TRACES:
+        print(cred("SHOW_EXCEPTION_TRACES is true -- dumping exception trace:\n"))
+        raise exception
+    else:
+        log.error(msg)
+        log.error("Exception message: \"{}\"".format(exception.args[0]))
     exit(exit_code)

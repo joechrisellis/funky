@@ -147,7 +147,7 @@ class LazyPythonRuntime(Runtime):
     def runtime_to_str(self):
         fname = "__to_str"
         return """def {}(a):
-    return Thunk(lambda: str(trampoline(a)))""".format(fname), fname
+    return Thunk(lambda: make_lazy_string(str(trampoline(a))))""".format(fname), fname
 
     @add_to_runtime
     def runtime_to_int(self):

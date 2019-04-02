@@ -48,6 +48,8 @@ class LazyString:
         return wrap(str(self))
 
     def __eq__(self, other):
+        if not (isinstance(other, (LazyString, str))):
+            return False
         return str(self) == str(other)
 
 def make_lazy_string(string):

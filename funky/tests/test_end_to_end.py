@@ -304,3 +304,33 @@ module listmax with
         with self.assertRaises(Exception):
             fprog = funky_prog(prog.format("Nil"))
             fprog()
+
+    def test_lazy(self):
+        prog = """
+module lists with
+    
+    import "intlist.fky"
+
+    ones  = Cons 1 ones
+    nats  = iterate ((+) 1) 1
+    negs  = map negate nats
+
+    fibs = Cons 0 (Cons 1 (zipwith (+) fibs (tail fibs)))
+
+    primes = sieve (tail nats)
+             with sieve (Cons p xs) = Cons p (sieve (filter (lambda x -> x % p > 0) xs))
+
+    main = pprint (take 5 {})
+        """
+        
+        tests = {
+            "ones"    :  "[1, 1, 1, 1, 1]",
+            "nats"    :  "[1, 2, 3, 4, 5]",
+            "negs"    :  "[-1, -2, -3, -4, -5]",
+            "fibs"    :  "[0, 1, 1, 2, 3]",
+            "primes"  :  "[2, 3, 5, 7, 11]",
+        }
+
+        for test_list, expected in tests.items():
+            fprog = funky_prog(prog.format(test_list), lazy=True)
+            self.assertEqual(str(fprog()), expected)

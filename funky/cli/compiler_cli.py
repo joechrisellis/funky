@@ -7,7 +7,7 @@ import time
 from funky._version import __version__
 
 import funky.globals
-from funky.cli.verbosity import set_loglevel
+from funky.cli.verbosity import set_verbosity
 import funky.compiler as compiler
 
 log = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ def main():
     args.target = args.target if args.target else "python"
 
     verbosity = args.verbose - args.quiet
-    set_loglevel(verbosity)
+    set_verbosity(verbosity)
 
     log.info("Will compile {}.".format(args.input.name))
 

@@ -1,3 +1,5 @@
+import logging
+
 import funky.cli.verbosity as verbosity
 import funky.compiler as compiler
 
@@ -27,7 +29,7 @@ class FunkyCallable:
         self.memo = g["result"]()
         return self.memo
 
-def funky_prog(source, lazy=False, loglevel=verbosity.QUIET):
+def funky_prog(source, lazy=False, verbosity_value=verbosity.quietest):
     """Creates a FunkyCallable object whose code is the result of compiling the
     given source code. If lazy is True, we use the lazy Python code generator.
     If lazy is False, we use the strict Python code generator.
@@ -42,10 +44,9 @@ def funky_prog(source, lazy=False, loglevel=verbosity.QUIET):
     """
     target = "python_lazy" if lazy else "python"
 
-    # Be quiet while compiling
-    old_loglevel = verbosity.get_loglevel()
-    verbosity.set_loglevel(loglevel)
+    old_loglevel = logging.getLogger().getEffectiveLevel()
+    verbosity.set_verbosity(verbosity_value)
     py_code = compiler.do_compile(source, filename=".", target=target)
 
-    verbosity.set_loglevel(old_loglevel)
+    logging.getLogger().setLevel(old_loglevel)
     return FunkyCallable(py_code)

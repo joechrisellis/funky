@@ -11,7 +11,7 @@ import traceback
 from funky._version import __version__
 
 import funky.globals
-from funky.cli.verbosity import set_loglevel
+from funky.cli.verbosity import set_verbosity
 from funky.util.color import *
 
 from funky import FunkyError
@@ -565,7 +565,7 @@ def main():
     funky.globals.USE_COLORS  = not args.no_colors
 
     verbosity = args.verbose - args.quiet
-    set_loglevel(verbosity)
+    set_verbosity(verbosity)
 
     global SHOW_EXCEPTION_TRACES
     SHOW_EXCEPTION_TRACES = args.show_exception_traces

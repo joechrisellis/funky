@@ -334,3 +334,38 @@ module lists with
         for test_list, expected in tests.items():
             fprog = funky_prog(prog.format(test_list), lazy=True)
             self.assertEqual(str(fprog()), expected)
+    
+    def test_lazy_string(self):
+        prog = """
+module lazy_string with
+
+    dog = "woof " ++ dog
+
+    main = slice_to {} ("dog: " ++ dog)
+        """
+
+        sample = "dog: woof woof woof woof woof woof woof woof"
+        for i in range(35):
+            fprog = funky_prog(prog.format(i), lazy=True)
+            self.assertEqual(fprog(), sample[:i])
+
+    def test_slice_consistency(self):
+        test_string = "hello world 1234567"
+        prog = """
+module slice with
+
+    test_string = "{}"
+
+    main = {} {} test_string
+        """
+
+        for f in ["slice_from", "slice_to"]:
+            for n in range(len(test_string)):
+                fprog_strict = funky_prog(prog.format(test_string, f, n))
+                fprog_lazy = funky_prog(prog.format(test_string, f, n), lazy=True)
+                if f == "slice_from":
+                    self.assertEqual(fprog_strict(), test_string[n:])
+                    self.assertEqual(fprog_lazy(), test_string[n:])
+                else:
+                    self.assertEqual(fprog_strict(), test_string[:n])
+                    self.assertEqual(fprog_lazy(), test_string[:n])

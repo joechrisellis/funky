@@ -182,7 +182,25 @@ def if_desugar(node):
 def match_desugar(node):
     scrutinee = desugar(node.expression)
     alternatives = [desugar(a) for a in node.alternatives]
-    return CoreMatch(scrutinee, alternatives)
+
+    # FIXME: big hack, but it works.
+    # If any of the alternatives are *just* a variable, set our 'dummy
+    # scrutinee' variable's name to that variable. Otherwise, just generate a
+    # fresh one.
+    for a in alternatives:
+        if isinstance(a.altcon, CoreVariable):
+            vname = a.altcon.identifier
+            break
+    else:
+        vname = get_unique_varname()
+
+    # Pass through maranget's algorithm to form a decision tree.
+    pattern_matrix = [[a.altcon] for a in alternatives]
+    variables = [CoreVariable(vname)]
+    outcomes = [a.expr for a in alternatives]
+    
+    tree = get_match_tree(pattern_matrix[:], variables[:], outcomes[:])
+    return CoreLet([CoreBind(vname, scrutinee)], tree)
 
 @desugar.register(FunctionApplication)
 def function_application_desugar(node):

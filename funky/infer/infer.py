@@ -129,7 +129,10 @@ def infer_cons(node, ctx, non_generic):
     try:
         typeop = ctx[operator_prefix(node.constructor)]
         for x, y in zip(node.parameters, typeop.types):
-            ctx[x.identifier] = y
+            if isinstance(x, CoreVariable):
+                ctx[x.identifier] = y
+            else:
+                infer(x, ctx, non_generic)
         node.inferred_type = get_fresh(typeop, non_generic)
     except KeyError:
         raise FunkyTypeError("Undefined constructor "

@@ -62,6 +62,9 @@ def new_cons_statement_rename(node, scope):
     
 @rename.register(Construction)
 def construction_rename(node, scope, fname=None, index=None, depth=0):
+    # NOTE to self: the depth parameter here is used exclusively to give nested
+    # patterns distinguishable parameter names.
+
     if node.constructor not in scope:
         raise FunkyRenamingError("Constructor '{}' not " \
                                  "defined.".format(node.constructor))

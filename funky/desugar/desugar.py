@@ -188,7 +188,7 @@ def match_desugar(node):
     # scrutinee' variable's name to that variable. Otherwise, just generate a
     # fresh one.
     for a in alternatives:
-        if isinstance(a.altcon, CoreVariable):
+        if isinstance(a.altcon, CoreVariable) and a.altcon.identifier != "_":
             vname = a.altcon.identifier
             break
     else:

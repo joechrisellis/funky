@@ -61,7 +61,7 @@ def new_cons_statement_rename(node, scope):
     scope.local.update(tmp_scope_2.local)
     
 @rename.register(Construction)
-def construction_rename(node, scope, fname=None, index=None):
+def construction_rename(node, scope, fname=None, index=None, depth=0):
     if node.constructor not in scope:
         raise FunkyRenamingError("Constructor '{}' not " \
                                  "defined.".format(node.constructor))
@@ -70,13 +70,13 @@ def construction_rename(node, scope, fname=None, index=None):
                                  "'{}'.".format(scope[node.constructor],
                                                 node.constructor))
     
-    localizer = get_parameter_name(fname, index)
+    localizer = get_parameter_name(fname, index, depth)
     for i, param in enumerate(node.parameters):
         if isinstance(param, Parameter):
             rename(param, scope, fname=node.constructor, index=i,
                     localizer=localizer)
         elif isinstance(param, Construction):
-            rename(param, scope, fname=node.constructor, index=i)
+            rename(param, scope, fname=node.constructor, index=i, depth=depth+1)
         else:
             rename(param, scope)
 

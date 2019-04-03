@@ -369,3 +369,77 @@ module slice with
                 else:
                     self.assertEqual(fprog_strict(), test_string[:n])
                     self.assertEqual(fprog_lazy(), test_string[:n])
+
+    def test_matching1(self):
+        prog = """
+module test with
+
+    newtype List = Cons Integer List | Nil
+
+    test x = match x on
+                (Cons x (Cons y Nil)) -> x + y
+                (Cons x Nil) -> 999
+                l -> 0
+
+    main = test ({})
+            """
+
+        tests = {
+            "Cons 1 (Cons 2 Nil)" : 1 + 2,
+            "Cons 1 Nil" : 999,
+            "Cons 1 (Cons 2 (Cons 3 Nil))" : 0,
+            "Nil" : 0,
+        }
+
+        for test, expected in tests.items():
+            fprog = funky_prog(prog.format(test))
+            self.assertEqual(fprog(), expected)
+
+    def test_matching2(self):
+        prog = """
+module test with
+
+    newtype Maybe = Just Integer | Nothing
+
+    increment = lambda n -> match n on
+                                Just x -> Just (x + 1)
+                                f -> f
+
+    main = increment ({})
+        """
+
+        tests = {
+            "Just 5" : "Just 6",
+            "Just (-100)" : "Just -99",
+            "Nothing" : "Nothing",
+        }
+
+        for test, expected in tests.items():
+            fprog = funky_prog(prog.format(test))
+            self.assertEqual(str(fprog()), expected)
+
+    def test_matching3(self):
+        prog = """
+module test with
+
+    newtype List = Cons Integer List | Nil
+
+    test l = match l on
+                Cons 1 (Cons 2 (Cons x xs)) -> x
+                Cons 2 (Cons 1 (Cons x (Cons y ys))) -> x + y
+                Cons 0 (Cons 0 Nil) -> 999
+                _ -> -5
+
+    main = test ({})
+        """
+
+        tests = {
+            "Cons 1 (Cons 2 (Cons 123 (Cons 4 Nil)))" : 123,
+            "Cons 2 (Cons 1 (Cons 123 (Cons 4 (Cons 3 Nil))))" : 123 + 4,
+            "Cons 0 (Cons 0 (Cons 0 Nil))" : -5,
+            "Cons 0 (Cons 0 Nil)" : 999,
+        }
+
+        for test, expected in tests.items():
+            fprog = funky_prog(prog.format(test))
+            self.assertEqual(fprog(), expected)

@@ -443,3 +443,30 @@ module test with
         for test, expected in tests.items():
             fprog = funky_prog(prog.format(test))
             self.assertEqual(fprog(), expected)
+
+    def test_matching4(self):
+        prog = """
+module test with
+
+    newtype List = Cons Integer List | Nil
+    newtype Either = A List | B String
+
+    test a b = match a on
+                A (Cons x (Cons y Nil)) -> x + y
+                A (Cons x (Cons y xs))  -> x - y
+                B s -> match b on
+                        a -> a
+
+    main = test ({}) ({})
+        """
+
+        tests = {
+            ("A (Cons 1 (Cons 2 Nil))", "1") : 3,
+            ("A (Cons 1 (Cons 2 (Cons 3 Nil)))", "1") : -1,
+            ("B 'test'", "1123") : 1123,
+            ("B 'check'", "9919") : 9919,
+        }
+
+        for (test1, test2), expected in tests.items():
+            fprog = funky_prog(prog.format(test1, test2))
+            self.assertEqual(fprog(), expected)

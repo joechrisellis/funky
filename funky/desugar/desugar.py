@@ -48,8 +48,8 @@ def module_desugar(node):
 
 @desugar.register(ProgramBody)
 def program_body_desugar(node):
-    # TODO: imports should already be in the parse tree by now, so no need to
-    #       do anything with imports.
+    # NOTE: imports should already be in the parse tree by now, so no need to
+    #       do anything with import statements.
 
     typedefs, code = split_typedefs_and_code(node.toplevel_declarations)
 

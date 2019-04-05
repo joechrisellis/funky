@@ -1,4 +1,4 @@
-
+# A functional parser.
 module parser with
 
     import "string.fky"
@@ -75,3 +75,5 @@ module parser with
                     char "]" ~sequence~ (lambda z ->
                     return "10"
                     )))
+
+    main = parse_intlist "[1,2,3]"

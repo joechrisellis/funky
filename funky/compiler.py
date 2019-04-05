@@ -95,8 +95,12 @@ def compiler_rename(parsed, dump_renamed):
     :param dump_renamed bool: if true, dump the renamed tree to stdout
     """
     # rename variables
-    do_rename(parsed)
+    scope = do_rename(parsed)
     if dump_renamed:
+        print(cblue("## DUMPED RENAMER MAPPING"))
+        scope.pprint_local_binds()
+
+        print("")
         print(cblue("## DUMPED RENAMED PARSE TREE"))
         print(parsed)
         print("")
@@ -131,7 +135,8 @@ def compiler_inference(core_tree, typedefs, dump_types):
     do_type_inference(core_tree, typedefs)
     if dump_types:
         print(cblue("## CORE TYPES"))
-        print(core_tree)
+        for bind in core_tree.binds:
+            print("{} :: {}".format(bind.identifier, bind.bindee.inferred_type))
         print("")
 
     log.info("Type inference completed.")

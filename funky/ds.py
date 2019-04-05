@@ -1,6 +1,7 @@
 """Useful data structures."""
 
 from collections import defaultdict
+from funky.util.color import *
 
 class Scope:
     """A scope maps identifiers to arbitrary items."""
@@ -10,6 +11,16 @@ class Scope:
         self.parent              =  parent
         self.localizer           =  localizer
         self.pending_definition  =  {}
+
+    def pprint_local_binds(self):
+        pad_length = len(max(self.local, key=len)) + 2
+        for k, v in self.local.items():
+            renamer_name = v
+            if isinstance(v, dict):
+                renamer_name = v["id"]
+            
+            renamed = "(renamed to {})".format(cblue(renamer_name))
+            print("{}{}{}".format(cblue(k), " " * (pad_length - len(k)), renamed))
 
     def search(self, item):
         """Searches the local scope for the item.

@@ -134,12 +134,7 @@ def compiler_inference(core_tree, typedefs, dump_types):
     """
     do_type_inference(core_tree, typedefs)
     if dump_types:
-        print(cblue("## ALGEBRAIC DATA TYPES"))
-        for typedef in typedefs:
-            print(typedef)
-
-        print("")
-        print(cblue("## TYPES"))
+        print(cblue("## CORE TYPES"))
         for bind in core_tree.binds:
             print("{} :: {}".format(bind.identifier, bind.bindee.inferred_type))
         print("")

@@ -54,14 +54,15 @@ def main():
                              "stdout.")
     parser.add_argument("--dump-renamed", default=False, required=False,
                         action="store_true",
-                        help="Dump the renamed parse tree to stdout.")
+                        help="Dump the renamed parse tree to stdout (alongside "
+                             "renamer mapping for top-level objects).")
     parser.add_argument("--dump-desugared", default=False, required=False,
                         action="store_true",
                         help="Dump the core (desugared) funky code to stdout.")
     parser.add_argument("--dump-types", default=False, required=False,
                         action="store_true",
-                        help="Dump the types of all symbols in the core tree "
-                             "to stdout.")
+                        help="Dump the types of all top-level objects in the "
+                             "core tree to stdout.")
     parser.add_argument("--dump-generated", default=False, required=False,
                         action="store_true",
                         help="Dump the generated code to stdout.")

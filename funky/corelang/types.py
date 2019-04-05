@@ -149,16 +149,14 @@ class AlgebraicDataType:
 
     __repr__ = output_attributes
 
-    def __init__(self, type_name, type_parameters, constructors):
+    def __init__(self, type_name, constructors):
         self.type_name        =  type_name
-        self.type_parameters  =  type_parameters
         self.constructors     =  constructors
 
     def __str__(self):
         constructors_str = " | ".join(str(constructor)
                                       for constructor in self.constructors)
-        params_str = " ".join(self.type_parameters)
-        return "{} {} = {}".format(self.type_name, params_str, constructors_str)
+        return "{} = {}".format(COLOR_TYPECLASS(self.type_name), constructors_str)
 
 class ConstructorType:
     """A constructor type under an algebraic data type."""
@@ -170,5 +168,6 @@ class ConstructorType:
         self.parameters  =  parameters
 
     def __str__(self):
-        parameters_str = " ".join(str(parameter) for parameter in self.parameters)
+        parameters_str = " ".join(COLOR_TYPENAME(str(parameter)) for parameter in
+                                  self.parameters)
         return "{} {}".format(str(self.identifier), parameters_str)

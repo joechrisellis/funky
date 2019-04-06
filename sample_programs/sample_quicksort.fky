@@ -5,9 +5,9 @@ module quicksort with
     import "intlist.fky"
 
     quicksort Nil         = Nil
-    quicksort (Cons x xs) = (quicksort lesser) ~concatenate~ unit x ~concatenate~ (quicksort greater)
-                            with lesser  = filter ((>)  x) xs
-                                 greater = filter ((<=) x) xs
+    quicksort (Cons x xs) = (quicksort s) ~concatenate~ unit x ~concatenate~ (quicksort l)
+                            with s = filter ((>)  x) xs
+                                 l = filter ((<=) x) xs
 
     main = pprint (quicksort my_list)
            with my_list = Cons 5 (Cons 1 (Cons 7 (Cons 7 (Cons 3 Nil))))

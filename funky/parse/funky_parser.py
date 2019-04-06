@@ -15,40 +15,40 @@ class FunkyParser:
     tokens  =  FunkyLexer.tokens
 
     def p_MODULE_DEFINITION(self, p):
-        """MODULE_DEFINITION : MODULE IDENTIFIER WITH BODY
+        """MODULE_DEFINITION : MODULE IDENTIFIER WITH MODULE_BODY
         """
         module_id, body = p[2], p[4]
         p[0] = Module(module_id, body)
 
-    def p_BODY(self, p):
-        """BODY : OPEN_BRACE IMPORT_DECLARATIONS ENDSTATEMENT TOP_DECLARATIONS CLOSE_BRACE
-                | OPEN_BRACE TOP_DECLARATIONS CLOSE_BRACE
+    def p_MODULE_BODY(self, p):
+        """MODULE_BODY : OPEN_BRACE IMPORT_STATEMENTS ENDSTATEMENT TOPLEVEL_DECLARATIONS CLOSE_BRACE
+                       | OPEN_BRACE TOPLEVEL_DECLARATIONS CLOSE_BRACE
         """
         if len(p) == 6:
-            imports, top_declarations = p[2], p[4]
+            imports, toplevel_declarations = p[2], p[4]
         else:
-            imports, top_declarations = [], p[2]
+            imports, toplevel_declarations = [], p[2]
 
         imports = [i for i in imports if i]
-        top_declarations = [t for t in top_declarations if t]
-        p[0] = ProgramBody(imports, top_declarations)
+        toplevel_declarations = [t for t in toplevel_declarations if t]
+        p[0] = ProgramBody(imports, toplevel_declarations)
 
-    def p_IMPORT_DECLARATIONS(self, p):
-        """IMPORT_DECLARATIONS : IMPORT_DECLARATIONS ENDSTATEMENT IMPORT_DECLARATION
-                               | IMPORT_DECLARATION
+    def p_IMPORT_STATEMENTS(self, p):
+        """IMPORT_STATEMENTS : IMPORT_STATEMENTS ENDSTATEMENT IMPORT_STATEMENT
+                             | IMPORT_STATEMENT
         """
         if len(p) == 4:
             p[0] = p[1] + [p[3]]
         else:
             p[0] = [p[1]]
 
-    def p_IMPORT_DECLARATION(self, p):
-        """IMPORT_DECLARATION : IMPORT STRING"""
+    def p_IMPORT_STATEMENT(self, p):
+        """IMPORT_STATEMENT : IMPORT STRING"""
         p[0] = p[2]
 
-    def p_TOP_DECLARATIONS(self, p):
-        """TOP_DECLARATIONS : TOP_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
-                            | TOP_DECLARATION
+    def p_TOPLEVEL_DECLARATION(self, p):
+        """TOPLEVEL_DECLARATIONS : TOPLEVEL_DECLARATIONS ENDSTATEMENT TOP_DECLARATION
+                                 | TOP_DECLARATION
         """
         if len(p) == 4:
             p[0] = p[1] + [p[3]]
@@ -56,23 +56,14 @@ class FunkyParser:
             p[0] =[p[1]]
 
     def p_TOP_DECLARATION(self, p):
-        """TOP_DECLARATION : TYPE_DECLARATION
+        """TOP_DECLARATION : ADT_DECLARATION
                            | DECLARATION
         """
         p[0] = p[1]
 
-    def p_TYPE_DECLARATION(self, p):
-        """TYPE_DECLARATION : NEWTYPE TYPENAME TYVARS EQUALS CONSTRUCTORS"""
-        p[0] = NewTypeStatement(p[2], p[3], p[5])
-
-    def p_TYVARS(self, p):
-        """TYVARS : TYVARS IDENTIFIER
-                  |
-        """
-        if len(p) == 3:
-            p[0] = p[1] + [p[2]]
-        else:
-            p[0] = []
+    def p_ADT_DECLARATION(self, p):
+        """ADT_DECLARATION : NEWTYPE TYPENAME EQUALS CONSTRUCTORS"""
+        p[0] = NewTypeStatement(p[2], [], p[4])
 
     def p_CONSTRUCTORS(self, p):
         """CONSTRUCTORS : CONSTRUCTORS PIPE CONSTRUCTOR
@@ -214,8 +205,6 @@ class FunkyParser:
                      | MINUS INFIX_EXP
                      | LEXP
         """
-        # NOTE: we keep infix expressions FLAT for now -- we perform fixity
-        # resolution at a later step.
         tokens = []
         if len(p) == 4:
             tokens.append(p[1])
@@ -396,7 +385,7 @@ class FunkyParser:
                                                   dump_lexed=dump_lexed)
         log.debug("Using PLY to build the parser...")
         self.parser = yacc.yacc(module=self,
-                                errorlog=yacc.NullLogger(),
+                                # errorlog=yacc.NullLogger(),
                                 **kwargs)
         log.debug("Parser built.")
 

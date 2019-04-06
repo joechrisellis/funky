@@ -198,15 +198,15 @@ class FunkyShell(CustomCmd):
         # create the various parsers:
         log.debug("Creating required parsers...")
         self.decl_parser = FunkyParser()
-        self.decl_parser.build(start="TOP_DECLARATIONS")
+        self.decl_parser.build(start="TOPLEVEL_DECLARATIONS")
         self.expr_parser = FunkyParser()
         self.expr_parser.build(start="EXP")
         self.newtype_parser = FunkyParser()
-        self.newtype_parser.build(start="TYPE_DECLARATION")
+        self.newtype_parser.build(start="ADT_DECLARATION")
         self.setfix_parser = FunkyParser()
         self.setfix_parser.build(start="FIXITY_DECLARATION")
         self.import_parser = FunkyParser()
-        self.import_parser.build(start="IMPORT_DECLARATION")
+        self.import_parser.build(start="IMPORT_STATEMENT")
 
         if lazy:
             log.debug("Using lazy code generator for REPL.")

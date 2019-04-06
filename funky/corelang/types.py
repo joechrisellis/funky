@@ -67,8 +67,8 @@ class TypeVariable:
         return "[accepts: {}]".format("/".join(self.constraints))
 
     def __str__(self):
-        """If we have a concrete type instance, print that.  . Otherwise, use
-        our lazy-defined type name.
+        """If we have a concrete type instance, print that. Otherwise, use our
+        lazy-defined type name.
         """
         if self.instance:
             return str(self.instance)

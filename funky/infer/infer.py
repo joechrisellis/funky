@@ -270,19 +270,6 @@ def occurs_in(t, types):
     """
     return any(occurs_in_type(t, t2) for t2 in types)
 
-def create_type_alias(typedef, ctx):
-    """Creates a type alias within the given context.
-
-    :param typedef: the type definition from the core tree
-    :param ctx:     the context to create the type alias in
-    """
-    log.debug("Creating type alias {}...".format(typedef))
-    try:
-        ctx[typedef.identifier] = ctx[typedef.typ.identifier]
-    except KeyError:
-        raise FunkyTypeError("Type '{}' not defined, so it cannot be used in "
-                             "a type alias.".format(typedef.typ))
-
 def operator_prefix(s):
     """Prefixes a string with an operator prefix. This is used to distinguish
     between constructors as actual type operators, and constructors as
@@ -397,16 +384,6 @@ def create_algebraic_data_structure(adt, ctx):
         ctx[prefixed] = constructor_op
         ctx[constructor.identifier] = f
 
-def create_type(typedef, ctx):
-    """Creates a type for use in the inferencer.
-    :param typedef: the type definition
-    :param ctx:     the context to place the new definition in
-    """
-    if isinstance(typedef.typ, AlgebraicDataType): # newcons
-        create_algebraic_data_structure(typedef.typ, ctx)
-    else: # newtype
-        create_type_alias(typedef, ctx)
-
 def do_type_inference(core_tree, typedefs):
     """Perform type inference on the core tree.
     :param core_tree: the program statements to perform inference on
@@ -416,7 +393,7 @@ def do_type_inference(core_tree, typedefs):
 
     ctx, non_generic = DEFAULT_ENVIRONMENT, set()
     for typedef in typedefs:
-        create_type(typedef, ctx)
+        create_algebraic_data_structure(typedef.typ, ctx)
 
     infer(core_tree, ctx, non_generic)
 

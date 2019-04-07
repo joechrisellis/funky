@@ -1,7 +1,6 @@
 """Control flow for the compiler."""
 import logging
 import os
-import sys
 
 from funky.util import get_registry_function
 from funky.util.color import *

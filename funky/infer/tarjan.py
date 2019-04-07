@@ -59,7 +59,6 @@ def find_strongly_connected_components(graph):
     :return:      a list of strongly connected components
     :rtype:       list
     """
-    # TODO: document this better
 
     i = scc_count = 0
     ids, low = defaultdict(lambda: UNVISITED), defaultdict(lambda: 0)

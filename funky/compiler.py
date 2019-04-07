@@ -23,7 +23,6 @@ from funky.rename.rename import do_rename
 from funky.desugar.desugar import do_desugar
 from funky.infer.infer import do_type_inference
 
-from funky.generate.gen_c import CCodeGenerator
 from funky.generate.gen_haskell import HaskellCodeGenerator
 from funky.generate.gen_python_strict import StrictPythonCodeGenerator
 from funky.generate.gen_python_lazy import LazyPythonCodeGenerator

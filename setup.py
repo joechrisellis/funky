@@ -29,7 +29,8 @@ kwargs = {
     },
     "install_requires" : [
         "ply", # <-- for parsing
-    ]
+    ],
+    "include_package_data" : True,
 }
 
 setup(**kwargs)

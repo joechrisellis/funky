@@ -1,1 +1,1 @@
-recursive-include stdlib *.fky
+recursive-include funky/libs *.fky

@@ -51,7 +51,7 @@ class HaskellRuntime(Runtime):
         return ">="
 
     def runtime_pow(self):
-        return "**"
+        return "^"
 
     def runtime_add(self):
         return "+"
@@ -105,15 +105,22 @@ class HaskellRuntime(Runtime):
                Just x -> fromIntegral x :: Float
                Nothing -> read (read (show x)) :: Float""".format(fname, fname), fname
 
+    # NOTE: runtime_slice_from and runtime_slice_to have to wrangle around the
+    #       Haskell type system a bit. The drop function accepts Int, but we
+    #       use Integer every else, so we have to convert if we want the
+    #       Haskell code to type check.
+
     @add_to_runtime
     def runtime_slice_from(self):
         fname = "runtime_slice_from"
-        return """{} n xs = drop n xs""".format(fname), fname
+        return """{} :: Integer -> String -> String
+{} n xs = drop ((fromIntegral n) :: Int) xs""".format(fname, fname), fname
 
     @add_to_runtime
     def runtime_slice_to(self):
         fname = "runtime_slice_to"
-        return """{} n xs = take n xs""".format(fname), fname
+        return """{} :: Integer -> String -> String
+{} n xs = take ((fromIntegral n) :: Int) xs""".format(fname, fname), fname
 
     def runtime_fail(self):
         return "error"

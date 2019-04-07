@@ -1,6 +1,7 @@
 import logging
 
 from funky.corelang.coretree import *
+from funky.corelang.types import *
 from funky.corelang.builtins import String
 from funky.generate.gen import CodeGenerator, CodeSection
 from funky.generate.runtime.haskell_runtime import HaskellRuntime
@@ -20,6 +21,16 @@ class HaskellCodeGenerator(CodeGenerator):
         # we do not convert them to lowercase when compiling CoreVariables.
         self.constructor_names = set()
 
+    def funky_type_to_haskell(self, t, adt_names):
+        if isinstance(t, FunctionType):
+            return "({} -> {})".format(self.funky_type_to_haskell(t.input_type, adt_names),
+                                     self.funky_type_to_haskell(t.output_type, adt_names))
+        else:
+            ident = str(t)
+            if ident in adt_names:
+                ident = "{}{}".format(self.ADT_PREFIX, ident)
+            return ident
+
     ADT_PREFIX = "ADT"
     def make_adts(self, typedefs):
         adts = CodeSection("algebraic data types")
@@ -28,16 +39,19 @@ class HaskellCodeGenerator(CodeGenerator):
         for typedef in typedefs:
             adt = typedef.typ
             adt_names.add(adt.type_name)
+            
+            # If true, this ADT contains a function type somewhere, and
+            # therefore cannot derive Show or Eq.
+            has_function = False
 
             ind = 0
             for i, constructor in enumerate(adt.constructors):
                 
                 params = []
                 for p in constructor.parameters:
-                    ident = str(p)
-                    if p in adt_names:
-                        ident = "{}{}".format(self.ADT_PREFIX, ident)
-                    params.append(ident)
+                    pstring = self.funky_type_to_haskell(p, adt_names)
+                    if "->" in pstring: has_function = True
+                    params.append(pstring)
                 params = " ".join(params)
 
                 if i == 0:
@@ -55,7 +69,9 @@ class HaskellCodeGenerator(CodeGenerator):
                     adts.emit(line, d=ind)
                 self.constructor_names.add(constructor.identifier)
 
-            adts.emit("deriving (Show, Eq)", d=ind)
+            if not has_function:
+                adts.emit("deriving (Show, Eq)", d=ind)
+
             adts.newline()
 
         return adts
@@ -147,6 +163,10 @@ class HaskellCodeGenerator(CodeGenerator):
         :return:          the generated Haskell code as a string
         :rtype:           str
         """
+
+        import funky.globals
+        funky.globals.USE_UNICODE = False
+        funky.globals.USE_COLORS  = False
 
         super().do_generate_code(core_tree, typedefs)
 

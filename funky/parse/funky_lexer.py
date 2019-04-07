@@ -177,7 +177,7 @@ class IndentationLexer:
     def input(self, source, *args, **kwargs):
         self.source       =  source
         self.orig_tokens  =  self.lexer.do_lex(source, *args, **kwargs)
-        self.new_tokens   =  self._insert_implicit_tokens(self.orig_tokens)
+        self.new_tokens   =  self._disambiguate(self.orig_tokens)
 
         if self.dump_pretty:
             print(cblue("## PRETTIFIED SOURCE"))
@@ -202,11 +202,12 @@ class IndentationLexer:
         if self.new_tokens:
             return self.new_tokens.pop(0)
 
-    def _insert_implicit_tokens(self, tokens):
+    def _disambiguate(self, tokens):
         """Inserts explicit braces into a token stream containing omitted
-        braces.
+        braces, disambiguating the code.
 
         :param tokens list: a list of tokens from the first-pass lexer
+        :return:            a new list of tokens with explicit braces inserted
         """
         log.debug("Using the layout rule to convert indentation to explicit "
                   "braces.")

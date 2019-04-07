@@ -141,6 +141,14 @@ def atomic(f):
     wrapper.__doc__ = f.__doc__
     return wrapper
 
+def needs_argument(f):
+    def wrapper(self, arg, *args, **kwargs):
+        if not arg:
+            print(cred("Need an argument!"))
+            return
+        return f(self, arg, *args, **kwargs)
+    return wrapper
+
 def report_errors(f):
     """This decorator is used to wrap do_* functions in the command prompt
     below with error-catching and reporting code. Instead of having to repeat
@@ -243,6 +251,7 @@ class FunkyShell(CustomCmd):
 
     @report_errors
     @atomic
+    @needs_argument
     def do_type(self, arg):
         """Show the type of an expression. E.g.: :type 5"""
         expr = self.get_core(arg)
@@ -250,6 +259,7 @@ class FunkyShell(CustomCmd):
         do_type_inference(self.global_let, self.global_types)
         print("{} :: {}".format(arg, self.global_let.inferred_type))
 
+    @needs_argument
     def do_lazy(self, arg):
         """Use ':lazy on' to use lazy evaluation and ':lazy off' to use strict evaluation."""
         SWAPPED = "Swapped to {} code generator.".format
@@ -272,6 +282,7 @@ class FunkyShell(CustomCmd):
             print(cred("Invalid option '{}'. Please specify 'on' or "
                        "'off'.".format(arg)))
 
+    @needs_argument
     def do_color(self, arg):
         """Use ':color on' to enable colors and ':color off' to disable them."""
         SWAPPED = "Turned colors {}.".format
@@ -295,6 +306,7 @@ class FunkyShell(CustomCmd):
             print(cred("Invalid option '{}'. Please specify 'on' or "
                        "'off'.".format(arg)))
 
+    @needs_argument
     def do_unicode(self, arg):
         """Use ':unicode on' to enable unicode characters and ':unicode off' to disable them."""
         SWAPPED = "Unicode printing is now {}.".format
@@ -341,6 +353,7 @@ class FunkyShell(CustomCmd):
 
     @report_errors
     @atomic
+    @needs_argument
     def do_newtype(self, arg):
         """Create an ADT. E.g.: :newtype List = Cons Integer List | Nil"""
         parsed = self.newtype_parser.do_parse("newtype {}".format(arg))
@@ -348,18 +361,21 @@ class FunkyShell(CustomCmd):
 
     @report_errors
     @atomic
+    @needs_argument
     def do_show(self, arg):
         """Show the compiled code for an expression. E.g.: :show 1 + 1"""
         code = self.get_compiled(arg)
         print(code)
 
     @report_errors
+    @needs_argument
     def do_setfix(self, arg):
         """Change the fixity of an operator. E.g.: :setfix leftassoc 8 **"""
         self.setfix_parser.do_parse("setfix {}".format(arg))
 
     @report_errors
     @atomic
+    @needs_argument
     def do_import(self, arg):
         """Import a .fky file into the REPL. E.g.: :import "stdlib.fky"."""
         start = time.time()
@@ -385,6 +401,7 @@ class FunkyShell(CustomCmd):
             e.args = (new_msg,) + e.args[1:]
             raise
 
+    @needs_argument
     def do_typeclass(self, arg):
         """Prints a quick summary of a typeclass."""
         try:

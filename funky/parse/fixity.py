@@ -39,6 +39,7 @@ fixities = {
     "%"    :  ("leftassoc",   7),
     "*"    :  ("leftassoc",   7),
     "**"   :  ("rightassoc",  8),
+    "^"    :  ("rightassoc",  8),
 }
 
 def set_fixity(operator, associativity, precedence):

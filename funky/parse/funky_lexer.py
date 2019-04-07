@@ -39,7 +39,7 @@ class FunkyLexer:
         "FLOAT", "INTEGER", "BOOL", "STRING",
 
         "EQUALITY", "INEQUALITY", "LESS", "LEQ", "GREATER", "GEQ", "EQUALS",
-        "POW", "CONCAT", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO",
+        "FPOW", "IPOW", "CONCAT", "PLUS", "MINUS", "TIMES", "DIVIDE", "MODULO",
 
         "OPEN_PAREN", "CLOSE_PAREN",
         "OPEN_BRACE", "CLOSE_BRACE",
@@ -106,20 +106,21 @@ class FunkyLexer:
         return t
 
     # Math operators.
-    t_EQUALITY          =  r"=="
-    t_INEQUALITY        =  r"!="
-    t_LESS              =  r"<"
-    t_LEQ               =  r"<="
-    t_GREATER           =  r">"
-    t_GEQ               =  r">="
-    t_EQUALS            =  r"="
-    t_POW               =  r"\*\*"
-    t_CONCAT            =  r"\+\+"
-    t_PLUS              =  r"\+"
-    t_MINUS             =  r"-"
-    t_TIMES             =  r"\*"
-    t_DIVIDE            =  r"/"
-    t_MODULO            =  r"%"
+    t_EQUALITY    =  r"=="
+    t_INEQUALITY  =  r"!="
+    t_LESS        =  r"<"
+    t_LEQ         =  r"<="
+    t_GREATER     =  r">"
+    t_GEQ         =  r">="
+    t_EQUALS      =  r"="
+    t_FPOW        =  r"\*\*"
+    t_IPOW        =  r"\^"
+    t_CONCAT      =  r"\+\+"
+    t_PLUS        =  r"\+"
+    t_MINUS       =  r"-"
+    t_TIMES       =  r"\*"
+    t_DIVIDE      =  r"/"
+    t_MODULO      =  r"%"
 
     # Brackets.
     t_OPEN_PAREN    =  r"\("

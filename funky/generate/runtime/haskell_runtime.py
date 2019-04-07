@@ -12,7 +12,8 @@ class HaskellRuntime(Runtime):
             "<="          :  self.runtime_leq,
             ">"           :  self.runtime_greater,
             ">="          :  self.runtime_geq,
-            "**"          :  self.runtime_pow,
+            "**"          :  self.runtime_fpow,
+            "^"           :  self.runtime_ipow,
             "+"           :  self.runtime_add,
             "++"          :  self.runtime_concat,
             "-"           :  self.runtime_sub,
@@ -50,7 +51,10 @@ class HaskellRuntime(Runtime):
     def runtime_geq(self):
         return ">="
 
-    def runtime_pow(self):
+    def runtime_fpow(self):
+        return "**"
+
+    def runtime_ipow(self):
         return "^"
 
     def runtime_add(self):

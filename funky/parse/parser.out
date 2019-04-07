@@ -97,51 +97,54 @@ Rule 87    VARSYM -> MINUS
 Rule 88    VARSYM -> TIMES
 Rule 89    VARSYM -> DIVIDE
 Rule 90    VARSYM -> MODULO
-Rule 91    VARSYM -> POW
-Rule 92    VARSYM -> EQUALITY
-Rule 93    VARSYM -> INEQUALITY
-Rule 94    VARSYM -> LESS
-Rule 95    VARSYM -> LEQ
-Rule 96    VARSYM -> GREATER
-Rule 97    VARSYM -> GEQ
-Rule 98    VARSYM -> CONCAT
-Rule 99    VARSYM -> AND
-Rule 100   VARSYM -> OR
-Rule 101   LITERAL -> FLOAT
-Rule 102   LITERAL -> INTEGER
-Rule 103   LITERAL -> BOOL
-Rule 104   LITERAL -> STRING
-Rule 105   USED_VAR -> IDENTIFIER
-Rule 106   USED_TYPENAME -> TYPENAME
-Rule 107   PARAM -> IDENTIFIER
+Rule 91    VARSYM -> FPOW
+Rule 92    VARSYM -> IPOW
+Rule 93    VARSYM -> EQUALITY
+Rule 94    VARSYM -> INEQUALITY
+Rule 95    VARSYM -> LESS
+Rule 96    VARSYM -> LEQ
+Rule 97    VARSYM -> GREATER
+Rule 98    VARSYM -> GEQ
+Rule 99    VARSYM -> CONCAT
+Rule 100   VARSYM -> AND
+Rule 101   VARSYM -> OR
+Rule 102   LITERAL -> FLOAT
+Rule 103   LITERAL -> INTEGER
+Rule 104   LITERAL -> BOOL
+Rule 105   LITERAL -> STRING
+Rule 106   USED_VAR -> IDENTIFIER
+Rule 107   USED_TYPENAME -> TYPENAME
+Rule 108   PARAM -> IDENTIFIER
 
 Terminals, with rules where they appear
 
-AND                  : 99
+AND                  : 100
 ARROW                : 30 55 69
-BOOL                 : 103
+BOOL                 : 104
 CLOSE_BRACE          : 2 3 15 16 58
 CLOSE_PAREN          : 35 37 65 66 80
-CONCAT               : 98
+CONCAT               : 99
 DIVIDE               : 89
 ELSE                 : 57
 ENDSTATEMENT         : 2 4 7 17 67
-EQUALITY             : 92
+EQUALITY             : 93
 EQUALS               : 11 40 41 44 45
-FLOAT                : 76 101
-GEQ                  : 97
+FLOAT                : 76 102
+FPOW                 : 91
+GEQ                  : 98
 GIVEN                : 44 45
-GREATER              : 96
-IDENTIFIER           : 1 34 36 83 105 107
+GREATER              : 97
+IDENTIFIER           : 1 34 36 83 106 108
 IF                   : 57
 IMPORT               : 6
 IN                   : 56
-INEQUALITY           : 93
-INTEGER              : 25 75 102
+INEQUALITY           : 94
+INTEGER              : 25 75 103
+IPOW                 : 92
 LAMBDA               : 55
 LEFTASSOC            : 26
-LEQ                  : 95
-LESS                 : 94
+LEQ                  : 96
+LESS                 : 95
 LET                  : 56
 MATCH                : 58
 MINUS                : 48 75 76 87
@@ -152,16 +155,15 @@ NONASSOC             : 28
 ON                   : 58
 OPEN_BRACE           : 2 3 15 16 58
 OPEN_PAREN           : 35 37 65 66 80
-OR                   : 100
+OR                   : 101
 PIPE                 : 12
 PLUS                 : 86
-POW                  : 91
 RIGHTASSOC           : 27
 SETFIX               : 25
-STRING               : 6 104
+STRING               : 6 105
 TILDE                : 83 83
 TIMES                : 88
-TYPENAME             : 11 14 33 74 78 106
+TYPENAME             : 11 14 33 74 78 107
 WHITESPACE           : 
 WITH                 : 1 41 43
 error                : 
@@ -286,7 +288,7 @@ state 6
     (36) FUNCTION_LHS -> . IDENTIFIER APAT APATS
     (37) FUNCTION_LHS -> . OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
     (38) FUNCTION_LHS -> . INFIX_FUNCTION_DEFINITION
-    (107) PARAM -> . IDENTIFIER
+    (108) PARAM -> . IDENTIFIER
     (39) INFIX_FUNCTION_DEFINITION -> . LPAT INFIX_FUNCTION LPAT
     (71) LPAT -> . APAT
     (72) LPAT -> . CONSTRUCTOR_PATTERN
@@ -298,10 +300,10 @@ state 6
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     IMPORT          shift and go to state 11
     NEWTYPE         shift and go to state 15
@@ -376,41 +378,42 @@ state 11
 
 state 12
 
-    (104) LITERAL -> STRING .
+    (105) LITERAL -> STRING .
 
-    TILDE           reduce using rule 104 (LITERAL -> STRING .)
-    TYPENAME        reduce using rule 104 (LITERAL -> STRING .)
-    OPEN_PAREN      reduce using rule 104 (LITERAL -> STRING .)
-    IDENTIFIER      reduce using rule 104 (LITERAL -> STRING .)
-    FLOAT           reduce using rule 104 (LITERAL -> STRING .)
-    INTEGER         reduce using rule 104 (LITERAL -> STRING .)
-    BOOL            reduce using rule 104 (LITERAL -> STRING .)
-    STRING          reduce using rule 104 (LITERAL -> STRING .)
-    CLOSE_PAREN     reduce using rule 104 (LITERAL -> STRING .)
-    EQUALS          reduce using rule 104 (LITERAL -> STRING .)
-    GIVEN           reduce using rule 104 (LITERAL -> STRING .)
-    ARROW           reduce using rule 104 (LITERAL -> STRING .)
-    PLUS            reduce using rule 104 (LITERAL -> STRING .)
-    MINUS           reduce using rule 104 (LITERAL -> STRING .)
-    TIMES           reduce using rule 104 (LITERAL -> STRING .)
-    DIVIDE          reduce using rule 104 (LITERAL -> STRING .)
-    MODULO          reduce using rule 104 (LITERAL -> STRING .)
-    POW             reduce using rule 104 (LITERAL -> STRING .)
-    EQUALITY        reduce using rule 104 (LITERAL -> STRING .)
-    INEQUALITY      reduce using rule 104 (LITERAL -> STRING .)
-    LESS            reduce using rule 104 (LITERAL -> STRING .)
-    LEQ             reduce using rule 104 (LITERAL -> STRING .)
-    GREATER         reduce using rule 104 (LITERAL -> STRING .)
-    GEQ             reduce using rule 104 (LITERAL -> STRING .)
-    CONCAT          reduce using rule 104 (LITERAL -> STRING .)
-    AND             reduce using rule 104 (LITERAL -> STRING .)
-    OR              reduce using rule 104 (LITERAL -> STRING .)
-    WITH            reduce using rule 104 (LITERAL -> STRING .)
-    IF              reduce using rule 104 (LITERAL -> STRING .)
-    CLOSE_BRACE     reduce using rule 104 (LITERAL -> STRING .)
-    ENDSTATEMENT    reduce using rule 104 (LITERAL -> STRING .)
-    ON              reduce using rule 104 (LITERAL -> STRING .)
-    ELSE            reduce using rule 104 (LITERAL -> STRING .)
+    TILDE           reduce using rule 105 (LITERAL -> STRING .)
+    TYPENAME        reduce using rule 105 (LITERAL -> STRING .)
+    OPEN_PAREN      reduce using rule 105 (LITERAL -> STRING .)
+    IDENTIFIER      reduce using rule 105 (LITERAL -> STRING .)
+    FLOAT           reduce using rule 105 (LITERAL -> STRING .)
+    INTEGER         reduce using rule 105 (LITERAL -> STRING .)
+    BOOL            reduce using rule 105 (LITERAL -> STRING .)
+    STRING          reduce using rule 105 (LITERAL -> STRING .)
+    CLOSE_PAREN     reduce using rule 105 (LITERAL -> STRING .)
+    EQUALS          reduce using rule 105 (LITERAL -> STRING .)
+    GIVEN           reduce using rule 105 (LITERAL -> STRING .)
+    ARROW           reduce using rule 105 (LITERAL -> STRING .)
+    PLUS            reduce using rule 105 (LITERAL -> STRING .)
+    MINUS           reduce using rule 105 (LITERAL -> STRING .)
+    TIMES           reduce using rule 105 (LITERAL -> STRING .)
+    DIVIDE          reduce using rule 105 (LITERAL -> STRING .)
+    MODULO          reduce using rule 105 (LITERAL -> STRING .)
+    FPOW            reduce using rule 105 (LITERAL -> STRING .)
+    IPOW            reduce using rule 105 (LITERAL -> STRING .)
+    EQUALITY        reduce using rule 105 (LITERAL -> STRING .)
+    INEQUALITY      reduce using rule 105 (LITERAL -> STRING .)
+    LESS            reduce using rule 105 (LITERAL -> STRING .)
+    LEQ             reduce using rule 105 (LITERAL -> STRING .)
+    GREATER         reduce using rule 105 (LITERAL -> STRING .)
+    GEQ             reduce using rule 105 (LITERAL -> STRING .)
+    CONCAT          reduce using rule 105 (LITERAL -> STRING .)
+    AND             reduce using rule 105 (LITERAL -> STRING .)
+    OR              reduce using rule 105 (LITERAL -> STRING .)
+    WITH            reduce using rule 105 (LITERAL -> STRING .)
+    IF              reduce using rule 105 (LITERAL -> STRING .)
+    CLOSE_BRACE     reduce using rule 105 (LITERAL -> STRING .)
+    ENDSTATEMENT    reduce using rule 105 (LITERAL -> STRING .)
+    ON              reduce using rule 105 (LITERAL -> STRING .)
+    ELSE            reduce using rule 105 (LITERAL -> STRING .)
 
 
 state 13
@@ -444,11 +447,11 @@ state 16
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TILDE           reduce using rule 78 (APAT -> TYPENAME .)
     CLOSE_PAREN     reduce using rule 78 (APAT -> TYPENAME .)
@@ -540,61 +543,62 @@ state 22
 
 state 23
 
-    (102) LITERAL -> INTEGER .
+    (103) LITERAL -> INTEGER .
 
-    TILDE           reduce using rule 102 (LITERAL -> INTEGER .)
-    TYPENAME        reduce using rule 102 (LITERAL -> INTEGER .)
-    OPEN_PAREN      reduce using rule 102 (LITERAL -> INTEGER .)
-    IDENTIFIER      reduce using rule 102 (LITERAL -> INTEGER .)
-    FLOAT           reduce using rule 102 (LITERAL -> INTEGER .)
-    INTEGER         reduce using rule 102 (LITERAL -> INTEGER .)
-    BOOL            reduce using rule 102 (LITERAL -> INTEGER .)
-    STRING          reduce using rule 102 (LITERAL -> INTEGER .)
-    CLOSE_PAREN     reduce using rule 102 (LITERAL -> INTEGER .)
-    EQUALS          reduce using rule 102 (LITERAL -> INTEGER .)
-    GIVEN           reduce using rule 102 (LITERAL -> INTEGER .)
-    ARROW           reduce using rule 102 (LITERAL -> INTEGER .)
-    PLUS            reduce using rule 102 (LITERAL -> INTEGER .)
-    MINUS           reduce using rule 102 (LITERAL -> INTEGER .)
-    TIMES           reduce using rule 102 (LITERAL -> INTEGER .)
-    DIVIDE          reduce using rule 102 (LITERAL -> INTEGER .)
-    MODULO          reduce using rule 102 (LITERAL -> INTEGER .)
-    POW             reduce using rule 102 (LITERAL -> INTEGER .)
-    EQUALITY        reduce using rule 102 (LITERAL -> INTEGER .)
-    INEQUALITY      reduce using rule 102 (LITERAL -> INTEGER .)
-    LESS            reduce using rule 102 (LITERAL -> INTEGER .)
-    LEQ             reduce using rule 102 (LITERAL -> INTEGER .)
-    GREATER         reduce using rule 102 (LITERAL -> INTEGER .)
-    GEQ             reduce using rule 102 (LITERAL -> INTEGER .)
-    CONCAT          reduce using rule 102 (LITERAL -> INTEGER .)
-    AND             reduce using rule 102 (LITERAL -> INTEGER .)
-    OR              reduce using rule 102 (LITERAL -> INTEGER .)
-    WITH            reduce using rule 102 (LITERAL -> INTEGER .)
-    IF              reduce using rule 102 (LITERAL -> INTEGER .)
-    CLOSE_BRACE     reduce using rule 102 (LITERAL -> INTEGER .)
-    ENDSTATEMENT    reduce using rule 102 (LITERAL -> INTEGER .)
-    ON              reduce using rule 102 (LITERAL -> INTEGER .)
-    ELSE            reduce using rule 102 (LITERAL -> INTEGER .)
+    TILDE           reduce using rule 103 (LITERAL -> INTEGER .)
+    TYPENAME        reduce using rule 103 (LITERAL -> INTEGER .)
+    OPEN_PAREN      reduce using rule 103 (LITERAL -> INTEGER .)
+    IDENTIFIER      reduce using rule 103 (LITERAL -> INTEGER .)
+    FLOAT           reduce using rule 103 (LITERAL -> INTEGER .)
+    INTEGER         reduce using rule 103 (LITERAL -> INTEGER .)
+    BOOL            reduce using rule 103 (LITERAL -> INTEGER .)
+    STRING          reduce using rule 103 (LITERAL -> INTEGER .)
+    CLOSE_PAREN     reduce using rule 103 (LITERAL -> INTEGER .)
+    EQUALS          reduce using rule 103 (LITERAL -> INTEGER .)
+    GIVEN           reduce using rule 103 (LITERAL -> INTEGER .)
+    ARROW           reduce using rule 103 (LITERAL -> INTEGER .)
+    PLUS            reduce using rule 103 (LITERAL -> INTEGER .)
+    MINUS           reduce using rule 103 (LITERAL -> INTEGER .)
+    TIMES           reduce using rule 103 (LITERAL -> INTEGER .)
+    DIVIDE          reduce using rule 103 (LITERAL -> INTEGER .)
+    MODULO          reduce using rule 103 (LITERAL -> INTEGER .)
+    FPOW            reduce using rule 103 (LITERAL -> INTEGER .)
+    IPOW            reduce using rule 103 (LITERAL -> INTEGER .)
+    EQUALITY        reduce using rule 103 (LITERAL -> INTEGER .)
+    INEQUALITY      reduce using rule 103 (LITERAL -> INTEGER .)
+    LESS            reduce using rule 103 (LITERAL -> INTEGER .)
+    LEQ             reduce using rule 103 (LITERAL -> INTEGER .)
+    GREATER         reduce using rule 103 (LITERAL -> INTEGER .)
+    GEQ             reduce using rule 103 (LITERAL -> INTEGER .)
+    CONCAT          reduce using rule 103 (LITERAL -> INTEGER .)
+    AND             reduce using rule 103 (LITERAL -> INTEGER .)
+    OR              reduce using rule 103 (LITERAL -> INTEGER .)
+    WITH            reduce using rule 103 (LITERAL -> INTEGER .)
+    IF              reduce using rule 103 (LITERAL -> INTEGER .)
+    CLOSE_BRACE     reduce using rule 103 (LITERAL -> INTEGER .)
+    ENDSTATEMENT    reduce using rule 103 (LITERAL -> INTEGER .)
+    ON              reduce using rule 103 (LITERAL -> INTEGER .)
+    ELSE            reduce using rule 103 (LITERAL -> INTEGER .)
 
 
 state 24
 
     (36) FUNCTION_LHS -> IDENTIFIER . APAT APATS
-    (107) PARAM -> IDENTIFIER .
+    (108) PARAM -> IDENTIFIER .
     (77) APAT -> . PARAM
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
-    EQUALS          reduce using rule 107 (PARAM -> IDENTIFIER .)
-    GIVEN           reduce using rule 107 (PARAM -> IDENTIFIER .)
-    TILDE           reduce using rule 107 (PARAM -> IDENTIFIER .)
-    CLOSE_PAREN     reduce using rule 107 (PARAM -> IDENTIFIER .)
+    EQUALS          reduce using rule 108 (PARAM -> IDENTIFIER .)
+    GIVEN           reduce using rule 108 (PARAM -> IDENTIFIER .)
+    TILDE           reduce using rule 108 (PARAM -> IDENTIFIER .)
+    CLOSE_PAREN     reduce using rule 108 (PARAM -> IDENTIFIER .)
     TYPENAME        shift and go to state 40
     OPEN_PAREN      shift and go to state 43
     IDENTIFIER      shift and go to state 44
@@ -636,11 +640,11 @@ state 26
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     IDENTIFIER      shift and go to state 24
     OPEN_PAREN      shift and go to state 26
@@ -729,80 +733,82 @@ state 32
 
 state 33
 
-    (101) LITERAL -> FLOAT .
+    (102) LITERAL -> FLOAT .
 
-    TILDE           reduce using rule 101 (LITERAL -> FLOAT .)
-    TYPENAME        reduce using rule 101 (LITERAL -> FLOAT .)
-    OPEN_PAREN      reduce using rule 101 (LITERAL -> FLOAT .)
-    IDENTIFIER      reduce using rule 101 (LITERAL -> FLOAT .)
-    FLOAT           reduce using rule 101 (LITERAL -> FLOAT .)
-    INTEGER         reduce using rule 101 (LITERAL -> FLOAT .)
-    BOOL            reduce using rule 101 (LITERAL -> FLOAT .)
-    STRING          reduce using rule 101 (LITERAL -> FLOAT .)
-    CLOSE_PAREN     reduce using rule 101 (LITERAL -> FLOAT .)
-    EQUALS          reduce using rule 101 (LITERAL -> FLOAT .)
-    GIVEN           reduce using rule 101 (LITERAL -> FLOAT .)
-    ARROW           reduce using rule 101 (LITERAL -> FLOAT .)
-    PLUS            reduce using rule 101 (LITERAL -> FLOAT .)
-    MINUS           reduce using rule 101 (LITERAL -> FLOAT .)
-    TIMES           reduce using rule 101 (LITERAL -> FLOAT .)
-    DIVIDE          reduce using rule 101 (LITERAL -> FLOAT .)
-    MODULO          reduce using rule 101 (LITERAL -> FLOAT .)
-    POW             reduce using rule 101 (LITERAL -> FLOAT .)
-    EQUALITY        reduce using rule 101 (LITERAL -> FLOAT .)
-    INEQUALITY      reduce using rule 101 (LITERAL -> FLOAT .)
-    LESS            reduce using rule 101 (LITERAL -> FLOAT .)
-    LEQ             reduce using rule 101 (LITERAL -> FLOAT .)
-    GREATER         reduce using rule 101 (LITERAL -> FLOAT .)
-    GEQ             reduce using rule 101 (LITERAL -> FLOAT .)
-    CONCAT          reduce using rule 101 (LITERAL -> FLOAT .)
-    AND             reduce using rule 101 (LITERAL -> FLOAT .)
-    OR              reduce using rule 101 (LITERAL -> FLOAT .)
-    WITH            reduce using rule 101 (LITERAL -> FLOAT .)
-    IF              reduce using rule 101 (LITERAL -> FLOAT .)
-    CLOSE_BRACE     reduce using rule 101 (LITERAL -> FLOAT .)
-    ENDSTATEMENT    reduce using rule 101 (LITERAL -> FLOAT .)
-    ON              reduce using rule 101 (LITERAL -> FLOAT .)
-    ELSE            reduce using rule 101 (LITERAL -> FLOAT .)
+    TILDE           reduce using rule 102 (LITERAL -> FLOAT .)
+    TYPENAME        reduce using rule 102 (LITERAL -> FLOAT .)
+    OPEN_PAREN      reduce using rule 102 (LITERAL -> FLOAT .)
+    IDENTIFIER      reduce using rule 102 (LITERAL -> FLOAT .)
+    FLOAT           reduce using rule 102 (LITERAL -> FLOAT .)
+    INTEGER         reduce using rule 102 (LITERAL -> FLOAT .)
+    BOOL            reduce using rule 102 (LITERAL -> FLOAT .)
+    STRING          reduce using rule 102 (LITERAL -> FLOAT .)
+    CLOSE_PAREN     reduce using rule 102 (LITERAL -> FLOAT .)
+    EQUALS          reduce using rule 102 (LITERAL -> FLOAT .)
+    GIVEN           reduce using rule 102 (LITERAL -> FLOAT .)
+    ARROW           reduce using rule 102 (LITERAL -> FLOAT .)
+    PLUS            reduce using rule 102 (LITERAL -> FLOAT .)
+    MINUS           reduce using rule 102 (LITERAL -> FLOAT .)
+    TIMES           reduce using rule 102 (LITERAL -> FLOAT .)
+    DIVIDE          reduce using rule 102 (LITERAL -> FLOAT .)
+    MODULO          reduce using rule 102 (LITERAL -> FLOAT .)
+    FPOW            reduce using rule 102 (LITERAL -> FLOAT .)
+    IPOW            reduce using rule 102 (LITERAL -> FLOAT .)
+    EQUALITY        reduce using rule 102 (LITERAL -> FLOAT .)
+    INEQUALITY      reduce using rule 102 (LITERAL -> FLOAT .)
+    LESS            reduce using rule 102 (LITERAL -> FLOAT .)
+    LEQ             reduce using rule 102 (LITERAL -> FLOAT .)
+    GREATER         reduce using rule 102 (LITERAL -> FLOAT .)
+    GEQ             reduce using rule 102 (LITERAL -> FLOAT .)
+    CONCAT          reduce using rule 102 (LITERAL -> FLOAT .)
+    AND             reduce using rule 102 (LITERAL -> FLOAT .)
+    OR              reduce using rule 102 (LITERAL -> FLOAT .)
+    WITH            reduce using rule 102 (LITERAL -> FLOAT .)
+    IF              reduce using rule 102 (LITERAL -> FLOAT .)
+    CLOSE_BRACE     reduce using rule 102 (LITERAL -> FLOAT .)
+    ENDSTATEMENT    reduce using rule 102 (LITERAL -> FLOAT .)
+    ON              reduce using rule 102 (LITERAL -> FLOAT .)
+    ELSE            reduce using rule 102 (LITERAL -> FLOAT .)
 
 
 state 34
 
-    (103) LITERAL -> BOOL .
+    (104) LITERAL -> BOOL .
 
-    TILDE           reduce using rule 103 (LITERAL -> BOOL .)
-    TYPENAME        reduce using rule 103 (LITERAL -> BOOL .)
-    OPEN_PAREN      reduce using rule 103 (LITERAL -> BOOL .)
-    IDENTIFIER      reduce using rule 103 (LITERAL -> BOOL .)
-    FLOAT           reduce using rule 103 (LITERAL -> BOOL .)
-    INTEGER         reduce using rule 103 (LITERAL -> BOOL .)
-    BOOL            reduce using rule 103 (LITERAL -> BOOL .)
-    STRING          reduce using rule 103 (LITERAL -> BOOL .)
-    CLOSE_PAREN     reduce using rule 103 (LITERAL -> BOOL .)
-    EQUALS          reduce using rule 103 (LITERAL -> BOOL .)
-    GIVEN           reduce using rule 103 (LITERAL -> BOOL .)
-    ARROW           reduce using rule 103 (LITERAL -> BOOL .)
-    PLUS            reduce using rule 103 (LITERAL -> BOOL .)
-    MINUS           reduce using rule 103 (LITERAL -> BOOL .)
-    TIMES           reduce using rule 103 (LITERAL -> BOOL .)
-    DIVIDE          reduce using rule 103 (LITERAL -> BOOL .)
-    MODULO          reduce using rule 103 (LITERAL -> BOOL .)
-    POW             reduce using rule 103 (LITERAL -> BOOL .)
-    EQUALITY        reduce using rule 103 (LITERAL -> BOOL .)
-    INEQUALITY      reduce using rule 103 (LITERAL -> BOOL .)
-    LESS            reduce using rule 103 (LITERAL -> BOOL .)
-    LEQ             reduce using rule 103 (LITERAL -> BOOL .)
-    GREATER         reduce using rule 103 (LITERAL -> BOOL .)
-    GEQ             reduce using rule 103 (LITERAL -> BOOL .)
-    CONCAT          reduce using rule 103 (LITERAL -> BOOL .)
-    AND             reduce using rule 103 (LITERAL -> BOOL .)
-    OR              reduce using rule 103 (LITERAL -> BOOL .)
-    WITH            reduce using rule 103 (LITERAL -> BOOL .)
-    IF              reduce using rule 103 (LITERAL -> BOOL .)
-    CLOSE_BRACE     reduce using rule 103 (LITERAL -> BOOL .)
-    ENDSTATEMENT    reduce using rule 103 (LITERAL -> BOOL .)
-    ON              reduce using rule 103 (LITERAL -> BOOL .)
-    ELSE            reduce using rule 103 (LITERAL -> BOOL .)
+    TILDE           reduce using rule 104 (LITERAL -> BOOL .)
+    TYPENAME        reduce using rule 104 (LITERAL -> BOOL .)
+    OPEN_PAREN      reduce using rule 104 (LITERAL -> BOOL .)
+    IDENTIFIER      reduce using rule 104 (LITERAL -> BOOL .)
+    FLOAT           reduce using rule 104 (LITERAL -> BOOL .)
+    INTEGER         reduce using rule 104 (LITERAL -> BOOL .)
+    BOOL            reduce using rule 104 (LITERAL -> BOOL .)
+    STRING          reduce using rule 104 (LITERAL -> BOOL .)
+    CLOSE_PAREN     reduce using rule 104 (LITERAL -> BOOL .)
+    EQUALS          reduce using rule 104 (LITERAL -> BOOL .)
+    GIVEN           reduce using rule 104 (LITERAL -> BOOL .)
+    ARROW           reduce using rule 104 (LITERAL -> BOOL .)
+    PLUS            reduce using rule 104 (LITERAL -> BOOL .)
+    MINUS           reduce using rule 104 (LITERAL -> BOOL .)
+    TIMES           reduce using rule 104 (LITERAL -> BOOL .)
+    DIVIDE          reduce using rule 104 (LITERAL -> BOOL .)
+    MODULO          reduce using rule 104 (LITERAL -> BOOL .)
+    FPOW            reduce using rule 104 (LITERAL -> BOOL .)
+    IPOW            reduce using rule 104 (LITERAL -> BOOL .)
+    EQUALITY        reduce using rule 104 (LITERAL -> BOOL .)
+    INEQUALITY      reduce using rule 104 (LITERAL -> BOOL .)
+    LESS            reduce using rule 104 (LITERAL -> BOOL .)
+    LEQ             reduce using rule 104 (LITERAL -> BOOL .)
+    GREATER         reduce using rule 104 (LITERAL -> BOOL .)
+    GEQ             reduce using rule 104 (LITERAL -> BOOL .)
+    CONCAT          reduce using rule 104 (LITERAL -> BOOL .)
+    AND             reduce using rule 104 (LITERAL -> BOOL .)
+    OR              reduce using rule 104 (LITERAL -> BOOL .)
+    WITH            reduce using rule 104 (LITERAL -> BOOL .)
+    IF              reduce using rule 104 (LITERAL -> BOOL .)
+    CLOSE_BRACE     reduce using rule 104 (LITERAL -> BOOL .)
+    ENDSTATEMENT    reduce using rule 104 (LITERAL -> BOOL .)
+    ON              reduce using rule 104 (LITERAL -> BOOL .)
+    ELSE            reduce using rule 104 (LITERAL -> BOOL .)
 
 
 state 35
@@ -825,7 +831,7 @@ state 35
     (36) FUNCTION_LHS -> . IDENTIFIER APAT APATS
     (37) FUNCTION_LHS -> . OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
     (38) FUNCTION_LHS -> . INFIX_FUNCTION_DEFINITION
-    (107) PARAM -> . IDENTIFIER
+    (108) PARAM -> . IDENTIFIER
     (39) INFIX_FUNCTION_DEFINITION -> . LPAT INFIX_FUNCTION LPAT
     (71) LPAT -> . APAT
     (72) LPAT -> . CONSTRUCTOR_PATTERN
@@ -837,10 +843,10 @@ state 35
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     IMPORT          shift and go to state 11
     NEWTYPE         shift and go to state 15
@@ -896,7 +902,7 @@ state 37
     (36) FUNCTION_LHS -> . IDENTIFIER APAT APATS
     (37) FUNCTION_LHS -> . OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
     (38) FUNCTION_LHS -> . INFIX_FUNCTION_DEFINITION
-    (107) PARAM -> . IDENTIFIER
+    (108) PARAM -> . IDENTIFIER
     (39) INFIX_FUNCTION_DEFINITION -> . LPAT INFIX_FUNCTION LPAT
     (71) LPAT -> . APAT
     (72) LPAT -> . CONSTRUCTOR_PATTERN
@@ -908,10 +914,10 @@ state 37
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     NEWTYPE         shift and go to state 15
     CLOSE_BRACE     reduce using rule 22 (DECLARATION -> .)
@@ -982,11 +988,11 @@ state 41
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TILDE           reduce using rule 85 (APATS -> .)
     CLOSE_PAREN     reduce using rule 85 (APATS -> .)
@@ -1037,11 +1043,11 @@ state 43
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TYPENAME        shift and go to state 16
     OPEN_PAREN      shift and go to state 43
@@ -1061,20 +1067,20 @@ state 43
 
 state 44
 
-    (107) PARAM -> IDENTIFIER .
+    (108) PARAM -> IDENTIFIER .
 
-    TYPENAME        reduce using rule 107 (PARAM -> IDENTIFIER .)
-    OPEN_PAREN      reduce using rule 107 (PARAM -> IDENTIFIER .)
-    IDENTIFIER      reduce using rule 107 (PARAM -> IDENTIFIER .)
-    FLOAT           reduce using rule 107 (PARAM -> IDENTIFIER .)
-    INTEGER         reduce using rule 107 (PARAM -> IDENTIFIER .)
-    BOOL            reduce using rule 107 (PARAM -> IDENTIFIER .)
-    STRING          reduce using rule 107 (PARAM -> IDENTIFIER .)
-    TILDE           reduce using rule 107 (PARAM -> IDENTIFIER .)
-    CLOSE_PAREN     reduce using rule 107 (PARAM -> IDENTIFIER .)
-    EQUALS          reduce using rule 107 (PARAM -> IDENTIFIER .)
-    GIVEN           reduce using rule 107 (PARAM -> IDENTIFIER .)
-    ARROW           reduce using rule 107 (PARAM -> IDENTIFIER .)
+    TYPENAME        reduce using rule 108 (PARAM -> IDENTIFIER .)
+    OPEN_PAREN      reduce using rule 108 (PARAM -> IDENTIFIER .)
+    IDENTIFIER      reduce using rule 108 (PARAM -> IDENTIFIER .)
+    FLOAT           reduce using rule 108 (PARAM -> IDENTIFIER .)
+    INTEGER         reduce using rule 108 (PARAM -> IDENTIFIER .)
+    BOOL            reduce using rule 108 (PARAM -> IDENTIFIER .)
+    STRING          reduce using rule 108 (PARAM -> IDENTIFIER .)
+    TILDE           reduce using rule 108 (PARAM -> IDENTIFIER .)
+    CLOSE_PAREN     reduce using rule 108 (PARAM -> IDENTIFIER .)
+    EQUALS          reduce using rule 108 (PARAM -> IDENTIFIER .)
+    GIVEN           reduce using rule 108 (PARAM -> IDENTIFIER .)
+    ARROW           reduce using rule 108 (PARAM -> IDENTIFIER .)
 
 
 state 45
@@ -1109,12 +1115,12 @@ state 46
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -1177,12 +1183,12 @@ state 48
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -1256,11 +1262,11 @@ state 54
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     EQUALS          reduce using rule 85 (APATS -> .)
     GIVEN           reduce using rule 85 (APATS -> .)
@@ -1309,11 +1315,11 @@ state 57
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TYPENAME        shift and go to state 16
     OPEN_PAREN      shift and go to state 43
@@ -1405,11 +1411,11 @@ state 65
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TILDE           reduce using rule 85 (APATS -> .)
     CLOSE_PAREN     reduce using rule 85 (APATS -> .)
@@ -1477,7 +1483,8 @@ state 69
     TIMES           reduce using rule 46 (EXP -> INFIX_EXP .)
     DIVIDE          reduce using rule 46 (EXP -> INFIX_EXP .)
     MODULO          reduce using rule 46 (EXP -> INFIX_EXP .)
-    POW             reduce using rule 46 (EXP -> INFIX_EXP .)
+    FPOW            reduce using rule 46 (EXP -> INFIX_EXP .)
+    IPOW            reduce using rule 46 (EXP -> INFIX_EXP .)
     EQUALITY        reduce using rule 46 (EXP -> INFIX_EXP .)
     INEQUALITY      reduce using rule 46 (EXP -> INFIX_EXP .)
     LESS            reduce using rule 46 (EXP -> INFIX_EXP .)
@@ -1501,16 +1508,17 @@ state 70
     (88) VARSYM -> . TIMES
     (89) VARSYM -> . DIVIDE
     (90) VARSYM -> . MODULO
-    (91) VARSYM -> . POW
-    (92) VARSYM -> . EQUALITY
-    (93) VARSYM -> . INEQUALITY
-    (94) VARSYM -> . LESS
-    (95) VARSYM -> . LEQ
-    (96) VARSYM -> . GREATER
-    (97) VARSYM -> . GEQ
-    (98) VARSYM -> . CONCAT
-    (99) VARSYM -> . AND
-    (100) VARSYM -> . OR
+    (91) VARSYM -> . FPOW
+    (92) VARSYM -> . IPOW
+    (93) VARSYM -> . EQUALITY
+    (94) VARSYM -> . INEQUALITY
+    (95) VARSYM -> . LESS
+    (96) VARSYM -> . LEQ
+    (97) VARSYM -> . GREATER
+    (98) VARSYM -> . GEQ
+    (99) VARSYM -> . CONCAT
+    (100) VARSYM -> . AND
+    (101) VARSYM -> . OR
     (83) INFIX_FUNCTION -> . TILDE IDENTIFIER TILDE
 
   ! shift/reduce conflict for PLUS resolved as shift
@@ -1518,7 +1526,8 @@ state 70
   ! shift/reduce conflict for TIMES resolved as shift
   ! shift/reduce conflict for DIVIDE resolved as shift
   ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for POW resolved as shift
+  ! shift/reduce conflict for FPOW resolved as shift
+  ! shift/reduce conflict for IPOW resolved as shift
   ! shift/reduce conflict for EQUALITY resolved as shift
   ! shift/reduce conflict for INEQUALITY resolved as shift
   ! shift/reduce conflict for LESS resolved as shift
@@ -1543,16 +1552,17 @@ state 70
     TIMES           shift and go to state 108
     DIVIDE          shift and go to state 109
     MODULO          shift and go to state 110
-    POW             shift and go to state 111
-    EQUALITY        shift and go to state 112
-    INEQUALITY      shift and go to state 113
-    LESS            shift and go to state 114
-    LEQ             shift and go to state 115
-    GREATER         shift and go to state 116
-    GEQ             shift and go to state 117
-    CONCAT          shift and go to state 118
-    AND             shift and go to state 119
-    OR              shift and go to state 120
+    FPOW            shift and go to state 111
+    IPOW            shift and go to state 112
+    EQUALITY        shift and go to state 113
+    INEQUALITY      shift and go to state 114
+    LESS            shift and go to state 115
+    LEQ             shift and go to state 116
+    GREATER         shift and go to state 117
+    GEQ             shift and go to state 118
+    CONCAT          shift and go to state 119
+    AND             shift and go to state 120
+    OR              shift and go to state 121
     TILDE           shift and go to state 58
 
   ! PLUS            [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
@@ -1560,7 +1570,8 @@ state 70
   ! TIMES           [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
   ! DIVIDE          [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
   ! MODULO          [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
-  ! POW             [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
+  ! FPOW            [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
+  ! IPOW            [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
   ! EQUALITY        [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
   ! INEQUALITY      [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
   ! LESS            [ reduce using rule 49 (INFIX_EXP -> LEXP .) ]
@@ -1599,12 +1610,12 @@ state 71
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -1619,14 +1630,14 @@ state 71
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    INFIX_EXP                      shift and go to state 121
+    INFIX_EXP                      shift and go to state 122
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
     LET_EXPR                       shift and go to state 73
     IF_EXPR                        shift and go to state 74
     MATCH_EXPR                     shift and go to state 75
     FUNCTION_EXPR                  shift and go to state 76
-    EXP                            shift and go to state 122
+    EXP                            shift and go to state 123
     AEXP                           shift and go to state 80
     USED_VAR                       shift and go to state 81
     USED_TYPENAME                  shift and go to state 82
@@ -1642,7 +1653,8 @@ state 72
     TIMES           reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
     DIVIDE          reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
     MODULO          reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
-    POW             reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
+    FPOW            reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
+    IPOW            reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
     EQUALITY        reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
     INEQUALITY      reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
     LESS            reduce using rule 50 (LEXP -> LAMBDA_ABSTRACTION .)
@@ -1673,7 +1685,8 @@ state 73
     TIMES           reduce using rule 51 (LEXP -> LET_EXPR .)
     DIVIDE          reduce using rule 51 (LEXP -> LET_EXPR .)
     MODULO          reduce using rule 51 (LEXP -> LET_EXPR .)
-    POW             reduce using rule 51 (LEXP -> LET_EXPR .)
+    FPOW            reduce using rule 51 (LEXP -> LET_EXPR .)
+    IPOW            reduce using rule 51 (LEXP -> LET_EXPR .)
     EQUALITY        reduce using rule 51 (LEXP -> LET_EXPR .)
     INEQUALITY      reduce using rule 51 (LEXP -> LET_EXPR .)
     LESS            reduce using rule 51 (LEXP -> LET_EXPR .)
@@ -1704,7 +1717,8 @@ state 74
     TIMES           reduce using rule 52 (LEXP -> IF_EXPR .)
     DIVIDE          reduce using rule 52 (LEXP -> IF_EXPR .)
     MODULO          reduce using rule 52 (LEXP -> IF_EXPR .)
-    POW             reduce using rule 52 (LEXP -> IF_EXPR .)
+    FPOW            reduce using rule 52 (LEXP -> IF_EXPR .)
+    IPOW            reduce using rule 52 (LEXP -> IF_EXPR .)
     EQUALITY        reduce using rule 52 (LEXP -> IF_EXPR .)
     INEQUALITY      reduce using rule 52 (LEXP -> IF_EXPR .)
     LESS            reduce using rule 52 (LEXP -> IF_EXPR .)
@@ -1735,7 +1749,8 @@ state 75
     TIMES           reduce using rule 53 (LEXP -> MATCH_EXPR .)
     DIVIDE          reduce using rule 53 (LEXP -> MATCH_EXPR .)
     MODULO          reduce using rule 53 (LEXP -> MATCH_EXPR .)
-    POW             reduce using rule 53 (LEXP -> MATCH_EXPR .)
+    FPOW            reduce using rule 53 (LEXP -> MATCH_EXPR .)
+    IPOW            reduce using rule 53 (LEXP -> MATCH_EXPR .)
     EQUALITY        reduce using rule 53 (LEXP -> MATCH_EXPR .)
     INEQUALITY      reduce using rule 53 (LEXP -> MATCH_EXPR .)
     LESS            reduce using rule 53 (LEXP -> MATCH_EXPR .)
@@ -1766,12 +1781,12 @@ state 76
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     PLUS            reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
@@ -1779,7 +1794,8 @@ state 76
     TIMES           reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
     DIVIDE          reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
     MODULO          reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
-    POW             reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
+    FPOW            reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
+    IPOW            reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
     EQUALITY        reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
     INEQUALITY      reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
     LESS            reduce using rule 54 (LEXP -> FUNCTION_EXPR .)
@@ -1807,7 +1823,7 @@ state 76
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    AEXP                           shift and go to state 123
+    AEXP                           shift and go to state 124
     USED_VAR                       shift and go to state 81
     USED_TYPENAME                  shift and go to state 82
     LITERAL                        shift and go to state 83
@@ -1820,11 +1836,11 @@ state 77
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TYPENAME        shift and go to state 40
     OPEN_PAREN      shift and go to state 43
@@ -1834,7 +1850,7 @@ state 77
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    APAT                           shift and go to state 124
+    APAT                           shift and go to state 125
     PARAM                          shift and go to state 42
     LITERAL                        shift and go to state 31
 
@@ -1844,9 +1860,9 @@ state 78
     (15) DECLARATIONS -> . OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
     (16) DECLARATIONS -> . OPEN_BRACE CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 126
+    OPEN_BRACE      shift and go to state 127
 
-    DECLARATIONS                   shift and go to state 125
+    DECLARATIONS                   shift and go to state 126
 
 state 79
 
@@ -1871,12 +1887,12 @@ state 79
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -1891,7 +1907,7 @@ state 79
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    EXP                            shift and go to state 127
+    EXP                            shift and go to state 128
     INFIX_EXP                      shift and go to state 69
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
@@ -1921,7 +1937,8 @@ state 80
     TIMES           reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
     DIVIDE          reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
     MODULO          reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
-    POW             reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
+    FPOW            reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
+    IPOW            reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
     EQUALITY        reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
     INEQUALITY      reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
     LESS            reduce using rule 60 (FUNCTION_EXPR -> AEXP .)
@@ -1959,7 +1976,8 @@ state 81
     TIMES           reduce using rule 61 (AEXP -> USED_VAR .)
     DIVIDE          reduce using rule 61 (AEXP -> USED_VAR .)
     MODULO          reduce using rule 61 (AEXP -> USED_VAR .)
-    POW             reduce using rule 61 (AEXP -> USED_VAR .)
+    FPOW            reduce using rule 61 (AEXP -> USED_VAR .)
+    IPOW            reduce using rule 61 (AEXP -> USED_VAR .)
     EQUALITY        reduce using rule 61 (AEXP -> USED_VAR .)
     INEQUALITY      reduce using rule 61 (AEXP -> USED_VAR .)
     LESS            reduce using rule 61 (AEXP -> USED_VAR .)
@@ -1997,7 +2015,8 @@ state 82
     TIMES           reduce using rule 62 (AEXP -> USED_TYPENAME .)
     DIVIDE          reduce using rule 62 (AEXP -> USED_TYPENAME .)
     MODULO          reduce using rule 62 (AEXP -> USED_TYPENAME .)
-    POW             reduce using rule 62 (AEXP -> USED_TYPENAME .)
+    FPOW            reduce using rule 62 (AEXP -> USED_TYPENAME .)
+    IPOW            reduce using rule 62 (AEXP -> USED_TYPENAME .)
     EQUALITY        reduce using rule 62 (AEXP -> USED_TYPENAME .)
     INEQUALITY      reduce using rule 62 (AEXP -> USED_TYPENAME .)
     LESS            reduce using rule 62 (AEXP -> USED_TYPENAME .)
@@ -2035,7 +2054,8 @@ state 83
     TIMES           reduce using rule 63 (AEXP -> LITERAL .)
     DIVIDE          reduce using rule 63 (AEXP -> LITERAL .)
     MODULO          reduce using rule 63 (AEXP -> LITERAL .)
-    POW             reduce using rule 63 (AEXP -> LITERAL .)
+    FPOW            reduce using rule 63 (AEXP -> LITERAL .)
+    IPOW            reduce using rule 63 (AEXP -> LITERAL .)
     EQUALITY        reduce using rule 63 (AEXP -> LITERAL .)
     INEQUALITY      reduce using rule 63 (AEXP -> LITERAL .)
     LESS            reduce using rule 63 (AEXP -> LITERAL .)
@@ -2073,7 +2093,8 @@ state 84
     TIMES           reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
     DIVIDE          reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
     MODULO          reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
-    POW             reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
+    FPOW            reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
+    IPOW            reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
     EQUALITY        reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
     INEQUALITY      reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
     LESS            reduce using rule 64 (AEXP -> OPERATOR_FUNC .)
@@ -2110,16 +2131,17 @@ state 85
     (88) VARSYM -> . TIMES
     (89) VARSYM -> . DIVIDE
     (90) VARSYM -> . MODULO
-    (91) VARSYM -> . POW
-    (92) VARSYM -> . EQUALITY
-    (93) VARSYM -> . INEQUALITY
-    (94) VARSYM -> . LESS
-    (95) VARSYM -> . LEQ
-    (96) VARSYM -> . GREATER
-    (97) VARSYM -> . GEQ
-    (98) VARSYM -> . CONCAT
-    (99) VARSYM -> . AND
-    (100) VARSYM -> . OR
+    (91) VARSYM -> . FPOW
+    (92) VARSYM -> . IPOW
+    (93) VARSYM -> . EQUALITY
+    (94) VARSYM -> . INEQUALITY
+    (95) VARSYM -> . LESS
+    (96) VARSYM -> . LEQ
+    (97) VARSYM -> . GREATER
+    (98) VARSYM -> . GEQ
+    (99) VARSYM -> . CONCAT
+    (100) VARSYM -> . AND
+    (101) VARSYM -> . OR
     (83) INFIX_FUNCTION -> . TILDE IDENTIFIER TILDE
     (50) LEXP -> . LAMBDA_ABSTRACTION
     (51) LEXP -> . LET_EXPR
@@ -2137,29 +2159,30 @@ state 85
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
-    MINUS           shift and go to state 130
+    MINUS           shift and go to state 131
     PLUS            shift and go to state 106
     TIMES           shift and go to state 108
     DIVIDE          shift and go to state 109
     MODULO          shift and go to state 110
-    POW             shift and go to state 111
-    EQUALITY        shift and go to state 112
-    INEQUALITY      shift and go to state 113
-    LESS            shift and go to state 114
-    LEQ             shift and go to state 115
-    GREATER         shift and go to state 116
-    GEQ             shift and go to state 117
-    CONCAT          shift and go to state 118
-    AND             shift and go to state 119
-    OR              shift and go to state 120
+    FPOW            shift and go to state 111
+    IPOW            shift and go to state 112
+    EQUALITY        shift and go to state 113
+    INEQUALITY      shift and go to state 114
+    LESS            shift and go to state 115
+    LEQ             shift and go to state 116
+    GREATER         shift and go to state 117
+    GEQ             shift and go to state 118
+    CONCAT          shift and go to state 119
+    AND             shift and go to state 120
+    OR              shift and go to state 121
     TILDE           shift and go to state 58
     LAMBDA          shift and go to state 77
     LET             shift and go to state 78
@@ -2172,8 +2195,8 @@ state 85
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    EXP                            shift and go to state 128
-    OP                             shift and go to state 129
+    EXP                            shift and go to state 129
+    OP                             shift and go to state 130
     INFIX_EXP                      shift and go to state 69
     VARSYM                         shift and go to state 104
     INFIX_FUNCTION                 shift and go to state 105
@@ -2191,78 +2214,80 @@ state 85
 
 state 86
 
-    (105) USED_VAR -> IDENTIFIER .
+    (106) USED_VAR -> IDENTIFIER .
 
-    OPEN_PAREN      reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    IDENTIFIER      reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    TYPENAME        reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    FLOAT           reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    INTEGER         reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    BOOL            reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    STRING          reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    PLUS            reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    MINUS           reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    TIMES           reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    DIVIDE          reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    MODULO          reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    POW             reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    EQUALITY        reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    INEQUALITY      reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    LESS            reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    LEQ             reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    GREATER         reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    GEQ             reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    CONCAT          reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    AND             reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    OR              reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    TILDE           reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    WITH            reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    IF              reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    CLOSE_BRACE     reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    ENDSTATEMENT    reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    EQUALS          reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    ON              reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    ELSE            reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    CLOSE_PAREN     reduce using rule 105 (USED_VAR -> IDENTIFIER .)
-    GIVEN           reduce using rule 105 (USED_VAR -> IDENTIFIER .)
+    OPEN_PAREN      reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    IDENTIFIER      reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    TYPENAME        reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    FLOAT           reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    INTEGER         reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    BOOL            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    STRING          reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    PLUS            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    MINUS           reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    TIMES           reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    DIVIDE          reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    MODULO          reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    FPOW            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    IPOW            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    EQUALITY        reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    INEQUALITY      reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    LESS            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    LEQ             reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    GREATER         reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    GEQ             reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    CONCAT          reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    AND             reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    OR              reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    TILDE           reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    WITH            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    IF              reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    CLOSE_BRACE     reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    ENDSTATEMENT    reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    EQUALS          reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    ON              reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    ELSE            reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    CLOSE_PAREN     reduce using rule 106 (USED_VAR -> IDENTIFIER .)
+    GIVEN           reduce using rule 106 (USED_VAR -> IDENTIFIER .)
 
 
 state 87
 
-    (106) USED_TYPENAME -> TYPENAME .
+    (107) USED_TYPENAME -> TYPENAME .
 
-    OPEN_PAREN      reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    IDENTIFIER      reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    TYPENAME        reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    FLOAT           reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    INTEGER         reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    BOOL            reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    STRING          reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    PLUS            reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    MINUS           reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    TIMES           reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    DIVIDE          reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    MODULO          reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    POW             reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    EQUALITY        reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    INEQUALITY      reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    LESS            reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    LEQ             reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    GREATER         reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    GEQ             reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    CONCAT          reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    AND             reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    OR              reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    TILDE           reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    WITH            reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    IF              reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    CLOSE_BRACE     reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    ENDSTATEMENT    reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    EQUALS          reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    ON              reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    ELSE            reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    CLOSE_PAREN     reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
-    GIVEN           reduce using rule 106 (USED_TYPENAME -> TYPENAME .)
+    OPEN_PAREN      reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    IDENTIFIER      reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    TYPENAME        reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    FLOAT           reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    INTEGER         reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    BOOL            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    STRING          reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    PLUS            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    MINUS           reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    TIMES           reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    DIVIDE          reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    MODULO          reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    FPOW            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    IPOW            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    EQUALITY        reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    INEQUALITY      reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    LESS            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    LEQ             reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    GREATER         reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    GEQ             reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    CONCAT          reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    AND             reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    OR              reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    TILDE           reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    WITH            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    IF              reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    CLOSE_BRACE     reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    ENDSTATEMENT    reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    EQUALS          reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    ON              reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    ELSE            reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    CLOSE_PAREN     reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
+    GIVEN           reduce using rule 107 (USED_TYPENAME -> TYPENAME .)
 
 
 state 88
@@ -2271,9 +2296,9 @@ state 88
     (15) DECLARATIONS -> . OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
     (16) DECLARATIONS -> . OPEN_BRACE CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 126
+    OPEN_BRACE      shift and go to state 127
 
-    DECLARATIONS                   shift and go to state 131
+    DECLARATIONS                   shift and go to state 132
 
 state 89
 
@@ -2281,7 +2306,7 @@ state 89
     (45) GDRHS -> GIVEN EXP . EQUALS EXP GDRHS
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
 
-    EQUALS          shift and go to state 132
+    EQUALS          shift and go to state 133
     IF              shift and go to state 102
 
 
@@ -2295,16 +2320,17 @@ state 90
     (88) VARSYM -> . TIMES
     (89) VARSYM -> . DIVIDE
     (90) VARSYM -> . MODULO
-    (91) VARSYM -> . POW
-    (92) VARSYM -> . EQUALITY
-    (93) VARSYM -> . INEQUALITY
-    (94) VARSYM -> . LESS
-    (95) VARSYM -> . LEQ
-    (96) VARSYM -> . GREATER
-    (97) VARSYM -> . GEQ
-    (98) VARSYM -> . CONCAT
-    (99) VARSYM -> . AND
-    (100) VARSYM -> . OR
+    (91) VARSYM -> . FPOW
+    (92) VARSYM -> . IPOW
+    (93) VARSYM -> . EQUALITY
+    (94) VARSYM -> . INEQUALITY
+    (95) VARSYM -> . LESS
+    (96) VARSYM -> . LEQ
+    (97) VARSYM -> . GREATER
+    (98) VARSYM -> . GEQ
+    (99) VARSYM -> . CONCAT
+    (100) VARSYM -> . AND
+    (101) VARSYM -> . OR
     (83) INFIX_FUNCTION -> . TILDE IDENTIFIER TILDE
 
     PLUS            shift and go to state 106
@@ -2312,19 +2338,20 @@ state 90
     TIMES           shift and go to state 108
     DIVIDE          shift and go to state 109
     MODULO          shift and go to state 110
-    POW             shift and go to state 111
-    EQUALITY        shift and go to state 112
-    INEQUALITY      shift and go to state 113
-    LESS            shift and go to state 114
-    LEQ             shift and go to state 115
-    GREATER         shift and go to state 116
-    GEQ             shift and go to state 117
-    CONCAT          shift and go to state 118
-    AND             shift and go to state 119
-    OR              shift and go to state 120
+    FPOW            shift and go to state 111
+    IPOW            shift and go to state 112
+    EQUALITY        shift and go to state 113
+    INEQUALITY      shift and go to state 114
+    LESS            shift and go to state 115
+    LEQ             shift and go to state 116
+    GREATER         shift and go to state 117
+    GEQ             shift and go to state 118
+    CONCAT          shift and go to state 119
+    AND             shift and go to state 120
+    OR              shift and go to state 121
     TILDE           shift and go to state 58
 
-    OP                             shift and go to state 133
+    OP                             shift and go to state 134
     VARSYM                         shift and go to state 104
     INFIX_FUNCTION                 shift and go to state 105
 
@@ -2344,11 +2371,11 @@ state 92
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     TYPENAME        shift and go to state 40
     OPEN_PAREN      shift and go to state 43
@@ -2358,7 +2385,7 @@ state 92
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    APAT                           shift and go to state 134
+    APAT                           shift and go to state 135
     PARAM                          shift and go to state 42
     LITERAL                        shift and go to state 31
 
@@ -2393,7 +2420,7 @@ state 95
 
     (83) INFIX_FUNCTION -> TILDE IDENTIFIER . TILDE
 
-    TILDE           shift and go to state 135
+    TILDE           shift and go to state 136
 
 
 state 96
@@ -2416,7 +2443,7 @@ state 97
     CLOSE_BRACE     reduce using rule 32 (ATYPES -> .)
     ENDSTATEMENT    reduce using rule 32 (ATYPES -> .)
 
-    ATYPES                         shift and go to state 136
+    ATYPES                         shift and go to state 137
 
 state 98
 
@@ -2425,7 +2452,7 @@ state 98
 
     CLOSE_BRACE     reduce using rule 11 (ADT_DECLARATION -> NEWTYPE TYPENAME EQUALS CONSTRUCTORS .)
     ENDSTATEMENT    reduce using rule 11 (ADT_DECLARATION -> NEWTYPE TYPENAME EQUALS CONSTRUCTORS .)
-    PIPE            shift and go to state 137
+    PIPE            shift and go to state 138
 
 
 state 99
@@ -2454,9 +2481,9 @@ state 101
     (15) DECLARATIONS -> . OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE
     (16) DECLARATIONS -> . OPEN_BRACE CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 126
+    OPEN_BRACE      shift and go to state 127
 
-    DECLARATIONS                   shift and go to state 138
+    DECLARATIONS                   shift and go to state 139
 
 state 102
 
@@ -2481,12 +2508,12 @@ state 102
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -2501,7 +2528,7 @@ state 102
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    EXP                            shift and go to state 139
+    EXP                            shift and go to state 140
     INFIX_EXP                      shift and go to state 69
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
@@ -2538,12 +2565,12 @@ state 103
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -2559,13 +2586,13 @@ state 103
     STRING          shift and go to state 12
 
     LEXP                           shift and go to state 70
-    INFIX_EXP                      shift and go to state 140
+    INFIX_EXP                      shift and go to state 141
     LAMBDA_ABSTRACTION             shift and go to state 72
     LET_EXPR                       shift and go to state 73
     IF_EXPR                        shift and go to state 74
     MATCH_EXPR                     shift and go to state 75
     FUNCTION_EXPR                  shift and go to state 76
-    EXP                            shift and go to state 122
+    EXP                            shift and go to state 123
     AEXP                           shift and go to state 80
     USED_VAR                       shift and go to state 81
     USED_TYPENAME                  shift and go to state 82
@@ -2713,205 +2740,225 @@ state 110
 
 state 111
 
-    (91) VARSYM -> POW .
+    (91) VARSYM -> FPOW .
 
-    MINUS           reduce using rule 91 (VARSYM -> POW .)
-    LAMBDA          reduce using rule 91 (VARSYM -> POW .)
-    LET             reduce using rule 91 (VARSYM -> POW .)
-    MATCH           reduce using rule 91 (VARSYM -> POW .)
-    OPEN_PAREN      reduce using rule 91 (VARSYM -> POW .)
-    IDENTIFIER      reduce using rule 91 (VARSYM -> POW .)
-    TYPENAME        reduce using rule 91 (VARSYM -> POW .)
-    FLOAT           reduce using rule 91 (VARSYM -> POW .)
-    INTEGER         reduce using rule 91 (VARSYM -> POW .)
-    BOOL            reduce using rule 91 (VARSYM -> POW .)
-    STRING          reduce using rule 91 (VARSYM -> POW .)
-    CLOSE_PAREN     reduce using rule 91 (VARSYM -> POW .)
-    CLOSE_BRACE     reduce using rule 91 (VARSYM -> POW .)
-    ENDSTATEMENT    reduce using rule 91 (VARSYM -> POW .)
+    MINUS           reduce using rule 91 (VARSYM -> FPOW .)
+    LAMBDA          reduce using rule 91 (VARSYM -> FPOW .)
+    LET             reduce using rule 91 (VARSYM -> FPOW .)
+    MATCH           reduce using rule 91 (VARSYM -> FPOW .)
+    OPEN_PAREN      reduce using rule 91 (VARSYM -> FPOW .)
+    IDENTIFIER      reduce using rule 91 (VARSYM -> FPOW .)
+    TYPENAME        reduce using rule 91 (VARSYM -> FPOW .)
+    FLOAT           reduce using rule 91 (VARSYM -> FPOW .)
+    INTEGER         reduce using rule 91 (VARSYM -> FPOW .)
+    BOOL            reduce using rule 91 (VARSYM -> FPOW .)
+    STRING          reduce using rule 91 (VARSYM -> FPOW .)
+    CLOSE_PAREN     reduce using rule 91 (VARSYM -> FPOW .)
+    CLOSE_BRACE     reduce using rule 91 (VARSYM -> FPOW .)
+    ENDSTATEMENT    reduce using rule 91 (VARSYM -> FPOW .)
 
 
 state 112
 
-    (92) VARSYM -> EQUALITY .
+    (92) VARSYM -> IPOW .
 
-    MINUS           reduce using rule 92 (VARSYM -> EQUALITY .)
-    LAMBDA          reduce using rule 92 (VARSYM -> EQUALITY .)
-    LET             reduce using rule 92 (VARSYM -> EQUALITY .)
-    MATCH           reduce using rule 92 (VARSYM -> EQUALITY .)
-    OPEN_PAREN      reduce using rule 92 (VARSYM -> EQUALITY .)
-    IDENTIFIER      reduce using rule 92 (VARSYM -> EQUALITY .)
-    TYPENAME        reduce using rule 92 (VARSYM -> EQUALITY .)
-    FLOAT           reduce using rule 92 (VARSYM -> EQUALITY .)
-    INTEGER         reduce using rule 92 (VARSYM -> EQUALITY .)
-    BOOL            reduce using rule 92 (VARSYM -> EQUALITY .)
-    STRING          reduce using rule 92 (VARSYM -> EQUALITY .)
-    CLOSE_PAREN     reduce using rule 92 (VARSYM -> EQUALITY .)
-    CLOSE_BRACE     reduce using rule 92 (VARSYM -> EQUALITY .)
-    ENDSTATEMENT    reduce using rule 92 (VARSYM -> EQUALITY .)
+    MINUS           reduce using rule 92 (VARSYM -> IPOW .)
+    LAMBDA          reduce using rule 92 (VARSYM -> IPOW .)
+    LET             reduce using rule 92 (VARSYM -> IPOW .)
+    MATCH           reduce using rule 92 (VARSYM -> IPOW .)
+    OPEN_PAREN      reduce using rule 92 (VARSYM -> IPOW .)
+    IDENTIFIER      reduce using rule 92 (VARSYM -> IPOW .)
+    TYPENAME        reduce using rule 92 (VARSYM -> IPOW .)
+    FLOAT           reduce using rule 92 (VARSYM -> IPOW .)
+    INTEGER         reduce using rule 92 (VARSYM -> IPOW .)
+    BOOL            reduce using rule 92 (VARSYM -> IPOW .)
+    STRING          reduce using rule 92 (VARSYM -> IPOW .)
+    CLOSE_PAREN     reduce using rule 92 (VARSYM -> IPOW .)
+    CLOSE_BRACE     reduce using rule 92 (VARSYM -> IPOW .)
+    ENDSTATEMENT    reduce using rule 92 (VARSYM -> IPOW .)
 
 
 state 113
 
-    (93) VARSYM -> INEQUALITY .
+    (93) VARSYM -> EQUALITY .
 
-    MINUS           reduce using rule 93 (VARSYM -> INEQUALITY .)
-    LAMBDA          reduce using rule 93 (VARSYM -> INEQUALITY .)
-    LET             reduce using rule 93 (VARSYM -> INEQUALITY .)
-    MATCH           reduce using rule 93 (VARSYM -> INEQUALITY .)
-    OPEN_PAREN      reduce using rule 93 (VARSYM -> INEQUALITY .)
-    IDENTIFIER      reduce using rule 93 (VARSYM -> INEQUALITY .)
-    TYPENAME        reduce using rule 93 (VARSYM -> INEQUALITY .)
-    FLOAT           reduce using rule 93 (VARSYM -> INEQUALITY .)
-    INTEGER         reduce using rule 93 (VARSYM -> INEQUALITY .)
-    BOOL            reduce using rule 93 (VARSYM -> INEQUALITY .)
-    STRING          reduce using rule 93 (VARSYM -> INEQUALITY .)
-    CLOSE_PAREN     reduce using rule 93 (VARSYM -> INEQUALITY .)
-    CLOSE_BRACE     reduce using rule 93 (VARSYM -> INEQUALITY .)
-    ENDSTATEMENT    reduce using rule 93 (VARSYM -> INEQUALITY .)
+    MINUS           reduce using rule 93 (VARSYM -> EQUALITY .)
+    LAMBDA          reduce using rule 93 (VARSYM -> EQUALITY .)
+    LET             reduce using rule 93 (VARSYM -> EQUALITY .)
+    MATCH           reduce using rule 93 (VARSYM -> EQUALITY .)
+    OPEN_PAREN      reduce using rule 93 (VARSYM -> EQUALITY .)
+    IDENTIFIER      reduce using rule 93 (VARSYM -> EQUALITY .)
+    TYPENAME        reduce using rule 93 (VARSYM -> EQUALITY .)
+    FLOAT           reduce using rule 93 (VARSYM -> EQUALITY .)
+    INTEGER         reduce using rule 93 (VARSYM -> EQUALITY .)
+    BOOL            reduce using rule 93 (VARSYM -> EQUALITY .)
+    STRING          reduce using rule 93 (VARSYM -> EQUALITY .)
+    CLOSE_PAREN     reduce using rule 93 (VARSYM -> EQUALITY .)
+    CLOSE_BRACE     reduce using rule 93 (VARSYM -> EQUALITY .)
+    ENDSTATEMENT    reduce using rule 93 (VARSYM -> EQUALITY .)
 
 
 state 114
 
-    (94) VARSYM -> LESS .
+    (94) VARSYM -> INEQUALITY .
 
-    MINUS           reduce using rule 94 (VARSYM -> LESS .)
-    LAMBDA          reduce using rule 94 (VARSYM -> LESS .)
-    LET             reduce using rule 94 (VARSYM -> LESS .)
-    MATCH           reduce using rule 94 (VARSYM -> LESS .)
-    OPEN_PAREN      reduce using rule 94 (VARSYM -> LESS .)
-    IDENTIFIER      reduce using rule 94 (VARSYM -> LESS .)
-    TYPENAME        reduce using rule 94 (VARSYM -> LESS .)
-    FLOAT           reduce using rule 94 (VARSYM -> LESS .)
-    INTEGER         reduce using rule 94 (VARSYM -> LESS .)
-    BOOL            reduce using rule 94 (VARSYM -> LESS .)
-    STRING          reduce using rule 94 (VARSYM -> LESS .)
-    CLOSE_PAREN     reduce using rule 94 (VARSYM -> LESS .)
-    CLOSE_BRACE     reduce using rule 94 (VARSYM -> LESS .)
-    ENDSTATEMENT    reduce using rule 94 (VARSYM -> LESS .)
+    MINUS           reduce using rule 94 (VARSYM -> INEQUALITY .)
+    LAMBDA          reduce using rule 94 (VARSYM -> INEQUALITY .)
+    LET             reduce using rule 94 (VARSYM -> INEQUALITY .)
+    MATCH           reduce using rule 94 (VARSYM -> INEQUALITY .)
+    OPEN_PAREN      reduce using rule 94 (VARSYM -> INEQUALITY .)
+    IDENTIFIER      reduce using rule 94 (VARSYM -> INEQUALITY .)
+    TYPENAME        reduce using rule 94 (VARSYM -> INEQUALITY .)
+    FLOAT           reduce using rule 94 (VARSYM -> INEQUALITY .)
+    INTEGER         reduce using rule 94 (VARSYM -> INEQUALITY .)
+    BOOL            reduce using rule 94 (VARSYM -> INEQUALITY .)
+    STRING          reduce using rule 94 (VARSYM -> INEQUALITY .)
+    CLOSE_PAREN     reduce using rule 94 (VARSYM -> INEQUALITY .)
+    CLOSE_BRACE     reduce using rule 94 (VARSYM -> INEQUALITY .)
+    ENDSTATEMENT    reduce using rule 94 (VARSYM -> INEQUALITY .)
 
 
 state 115
 
-    (95) VARSYM -> LEQ .
+    (95) VARSYM -> LESS .
 
-    MINUS           reduce using rule 95 (VARSYM -> LEQ .)
-    LAMBDA          reduce using rule 95 (VARSYM -> LEQ .)
-    LET             reduce using rule 95 (VARSYM -> LEQ .)
-    MATCH           reduce using rule 95 (VARSYM -> LEQ .)
-    OPEN_PAREN      reduce using rule 95 (VARSYM -> LEQ .)
-    IDENTIFIER      reduce using rule 95 (VARSYM -> LEQ .)
-    TYPENAME        reduce using rule 95 (VARSYM -> LEQ .)
-    FLOAT           reduce using rule 95 (VARSYM -> LEQ .)
-    INTEGER         reduce using rule 95 (VARSYM -> LEQ .)
-    BOOL            reduce using rule 95 (VARSYM -> LEQ .)
-    STRING          reduce using rule 95 (VARSYM -> LEQ .)
-    CLOSE_PAREN     reduce using rule 95 (VARSYM -> LEQ .)
-    CLOSE_BRACE     reduce using rule 95 (VARSYM -> LEQ .)
-    ENDSTATEMENT    reduce using rule 95 (VARSYM -> LEQ .)
+    MINUS           reduce using rule 95 (VARSYM -> LESS .)
+    LAMBDA          reduce using rule 95 (VARSYM -> LESS .)
+    LET             reduce using rule 95 (VARSYM -> LESS .)
+    MATCH           reduce using rule 95 (VARSYM -> LESS .)
+    OPEN_PAREN      reduce using rule 95 (VARSYM -> LESS .)
+    IDENTIFIER      reduce using rule 95 (VARSYM -> LESS .)
+    TYPENAME        reduce using rule 95 (VARSYM -> LESS .)
+    FLOAT           reduce using rule 95 (VARSYM -> LESS .)
+    INTEGER         reduce using rule 95 (VARSYM -> LESS .)
+    BOOL            reduce using rule 95 (VARSYM -> LESS .)
+    STRING          reduce using rule 95 (VARSYM -> LESS .)
+    CLOSE_PAREN     reduce using rule 95 (VARSYM -> LESS .)
+    CLOSE_BRACE     reduce using rule 95 (VARSYM -> LESS .)
+    ENDSTATEMENT    reduce using rule 95 (VARSYM -> LESS .)
 
 
 state 116
 
-    (96) VARSYM -> GREATER .
+    (96) VARSYM -> LEQ .
 
-    MINUS           reduce using rule 96 (VARSYM -> GREATER .)
-    LAMBDA          reduce using rule 96 (VARSYM -> GREATER .)
-    LET             reduce using rule 96 (VARSYM -> GREATER .)
-    MATCH           reduce using rule 96 (VARSYM -> GREATER .)
-    OPEN_PAREN      reduce using rule 96 (VARSYM -> GREATER .)
-    IDENTIFIER      reduce using rule 96 (VARSYM -> GREATER .)
-    TYPENAME        reduce using rule 96 (VARSYM -> GREATER .)
-    FLOAT           reduce using rule 96 (VARSYM -> GREATER .)
-    INTEGER         reduce using rule 96 (VARSYM -> GREATER .)
-    BOOL            reduce using rule 96 (VARSYM -> GREATER .)
-    STRING          reduce using rule 96 (VARSYM -> GREATER .)
-    CLOSE_PAREN     reduce using rule 96 (VARSYM -> GREATER .)
-    CLOSE_BRACE     reduce using rule 96 (VARSYM -> GREATER .)
-    ENDSTATEMENT    reduce using rule 96 (VARSYM -> GREATER .)
+    MINUS           reduce using rule 96 (VARSYM -> LEQ .)
+    LAMBDA          reduce using rule 96 (VARSYM -> LEQ .)
+    LET             reduce using rule 96 (VARSYM -> LEQ .)
+    MATCH           reduce using rule 96 (VARSYM -> LEQ .)
+    OPEN_PAREN      reduce using rule 96 (VARSYM -> LEQ .)
+    IDENTIFIER      reduce using rule 96 (VARSYM -> LEQ .)
+    TYPENAME        reduce using rule 96 (VARSYM -> LEQ .)
+    FLOAT           reduce using rule 96 (VARSYM -> LEQ .)
+    INTEGER         reduce using rule 96 (VARSYM -> LEQ .)
+    BOOL            reduce using rule 96 (VARSYM -> LEQ .)
+    STRING          reduce using rule 96 (VARSYM -> LEQ .)
+    CLOSE_PAREN     reduce using rule 96 (VARSYM -> LEQ .)
+    CLOSE_BRACE     reduce using rule 96 (VARSYM -> LEQ .)
+    ENDSTATEMENT    reduce using rule 96 (VARSYM -> LEQ .)
 
 
 state 117
 
-    (97) VARSYM -> GEQ .
+    (97) VARSYM -> GREATER .
 
-    MINUS           reduce using rule 97 (VARSYM -> GEQ .)
-    LAMBDA          reduce using rule 97 (VARSYM -> GEQ .)
-    LET             reduce using rule 97 (VARSYM -> GEQ .)
-    MATCH           reduce using rule 97 (VARSYM -> GEQ .)
-    OPEN_PAREN      reduce using rule 97 (VARSYM -> GEQ .)
-    IDENTIFIER      reduce using rule 97 (VARSYM -> GEQ .)
-    TYPENAME        reduce using rule 97 (VARSYM -> GEQ .)
-    FLOAT           reduce using rule 97 (VARSYM -> GEQ .)
-    INTEGER         reduce using rule 97 (VARSYM -> GEQ .)
-    BOOL            reduce using rule 97 (VARSYM -> GEQ .)
-    STRING          reduce using rule 97 (VARSYM -> GEQ .)
-    CLOSE_PAREN     reduce using rule 97 (VARSYM -> GEQ .)
-    CLOSE_BRACE     reduce using rule 97 (VARSYM -> GEQ .)
-    ENDSTATEMENT    reduce using rule 97 (VARSYM -> GEQ .)
+    MINUS           reduce using rule 97 (VARSYM -> GREATER .)
+    LAMBDA          reduce using rule 97 (VARSYM -> GREATER .)
+    LET             reduce using rule 97 (VARSYM -> GREATER .)
+    MATCH           reduce using rule 97 (VARSYM -> GREATER .)
+    OPEN_PAREN      reduce using rule 97 (VARSYM -> GREATER .)
+    IDENTIFIER      reduce using rule 97 (VARSYM -> GREATER .)
+    TYPENAME        reduce using rule 97 (VARSYM -> GREATER .)
+    FLOAT           reduce using rule 97 (VARSYM -> GREATER .)
+    INTEGER         reduce using rule 97 (VARSYM -> GREATER .)
+    BOOL            reduce using rule 97 (VARSYM -> GREATER .)
+    STRING          reduce using rule 97 (VARSYM -> GREATER .)
+    CLOSE_PAREN     reduce using rule 97 (VARSYM -> GREATER .)
+    CLOSE_BRACE     reduce using rule 97 (VARSYM -> GREATER .)
+    ENDSTATEMENT    reduce using rule 97 (VARSYM -> GREATER .)
 
 
 state 118
 
-    (98) VARSYM -> CONCAT .
+    (98) VARSYM -> GEQ .
 
-    MINUS           reduce using rule 98 (VARSYM -> CONCAT .)
-    LAMBDA          reduce using rule 98 (VARSYM -> CONCAT .)
-    LET             reduce using rule 98 (VARSYM -> CONCAT .)
-    MATCH           reduce using rule 98 (VARSYM -> CONCAT .)
-    OPEN_PAREN      reduce using rule 98 (VARSYM -> CONCAT .)
-    IDENTIFIER      reduce using rule 98 (VARSYM -> CONCAT .)
-    TYPENAME        reduce using rule 98 (VARSYM -> CONCAT .)
-    FLOAT           reduce using rule 98 (VARSYM -> CONCAT .)
-    INTEGER         reduce using rule 98 (VARSYM -> CONCAT .)
-    BOOL            reduce using rule 98 (VARSYM -> CONCAT .)
-    STRING          reduce using rule 98 (VARSYM -> CONCAT .)
-    CLOSE_PAREN     reduce using rule 98 (VARSYM -> CONCAT .)
-    CLOSE_BRACE     reduce using rule 98 (VARSYM -> CONCAT .)
-    ENDSTATEMENT    reduce using rule 98 (VARSYM -> CONCAT .)
+    MINUS           reduce using rule 98 (VARSYM -> GEQ .)
+    LAMBDA          reduce using rule 98 (VARSYM -> GEQ .)
+    LET             reduce using rule 98 (VARSYM -> GEQ .)
+    MATCH           reduce using rule 98 (VARSYM -> GEQ .)
+    OPEN_PAREN      reduce using rule 98 (VARSYM -> GEQ .)
+    IDENTIFIER      reduce using rule 98 (VARSYM -> GEQ .)
+    TYPENAME        reduce using rule 98 (VARSYM -> GEQ .)
+    FLOAT           reduce using rule 98 (VARSYM -> GEQ .)
+    INTEGER         reduce using rule 98 (VARSYM -> GEQ .)
+    BOOL            reduce using rule 98 (VARSYM -> GEQ .)
+    STRING          reduce using rule 98 (VARSYM -> GEQ .)
+    CLOSE_PAREN     reduce using rule 98 (VARSYM -> GEQ .)
+    CLOSE_BRACE     reduce using rule 98 (VARSYM -> GEQ .)
+    ENDSTATEMENT    reduce using rule 98 (VARSYM -> GEQ .)
 
 
 state 119
 
-    (99) VARSYM -> AND .
+    (99) VARSYM -> CONCAT .
 
-    MINUS           reduce using rule 99 (VARSYM -> AND .)
-    LAMBDA          reduce using rule 99 (VARSYM -> AND .)
-    LET             reduce using rule 99 (VARSYM -> AND .)
-    MATCH           reduce using rule 99 (VARSYM -> AND .)
-    OPEN_PAREN      reduce using rule 99 (VARSYM -> AND .)
-    IDENTIFIER      reduce using rule 99 (VARSYM -> AND .)
-    TYPENAME        reduce using rule 99 (VARSYM -> AND .)
-    FLOAT           reduce using rule 99 (VARSYM -> AND .)
-    INTEGER         reduce using rule 99 (VARSYM -> AND .)
-    BOOL            reduce using rule 99 (VARSYM -> AND .)
-    STRING          reduce using rule 99 (VARSYM -> AND .)
-    CLOSE_PAREN     reduce using rule 99 (VARSYM -> AND .)
-    CLOSE_BRACE     reduce using rule 99 (VARSYM -> AND .)
-    ENDSTATEMENT    reduce using rule 99 (VARSYM -> AND .)
+    MINUS           reduce using rule 99 (VARSYM -> CONCAT .)
+    LAMBDA          reduce using rule 99 (VARSYM -> CONCAT .)
+    LET             reduce using rule 99 (VARSYM -> CONCAT .)
+    MATCH           reduce using rule 99 (VARSYM -> CONCAT .)
+    OPEN_PAREN      reduce using rule 99 (VARSYM -> CONCAT .)
+    IDENTIFIER      reduce using rule 99 (VARSYM -> CONCAT .)
+    TYPENAME        reduce using rule 99 (VARSYM -> CONCAT .)
+    FLOAT           reduce using rule 99 (VARSYM -> CONCAT .)
+    INTEGER         reduce using rule 99 (VARSYM -> CONCAT .)
+    BOOL            reduce using rule 99 (VARSYM -> CONCAT .)
+    STRING          reduce using rule 99 (VARSYM -> CONCAT .)
+    CLOSE_PAREN     reduce using rule 99 (VARSYM -> CONCAT .)
+    CLOSE_BRACE     reduce using rule 99 (VARSYM -> CONCAT .)
+    ENDSTATEMENT    reduce using rule 99 (VARSYM -> CONCAT .)
 
 
 state 120
 
-    (100) VARSYM -> OR .
+    (100) VARSYM -> AND .
 
-    MINUS           reduce using rule 100 (VARSYM -> OR .)
-    LAMBDA          reduce using rule 100 (VARSYM -> OR .)
-    LET             reduce using rule 100 (VARSYM -> OR .)
-    MATCH           reduce using rule 100 (VARSYM -> OR .)
-    OPEN_PAREN      reduce using rule 100 (VARSYM -> OR .)
-    IDENTIFIER      reduce using rule 100 (VARSYM -> OR .)
-    TYPENAME        reduce using rule 100 (VARSYM -> OR .)
-    FLOAT           reduce using rule 100 (VARSYM -> OR .)
-    INTEGER         reduce using rule 100 (VARSYM -> OR .)
-    BOOL            reduce using rule 100 (VARSYM -> OR .)
-    STRING          reduce using rule 100 (VARSYM -> OR .)
-    CLOSE_PAREN     reduce using rule 100 (VARSYM -> OR .)
-    CLOSE_BRACE     reduce using rule 100 (VARSYM -> OR .)
-    ENDSTATEMENT    reduce using rule 100 (VARSYM -> OR .)
+    MINUS           reduce using rule 100 (VARSYM -> AND .)
+    LAMBDA          reduce using rule 100 (VARSYM -> AND .)
+    LET             reduce using rule 100 (VARSYM -> AND .)
+    MATCH           reduce using rule 100 (VARSYM -> AND .)
+    OPEN_PAREN      reduce using rule 100 (VARSYM -> AND .)
+    IDENTIFIER      reduce using rule 100 (VARSYM -> AND .)
+    TYPENAME        reduce using rule 100 (VARSYM -> AND .)
+    FLOAT           reduce using rule 100 (VARSYM -> AND .)
+    INTEGER         reduce using rule 100 (VARSYM -> AND .)
+    BOOL            reduce using rule 100 (VARSYM -> AND .)
+    STRING          reduce using rule 100 (VARSYM -> AND .)
+    CLOSE_PAREN     reduce using rule 100 (VARSYM -> AND .)
+    CLOSE_BRACE     reduce using rule 100 (VARSYM -> AND .)
+    ENDSTATEMENT    reduce using rule 100 (VARSYM -> AND .)
 
 
 state 121
+
+    (101) VARSYM -> OR .
+
+    MINUS           reduce using rule 101 (VARSYM -> OR .)
+    LAMBDA          reduce using rule 101 (VARSYM -> OR .)
+    LET             reduce using rule 101 (VARSYM -> OR .)
+    MATCH           reduce using rule 101 (VARSYM -> OR .)
+    OPEN_PAREN      reduce using rule 101 (VARSYM -> OR .)
+    IDENTIFIER      reduce using rule 101 (VARSYM -> OR .)
+    TYPENAME        reduce using rule 101 (VARSYM -> OR .)
+    FLOAT           reduce using rule 101 (VARSYM -> OR .)
+    INTEGER         reduce using rule 101 (VARSYM -> OR .)
+    BOOL            reduce using rule 101 (VARSYM -> OR .)
+    STRING          reduce using rule 101 (VARSYM -> OR .)
+    CLOSE_PAREN     reduce using rule 101 (VARSYM -> OR .)
+    CLOSE_BRACE     reduce using rule 101 (VARSYM -> OR .)
+    ENDSTATEMENT    reduce using rule 101 (VARSYM -> OR .)
+
+
+state 122
 
     (48) INFIX_EXP -> MINUS INFIX_EXP .
     (46) EXP -> INFIX_EXP .
@@ -2930,7 +2977,8 @@ state 121
     TIMES           reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
     DIVIDE          reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
     MODULO          reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
-    POW             reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
+    FPOW            reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
+    IPOW            reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
     EQUALITY        reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
     INEQUALITY      reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
     LESS            reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .)
@@ -2946,14 +2994,14 @@ state 121
   ! IF              [ reduce using rule 48 (INFIX_EXP -> MINUS INFIX_EXP .) ]
 
 
-state 122
+state 123
 
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
 
     IF              shift and go to state 102
 
 
-state 123
+state 124
 
     (59) FUNCTION_EXPR -> FUNCTION_EXPR AEXP .
 
@@ -2969,7 +3017,8 @@ state 123
     TIMES           reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     DIVIDE          reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     MODULO          reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
-    POW             reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
+    FPOW            reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
+    IPOW            reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     EQUALITY        reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     INEQUALITY      reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
     LESS            reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
@@ -2991,7 +3040,7 @@ state 123
     GIVEN           reduce using rule 59 (FUNCTION_EXPR -> FUNCTION_EXPR AEXP .)
 
 
-state 124
+state 125
 
     (55) LAMBDA_ABSTRACTION -> LAMBDA APAT . APATS ARROW EXP
     (84) APATS -> . APAT APATS
@@ -3000,11 +3049,11 @@ state 124
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     ARROW           reduce using rule 85 (APATS -> .)
     TYPENAME        shift and go to state 40
@@ -3016,18 +3065,18 @@ state 124
     STRING          shift and go to state 12
 
     APAT                           shift and go to state 65
-    APATS                          shift and go to state 141
+    APATS                          shift and go to state 142
     PARAM                          shift and go to state 42
     LITERAL                        shift and go to state 31
 
-state 125
+state 126
 
     (56) LET_EXPR -> LET DECLARATIONS . IN EXP
 
-    IN              shift and go to state 142
+    IN              shift and go to state 143
 
 
-state 126
+state 127
 
     (15) DECLARATIONS -> OPEN_BRACE . DECLARATIONS_LIST CLOSE_BRACE
     (16) DECLARATIONS -> OPEN_BRACE . CLOSE_BRACE
@@ -3043,7 +3092,7 @@ state 126
     (36) FUNCTION_LHS -> . IDENTIFIER APAT APATS
     (37) FUNCTION_LHS -> . OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
     (38) FUNCTION_LHS -> . INFIX_FUNCTION_DEFINITION
-    (107) PARAM -> . IDENTIFIER
+    (108) PARAM -> . IDENTIFIER
     (39) INFIX_FUNCTION_DEFINITION -> . LPAT INFIX_FUNCTION LPAT
     (71) LPAT -> . APAT
     (72) LPAT -> . CONSTRUCTOR_PATTERN
@@ -3055,13 +3104,13 @@ state 126
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
   ! shift/reduce conflict for CLOSE_BRACE resolved as shift
-    CLOSE_BRACE     shift and go to state 144
+    CLOSE_BRACE     shift and go to state 145
     ENDSTATEMENT    reduce using rule 22 (DECLARATION -> .)
     SETFIX          shift and go to state 22
     IDENTIFIER      shift and go to state 24
@@ -3075,8 +3124,8 @@ state 126
 
   ! CLOSE_BRACE     [ reduce using rule 22 (DECLARATION -> .) ]
 
-    DECLARATIONS_LIST              shift and go to state 143
-    DECLARATION                    shift and go to state 145
+    DECLARATIONS_LIST              shift and go to state 144
+    DECLARATION                    shift and go to state 146
     FUNCTION_DEFINITION            shift and go to state 17
     VARIABLE_DEFINITION            shift and go to state 18
     FIXITY_DECLARATION             shift and go to state 19
@@ -3089,32 +3138,32 @@ state 126
     NEGATIVE_LITERAL               shift and go to state 30
     LITERAL                        shift and go to state 31
 
-state 127
+state 128
 
     (58) MATCH_EXPR -> MATCH EXP . ON OPEN_BRACE ALTS CLOSE_BRACE
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
 
-    ON              shift and go to state 146
-    IF              shift and go to state 102
-
-
-state 128
-
-    (65) AEXP -> OPEN_PAREN EXP . CLOSE_PAREN
-    (57) IF_EXPR -> EXP . IF EXP ELSE EXP
-
-    CLOSE_PAREN     shift and go to state 147
+    ON              shift and go to state 147
     IF              shift and go to state 102
 
 
 state 129
 
-    (66) OPERATOR_FUNC -> OPEN_PAREN OP . CLOSE_PAREN
+    (65) AEXP -> OPEN_PAREN EXP . CLOSE_PAREN
+    (57) IF_EXPR -> EXP . IF EXP ELSE EXP
 
     CLOSE_PAREN     shift and go to state 148
+    IF              shift and go to state 102
 
 
 state 130
+
+    (66) OPERATOR_FUNC -> OPEN_PAREN OP . CLOSE_PAREN
+
+    CLOSE_PAREN     shift and go to state 149
+
+
+state 131
 
     (48) INFIX_EXP -> MINUS . INFIX_EXP
     (87) VARSYM -> MINUS .
@@ -3138,12 +3187,12 @@ state 130
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     CLOSE_PAREN     reduce using rule 87 (VARSYM -> MINUS .)
@@ -3159,21 +3208,21 @@ state 130
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    INFIX_EXP                      shift and go to state 121
+    INFIX_EXP                      shift and go to state 122
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
     LET_EXPR                       shift and go to state 73
     IF_EXPR                        shift and go to state 74
     MATCH_EXPR                     shift and go to state 75
     FUNCTION_EXPR                  shift and go to state 76
-    EXP                            shift and go to state 122
+    EXP                            shift and go to state 123
     AEXP                           shift and go to state 80
     USED_VAR                       shift and go to state 81
     USED_TYPENAME                  shift and go to state 82
     LITERAL                        shift and go to state 83
     OPERATOR_FUNC                  shift and go to state 84
 
-state 131
+state 132
 
     (43) RHS -> GDRHS WITH DECLARATIONS .
 
@@ -3181,7 +3230,7 @@ state 131
     ENDSTATEMENT    reduce using rule 43 (RHS -> GDRHS WITH DECLARATIONS .)
 
 
-state 132
+state 133
 
     (44) GDRHS -> GIVEN EXP EQUALS . EXP
     (45) GDRHS -> GIVEN EXP EQUALS . EXP GDRHS
@@ -3205,12 +3254,12 @@ state 132
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -3225,7 +3274,7 @@ state 132
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    EXP                            shift and go to state 149
+    EXP                            shift and go to state 150
     INFIX_EXP                      shift and go to state 69
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
@@ -3239,7 +3288,7 @@ state 132
     LITERAL                        shift and go to state 83
     OPERATOR_FUNC                  shift and go to state 84
 
-state 133
+state 134
 
     (25) FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER OP .
 
@@ -3247,7 +3296,7 @@ state 133
     ENDSTATEMENT    reduce using rule 25 (FIXITY_DECLARATION -> SETFIX ASSOCIATIVITY INTEGER OP .)
 
 
-state 134
+state 135
 
     (37) FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT . APATS
     (84) APATS -> . APAT APATS
@@ -3256,11 +3305,11 @@ state 134
     (78) APAT -> . TYPENAME
     (79) APAT -> . LITERAL
     (80) APAT -> . OPEN_PAREN LPAT CLOSE_PAREN
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     EQUALS          reduce using rule 85 (APATS -> .)
     GIVEN           reduce using rule 85 (APATS -> .)
@@ -3274,11 +3323,11 @@ state 134
     STRING          shift and go to state 12
 
     APAT                           shift and go to state 65
-    APATS                          shift and go to state 150
+    APATS                          shift and go to state 151
     PARAM                          shift and go to state 42
     LITERAL                        shift and go to state 31
 
-state 135
+state 136
 
     (83) INFIX_FUNCTION -> TILDE IDENTIFIER TILDE .
 
@@ -3298,7 +3347,7 @@ state 135
     ENDSTATEMENT    reduce using rule 83 (INFIX_FUNCTION -> TILDE IDENTIFIER TILDE .)
 
 
-state 136
+state 137
 
     (14) CONSTRUCTOR -> TYPENAME ATYPES .
     (31) ATYPES -> ATYPES . ATYPE
@@ -3309,22 +3358,22 @@ state 136
     PIPE            reduce using rule 14 (CONSTRUCTOR -> TYPENAME ATYPES .)
     CLOSE_BRACE     reduce using rule 14 (CONSTRUCTOR -> TYPENAME ATYPES .)
     ENDSTATEMENT    reduce using rule 14 (CONSTRUCTOR -> TYPENAME ATYPES .)
-    TYPENAME        shift and go to state 151
-    IDENTIFIER      shift and go to state 153
-    OPEN_PAREN      shift and go to state 154
+    TYPENAME        shift and go to state 152
+    IDENTIFIER      shift and go to state 154
+    OPEN_PAREN      shift and go to state 155
 
-    ATYPE                          shift and go to state 152
+    ATYPE                          shift and go to state 153
 
-state 137
+state 138
 
     (12) CONSTRUCTORS -> CONSTRUCTORS PIPE . CONSTRUCTOR
     (14) CONSTRUCTOR -> . TYPENAME ATYPES
 
     TYPENAME        shift and go to state 97
 
-    CONSTRUCTOR                    shift and go to state 155
+    CONSTRUCTOR                    shift and go to state 156
 
-state 138
+state 139
 
     (41) RHS -> EQUALS EXP WITH DECLARATIONS .
 
@@ -3332,16 +3381,16 @@ state 138
     ENDSTATEMENT    reduce using rule 41 (RHS -> EQUALS EXP WITH DECLARATIONS .)
 
 
-state 139
+state 140
 
     (57) IF_EXPR -> EXP IF EXP . ELSE EXP
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
 
-    ELSE            shift and go to state 156
+    ELSE            shift and go to state 157
     IF              shift and go to state 102
 
 
-state 140
+state 141
 
     (47) INFIX_EXP -> LEXP OP INFIX_EXP .
     (46) EXP -> INFIX_EXP .
@@ -3360,7 +3409,8 @@ state 140
     TIMES           reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     DIVIDE          reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     MODULO          reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
-    POW             reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
+    FPOW            reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
+    IPOW            reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     EQUALITY        reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     INEQUALITY      reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
     LESS            reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .)
@@ -3376,14 +3426,14 @@ state 140
   ! IF              [ reduce using rule 47 (INFIX_EXP -> LEXP OP INFIX_EXP .) ]
 
 
-state 141
+state 142
 
     (55) LAMBDA_ABSTRACTION -> LAMBDA APAT APATS . ARROW EXP
 
-    ARROW           shift and go to state 157
+    ARROW           shift and go to state 158
 
 
-state 142
+state 143
 
     (56) LET_EXPR -> LET DECLARATIONS IN . EXP
     (46) EXP -> . INFIX_EXP
@@ -3406,12 +3456,12 @@ state 142
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -3426,7 +3476,7 @@ state 142
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    EXP                            shift and go to state 158
+    EXP                            shift and go to state 159
     INFIX_EXP                      shift and go to state 69
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
@@ -3440,14 +3490,14 @@ state 142
     LITERAL                        shift and go to state 83
     OPERATOR_FUNC                  shift and go to state 84
 
-state 143
+state 144
 
     (15) DECLARATIONS -> OPEN_BRACE DECLARATIONS_LIST . CLOSE_BRACE
 
-    CLOSE_BRACE     shift and go to state 159
+    CLOSE_BRACE     shift and go to state 160
 
 
-state 144
+state 145
 
     (16) DECLARATIONS -> OPEN_BRACE CLOSE_BRACE .
 
@@ -3456,23 +3506,23 @@ state 144
     ENDSTATEMENT    reduce using rule 16 (DECLARATIONS -> OPEN_BRACE CLOSE_BRACE .)
 
 
-state 145
+state 146
 
     (17) DECLARATIONS_LIST -> DECLARATION . ENDSTATEMENT DECLARATIONS_LIST
     (18) DECLARATIONS_LIST -> DECLARATION .
 
-    ENDSTATEMENT    shift and go to state 160
+    ENDSTATEMENT    shift and go to state 161
     CLOSE_BRACE     reduce using rule 18 (DECLARATIONS_LIST -> DECLARATION .)
 
 
-state 146
+state 147
 
     (58) MATCH_EXPR -> MATCH EXP ON . OPEN_BRACE ALTS CLOSE_BRACE
 
-    OPEN_BRACE      shift and go to state 161
+    OPEN_BRACE      shift and go to state 162
 
 
-state 147
+state 148
 
     (65) AEXP -> OPEN_PAREN EXP CLOSE_PAREN .
 
@@ -3488,7 +3538,8 @@ state 147
     TIMES           reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     DIVIDE          reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     MODULO          reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
-    POW             reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
+    FPOW            reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
+    IPOW            reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     EQUALITY        reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     INEQUALITY      reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
     LESS            reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
@@ -3510,7 +3561,7 @@ state 147
     GIVEN           reduce using rule 65 (AEXP -> OPEN_PAREN EXP CLOSE_PAREN .)
 
 
-state 148
+state 149
 
     (66) OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .
 
@@ -3526,7 +3577,8 @@ state 148
     TIMES           reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     DIVIDE          reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     MODULO          reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
-    POW             reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
+    FPOW            reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
+    IPOW            reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     EQUALITY        reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     INEQUALITY      reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
     LESS            reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
@@ -3548,7 +3600,7 @@ state 148
     GIVEN           reduce using rule 66 (OPERATOR_FUNC -> OPEN_PAREN OP CLOSE_PAREN .)
 
 
-state 149
+state 150
 
     (44) GDRHS -> GIVEN EXP EQUALS EXP .
     (45) GDRHS -> GIVEN EXP EQUALS EXP . GDRHS
@@ -3562,9 +3614,9 @@ state 149
     IF              shift and go to state 102
     GIVEN           shift and go to state 48
 
-    GDRHS                          shift and go to state 162
+    GDRHS                          shift and go to state 163
 
-state 150
+state 151
 
     (37) FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS .
 
@@ -3573,7 +3625,7 @@ state 150
     CLOSE_PAREN     reduce using rule 37 (FUNCTION_LHS -> OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS .)
 
 
-state 151
+state 152
 
     (33) ATYPE -> TYPENAME .
 
@@ -3587,7 +3639,7 @@ state 151
     CLOSE_PAREN     reduce using rule 33 (ATYPE -> TYPENAME .)
 
 
-state 152
+state 153
 
     (31) ATYPES -> ATYPES ATYPE .
 
@@ -3599,7 +3651,7 @@ state 152
     ENDSTATEMENT    reduce using rule 31 (ATYPES -> ATYPES ATYPE .)
 
 
-state 153
+state 154
 
     (34) ATYPE -> IDENTIFIER .
 
@@ -3613,7 +3665,7 @@ state 153
     CLOSE_PAREN     reduce using rule 34 (ATYPE -> IDENTIFIER .)
 
 
-state 154
+state 155
 
     (35) ATYPE -> OPEN_PAREN . TYPE CLOSE_PAREN
     (29) TYPE -> . ATYPE
@@ -3622,14 +3674,14 @@ state 154
     (34) ATYPE -> . IDENTIFIER
     (35) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
 
-    TYPENAME        shift and go to state 151
-    IDENTIFIER      shift and go to state 153
-    OPEN_PAREN      shift and go to state 154
+    TYPENAME        shift and go to state 152
+    IDENTIFIER      shift and go to state 154
+    OPEN_PAREN      shift and go to state 155
 
-    TYPE                           shift and go to state 163
-    ATYPE                          shift and go to state 164
+    TYPE                           shift and go to state 164
+    ATYPE                          shift and go to state 165
 
-state 155
+state 156
 
     (12) CONSTRUCTORS -> CONSTRUCTORS PIPE CONSTRUCTOR .
 
@@ -3638,7 +3690,7 @@ state 155
     ENDSTATEMENT    reduce using rule 12 (CONSTRUCTORS -> CONSTRUCTORS PIPE CONSTRUCTOR .)
 
 
-state 156
+state 157
 
     (57) IF_EXPR -> EXP IF EXP ELSE . EXP
     (46) EXP -> . INFIX_EXP
@@ -3661,69 +3713,12 @@ state 156
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
-    (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
-
-    MINUS           shift and go to state 71
-    LAMBDA          shift and go to state 77
-    LET             shift and go to state 78
-    MATCH           shift and go to state 79
-    OPEN_PAREN      shift and go to state 85
-    IDENTIFIER      shift and go to state 86
-    TYPENAME        shift and go to state 87
-    FLOAT           shift and go to state 33
-    INTEGER         shift and go to state 23
-    BOOL            shift and go to state 34
-    STRING          shift and go to state 12
-
-    EXP                            shift and go to state 165
-    INFIX_EXP                      shift and go to state 69
-    LEXP                           shift and go to state 70
-    LAMBDA_ABSTRACTION             shift and go to state 72
-    LET_EXPR                       shift and go to state 73
-    IF_EXPR                        shift and go to state 74
-    MATCH_EXPR                     shift and go to state 75
-    FUNCTION_EXPR                  shift and go to state 76
-    AEXP                           shift and go to state 80
-    USED_VAR                       shift and go to state 81
-    USED_TYPENAME                  shift and go to state 82
-    LITERAL                        shift and go to state 83
-    OPERATOR_FUNC                  shift and go to state 84
-
-state 157
-
-    (55) LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW . EXP
-    (46) EXP -> . INFIX_EXP
-    (47) INFIX_EXP -> . LEXP OP INFIX_EXP
-    (48) INFIX_EXP -> . MINUS INFIX_EXP
-    (49) INFIX_EXP -> . LEXP
-    (50) LEXP -> . LAMBDA_ABSTRACTION
-    (51) LEXP -> . LET_EXPR
-    (52) LEXP -> . IF_EXPR
-    (53) LEXP -> . MATCH_EXPR
-    (54) LEXP -> . FUNCTION_EXPR
-    (55) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
-    (56) LET_EXPR -> . LET DECLARATIONS IN EXP
-    (57) IF_EXPR -> . EXP IF EXP ELSE EXP
-    (58) MATCH_EXPR -> . MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE
-    (59) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
-    (60) FUNCTION_EXPR -> . AEXP
-    (61) AEXP -> . USED_VAR
-    (62) AEXP -> . USED_TYPENAME
-    (63) AEXP -> . LITERAL
-    (64) AEXP -> . OPERATOR_FUNC
-    (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -3754,6 +3749,63 @@ state 157
 
 state 158
 
+    (55) LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW . EXP
+    (46) EXP -> . INFIX_EXP
+    (47) INFIX_EXP -> . LEXP OP INFIX_EXP
+    (48) INFIX_EXP -> . MINUS INFIX_EXP
+    (49) INFIX_EXP -> . LEXP
+    (50) LEXP -> . LAMBDA_ABSTRACTION
+    (51) LEXP -> . LET_EXPR
+    (52) LEXP -> . IF_EXPR
+    (53) LEXP -> . MATCH_EXPR
+    (54) LEXP -> . FUNCTION_EXPR
+    (55) LAMBDA_ABSTRACTION -> . LAMBDA APAT APATS ARROW EXP
+    (56) LET_EXPR -> . LET DECLARATIONS IN EXP
+    (57) IF_EXPR -> . EXP IF EXP ELSE EXP
+    (58) MATCH_EXPR -> . MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE
+    (59) FUNCTION_EXPR -> . FUNCTION_EXPR AEXP
+    (60) FUNCTION_EXPR -> . AEXP
+    (61) AEXP -> . USED_VAR
+    (62) AEXP -> . USED_TYPENAME
+    (63) AEXP -> . LITERAL
+    (64) AEXP -> . OPERATOR_FUNC
+    (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
+    (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
+
+    MINUS           shift and go to state 71
+    LAMBDA          shift and go to state 77
+    LET             shift and go to state 78
+    MATCH           shift and go to state 79
+    OPEN_PAREN      shift and go to state 85
+    IDENTIFIER      shift and go to state 86
+    TYPENAME        shift and go to state 87
+    FLOAT           shift and go to state 33
+    INTEGER         shift and go to state 23
+    BOOL            shift and go to state 34
+    STRING          shift and go to state 12
+
+    EXP                            shift and go to state 167
+    INFIX_EXP                      shift and go to state 69
+    LEXP                           shift and go to state 70
+    LAMBDA_ABSTRACTION             shift and go to state 72
+    LET_EXPR                       shift and go to state 73
+    IF_EXPR                        shift and go to state 74
+    MATCH_EXPR                     shift and go to state 75
+    FUNCTION_EXPR                  shift and go to state 76
+    AEXP                           shift and go to state 80
+    USED_VAR                       shift and go to state 81
+    USED_TYPENAME                  shift and go to state 82
+    LITERAL                        shift and go to state 83
+    OPERATOR_FUNC                  shift and go to state 84
+
+state 159
+
     (56) LET_EXPR -> LET DECLARATIONS IN EXP .
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
 
@@ -3763,7 +3815,8 @@ state 158
     TIMES           reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     DIVIDE          reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     MODULO          reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
-    POW             reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
+    FPOW            reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
+    IPOW            reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     EQUALITY        reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     INEQUALITY      reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
     LESS            reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .)
@@ -3787,7 +3840,7 @@ state 158
   ! IF              [ reduce using rule 56 (LET_EXPR -> LET DECLARATIONS IN EXP .) ]
 
 
-state 159
+state 160
 
     (15) DECLARATIONS -> OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE .
 
@@ -3796,7 +3849,7 @@ state 159
     ENDSTATEMENT    reduce using rule 15 (DECLARATIONS -> OPEN_BRACE DECLARATIONS_LIST CLOSE_BRACE .)
 
 
-state 160
+state 161
 
     (17) DECLARATIONS_LIST -> DECLARATION ENDSTATEMENT . DECLARATIONS_LIST
     (17) DECLARATIONS_LIST -> . DECLARATION ENDSTATEMENT DECLARATIONS_LIST
@@ -3811,7 +3864,7 @@ state 160
     (36) FUNCTION_LHS -> . IDENTIFIER APAT APATS
     (37) FUNCTION_LHS -> . OPEN_PAREN FUNCTION_LHS CLOSE_PAREN APAT APATS
     (38) FUNCTION_LHS -> . INFIX_FUNCTION_DEFINITION
-    (107) PARAM -> . IDENTIFIER
+    (108) PARAM -> . IDENTIFIER
     (39) INFIX_FUNCTION_DEFINITION -> . LPAT INFIX_FUNCTION LPAT
     (71) LPAT -> . APAT
     (72) LPAT -> . CONSTRUCTOR_PATTERN
@@ -3823,10 +3876,10 @@ state 160
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     ENDSTATEMENT    reduce using rule 22 (DECLARATION -> .)
     CLOSE_BRACE     reduce using rule 22 (DECLARATION -> .)
@@ -3840,8 +3893,8 @@ state 160
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    DECLARATION                    shift and go to state 145
-    DECLARATIONS_LIST              shift and go to state 167
+    DECLARATION                    shift and go to state 146
+    DECLARATIONS_LIST              shift and go to state 168
     FUNCTION_DEFINITION            shift and go to state 17
     VARIABLE_DEFINITION            shift and go to state 18
     FIXITY_DECLARATION             shift and go to state 19
@@ -3854,7 +3907,7 @@ state 160
     NEGATIVE_LITERAL               shift and go to state 30
     LITERAL                        shift and go to state 31
 
-state 161
+state 162
 
     (58) MATCH_EXPR -> MATCH EXP ON OPEN_BRACE . ALTS CLOSE_BRACE
     (67) ALTS -> . ALT ENDSTATEMENT ALTS
@@ -3871,11 +3924,11 @@ state 161
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     ENDSTATEMENT    reduce using rule 70 (ALT -> .)
     CLOSE_BRACE     reduce using rule 70 (ALT -> .)
@@ -3888,16 +3941,16 @@ state 161
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    ALTS                           shift and go to state 168
-    ALT                            shift and go to state 169
-    LPAT                           shift and go to state 170
+    ALTS                           shift and go to state 169
+    ALT                            shift and go to state 170
+    LPAT                           shift and go to state 171
     APAT                           shift and go to state 25
     CONSTRUCTOR_PATTERN            shift and go to state 29
     NEGATIVE_LITERAL               shift and go to state 30
     PARAM                          shift and go to state 42
     LITERAL                        shift and go to state 31
 
-state 162
+state 163
 
     (45) GDRHS -> GIVEN EXP EQUALS EXP GDRHS .
 
@@ -3906,23 +3959,23 @@ state 162
     ENDSTATEMENT    reduce using rule 45 (GDRHS -> GIVEN EXP EQUALS EXP GDRHS .)
 
 
-state 163
+state 164
 
     (35) ATYPE -> OPEN_PAREN TYPE . CLOSE_PAREN
 
-    CLOSE_PAREN     shift and go to state 171
+    CLOSE_PAREN     shift and go to state 172
 
 
-state 164
+state 165
 
     (29) TYPE -> ATYPE .
     (30) TYPE -> ATYPE . ARROW TYPE
 
     CLOSE_PAREN     reduce using rule 29 (TYPE -> ATYPE .)
-    ARROW           shift and go to state 172
+    ARROW           shift and go to state 173
 
 
-state 165
+state 166
 
     (57) IF_EXPR -> EXP IF EXP ELSE EXP .
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
@@ -3933,7 +3986,8 @@ state 165
     TIMES           reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     DIVIDE          reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     MODULO          reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
-    POW             reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
+    FPOW            reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
+    IPOW            reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     EQUALITY        reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     INEQUALITY      reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
     LESS            reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .)
@@ -3957,7 +4011,7 @@ state 165
   ! IF              [ reduce using rule 57 (IF_EXPR -> EXP IF EXP ELSE EXP .) ]
 
 
-state 166
+state 167
 
     (55) LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
@@ -3968,7 +4022,8 @@ state 166
     TIMES           reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     DIVIDE          reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     MODULO          reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
-    POW             reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
+    FPOW            reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
+    IPOW            reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     EQUALITY        reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     INEQUALITY      reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
     LESS            reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .)
@@ -3992,37 +4047,37 @@ state 166
   ! IF              [ reduce using rule 55 (LAMBDA_ABSTRACTION -> LAMBDA APAT APATS ARROW EXP .) ]
 
 
-state 167
+state 168
 
     (17) DECLARATIONS_LIST -> DECLARATION ENDSTATEMENT DECLARATIONS_LIST .
 
     CLOSE_BRACE     reduce using rule 17 (DECLARATIONS_LIST -> DECLARATION ENDSTATEMENT DECLARATIONS_LIST .)
 
 
-state 168
+state 169
 
     (58) MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS . CLOSE_BRACE
 
-    CLOSE_BRACE     shift and go to state 173
-
-
-state 169
-
-    (67) ALTS -> ALT . ENDSTATEMENT ALTS
-    (68) ALTS -> ALT .
-
-    ENDSTATEMENT    shift and go to state 174
-    CLOSE_BRACE     reduce using rule 68 (ALTS -> ALT .)
+    CLOSE_BRACE     shift and go to state 174
 
 
 state 170
 
-    (69) ALT -> LPAT . ARROW EXP
+    (67) ALTS -> ALT . ENDSTATEMENT ALTS
+    (68) ALTS -> ALT .
 
-    ARROW           shift and go to state 175
+    ENDSTATEMENT    shift and go to state 175
+    CLOSE_BRACE     reduce using rule 68 (ALTS -> ALT .)
 
 
 state 171
+
+    (69) ALT -> LPAT . ARROW EXP
+
+    ARROW           shift and go to state 176
+
+
+state 172
 
     (35) ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .
 
@@ -4036,7 +4091,7 @@ state 171
     CLOSE_PAREN     reduce using rule 35 (ATYPE -> OPEN_PAREN TYPE CLOSE_PAREN .)
 
 
-state 172
+state 173
 
     (30) TYPE -> ATYPE ARROW . TYPE
     (29) TYPE -> . ATYPE
@@ -4045,14 +4100,14 @@ state 172
     (34) ATYPE -> . IDENTIFIER
     (35) ATYPE -> . OPEN_PAREN TYPE CLOSE_PAREN
 
-    TYPENAME        shift and go to state 151
-    IDENTIFIER      shift and go to state 153
-    OPEN_PAREN      shift and go to state 154
+    TYPENAME        shift and go to state 152
+    IDENTIFIER      shift and go to state 154
+    OPEN_PAREN      shift and go to state 155
 
-    ATYPE                          shift and go to state 164
-    TYPE                           shift and go to state 176
+    ATYPE                          shift and go to state 165
+    TYPE                           shift and go to state 177
 
-state 173
+state 174
 
     (58) MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .
 
@@ -4061,7 +4116,8 @@ state 173
     TIMES           reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
     DIVIDE          reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
     MODULO          reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
-    POW             reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
+    FPOW            reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
+    IPOW            reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
     EQUALITY        reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
     INEQUALITY      reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
     LESS            reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
@@ -4083,7 +4139,7 @@ state 173
     GIVEN           reduce using rule 58 (MATCH_EXPR -> MATCH EXP ON OPEN_BRACE ALTS CLOSE_BRACE .)
 
 
-state 174
+state 175
 
     (67) ALTS -> ALT ENDSTATEMENT . ALTS
     (67) ALTS -> . ALT ENDSTATEMENT ALTS
@@ -4100,11 +4156,11 @@ state 174
     (74) CONSTRUCTOR_PATTERN -> . TYPENAME APAT APATS
     (75) NEGATIVE_LITERAL -> . MINUS INTEGER
     (76) NEGATIVE_LITERAL -> . MINUS FLOAT
-    (107) PARAM -> . IDENTIFIER
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (108) PARAM -> . IDENTIFIER
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
 
     ENDSTATEMENT    reduce using rule 70 (ALT -> .)
     CLOSE_BRACE     reduce using rule 70 (ALT -> .)
@@ -4117,16 +4173,16 @@ state 174
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    ALT                            shift and go to state 169
-    ALTS                           shift and go to state 177
-    LPAT                           shift and go to state 170
+    ALT                            shift and go to state 170
+    ALTS                           shift and go to state 178
+    LPAT                           shift and go to state 171
     APAT                           shift and go to state 25
     CONSTRUCTOR_PATTERN            shift and go to state 29
     NEGATIVE_LITERAL               shift and go to state 30
     PARAM                          shift and go to state 42
     LITERAL                        shift and go to state 31
 
-state 175
+state 176
 
     (69) ALT -> LPAT ARROW . EXP
     (46) EXP -> . INFIX_EXP
@@ -4149,12 +4205,12 @@ state 175
     (63) AEXP -> . LITERAL
     (64) AEXP -> . OPERATOR_FUNC
     (65) AEXP -> . OPEN_PAREN EXP CLOSE_PAREN
-    (105) USED_VAR -> . IDENTIFIER
-    (106) USED_TYPENAME -> . TYPENAME
-    (101) LITERAL -> . FLOAT
-    (102) LITERAL -> . INTEGER
-    (103) LITERAL -> . BOOL
-    (104) LITERAL -> . STRING
+    (106) USED_VAR -> . IDENTIFIER
+    (107) USED_TYPENAME -> . TYPENAME
+    (102) LITERAL -> . FLOAT
+    (103) LITERAL -> . INTEGER
+    (104) LITERAL -> . BOOL
+    (105) LITERAL -> . STRING
     (66) OPERATOR_FUNC -> . OPEN_PAREN OP CLOSE_PAREN
 
     MINUS           shift and go to state 71
@@ -4169,7 +4225,7 @@ state 175
     BOOL            shift and go to state 34
     STRING          shift and go to state 12
 
-    EXP                            shift and go to state 178
+    EXP                            shift and go to state 179
     INFIX_EXP                      shift and go to state 69
     LEXP                           shift and go to state 70
     LAMBDA_ABSTRACTION             shift and go to state 72
@@ -4183,21 +4239,21 @@ state 175
     LITERAL                        shift and go to state 83
     OPERATOR_FUNC                  shift and go to state 84
 
-state 176
+state 177
 
     (30) TYPE -> ATYPE ARROW TYPE .
 
     CLOSE_PAREN     reduce using rule 30 (TYPE -> ATYPE ARROW TYPE .)
 
 
-state 177
+state 178
 
     (67) ALTS -> ALT ENDSTATEMENT ALTS .
 
     CLOSE_BRACE     reduce using rule 67 (ALTS -> ALT ENDSTATEMENT ALTS .)
 
 
-state 178
+state 179
 
     (69) ALT -> LPAT ARROW EXP .
     (57) IF_EXPR -> EXP . IF EXP ELSE EXP
@@ -4214,7 +4270,8 @@ WARNING: shift/reduce conflict for MINUS in state 70 resolved as shift
 WARNING: shift/reduce conflict for TIMES in state 70 resolved as shift
 WARNING: shift/reduce conflict for DIVIDE in state 70 resolved as shift
 WARNING: shift/reduce conflict for MODULO in state 70 resolved as shift
-WARNING: shift/reduce conflict for POW in state 70 resolved as shift
+WARNING: shift/reduce conflict for FPOW in state 70 resolved as shift
+WARNING: shift/reduce conflict for IPOW in state 70 resolved as shift
 WARNING: shift/reduce conflict for EQUALITY in state 70 resolved as shift
 WARNING: shift/reduce conflict for INEQUALITY in state 70 resolved as shift
 WARNING: shift/reduce conflict for LESS in state 70 resolved as shift
@@ -4225,11 +4282,11 @@ WARNING: shift/reduce conflict for CONCAT in state 70 resolved as shift
 WARNING: shift/reduce conflict for AND in state 70 resolved as shift
 WARNING: shift/reduce conflict for OR in state 70 resolved as shift
 WARNING: shift/reduce conflict for TILDE in state 70 resolved as shift
-WARNING: shift/reduce conflict for CLOSE_BRACE in state 126 resolved as shift
-WARNING: shift/reduce conflict for IF in state 158 resolved as shift
-WARNING: shift/reduce conflict for IF in state 165 resolved as shift
+WARNING: shift/reduce conflict for CLOSE_BRACE in state 127 resolved as shift
+WARNING: shift/reduce conflict for IF in state 159 resolved as shift
 WARNING: shift/reduce conflict for IF in state 166 resolved as shift
-WARNING: reduce/reduce conflict in state 121 resolved using rule (EXP -> INFIX_EXP)
-WARNING: rejected rule (INFIX_EXP -> MINUS INFIX_EXP) in state 121
-WARNING: reduce/reduce conflict in state 140 resolved using rule (EXP -> INFIX_EXP)
-WARNING: rejected rule (INFIX_EXP -> LEXP OP INFIX_EXP) in state 140
+WARNING: shift/reduce conflict for IF in state 167 resolved as shift
+WARNING: reduce/reduce conflict in state 122 resolved using rule (EXP -> INFIX_EXP)
+WARNING: rejected rule (INFIX_EXP -> MINUS INFIX_EXP) in state 122
+WARNING: reduce/reduce conflict in state 141 resolved using rule (EXP -> INFIX_EXP)
+WARNING: rejected rule (INFIX_EXP -> LEXP OP INFIX_EXP) in state 141

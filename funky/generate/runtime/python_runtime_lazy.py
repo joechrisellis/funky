@@ -13,6 +13,7 @@ class LazyPythonRuntime(Runtime):
             ">"           :  self.runtime_greater,
             ">="          :  self.runtime_geq,
             "**"          :  self.runtime_pow,
+            "^"           :  self.runtime_pow,
             "+"           :  self.runtime_add,
             "++"          :  self.runtime_concat,
             "-"           :  self.runtime_sub,
@@ -73,10 +74,7 @@ class LazyPythonRuntime(Runtime):
         fname = "__pow"
         return """def {}(a):
     def lam(x):
-        if type(a) == int and type(x) == int:
-            return Thunk(lambda: int(trampoline(a) ** trampoline(x)))
-        else:
-            return Thunk(lambda: trampoline(a) ** trampoline(x))
+        return Thunk(lambda: trampoline(a) ** trampoline(x))
     return lam""".format(fname), fname
 
     @add_to_runtime

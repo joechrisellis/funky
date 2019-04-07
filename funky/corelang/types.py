@@ -13,11 +13,28 @@ def typename_generator():
 
 get_typename = typename_generator()
 
+def contains_function(t):
+    """Checks if a given TypeVariable/TypeOperator contains a function.
+    
+    :param t: the TypeVariable or TypeOperator to check
+    :return:  True if t contains a function, False otherwise
+    :rtype:   bool
+    """
+    if isinstance(t, TypeVariable):
+        if t.instance:
+            return contains_function(t.instance)
+        return False
+    elif isinstance(t, TypeOperator):
+        return is_function(t) or any(is_function(x) for x in t.types)
+    else:
+        raise ValueError("contains_function input is not TypeVariable or "
+                         "TypeOperator.")
+
 def is_function(t):
     """Checks if a given TypeVariable/TypeOperator is a function.
     
     :param t: the TypeVariable or TypeOperator to check
-    :return:  True if t is a function, False otherwise.
+    :return:  True if t is a function, False otherwise
     :rtype:   bool
     """
     if isinstance(t, TypeVariable):

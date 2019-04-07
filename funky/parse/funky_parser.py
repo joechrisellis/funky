@@ -341,7 +341,8 @@ class FunkyParser:
                   | TIMES
                   | DIVIDE
                   | MODULO
-                  | POW
+                  | FPOW
+                  | IPOW
                   | EQUALITY
                   | INEQUALITY
                   | LESS

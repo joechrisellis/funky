@@ -49,7 +49,7 @@ module strings with
     def test_invalid_first_pass(self):
         lexer = FunkyLexer()
         lexer.build()
-        invalid = ["12.2.2", "10 ^ 2", "True && False", "'a'sd\;"]
+        invalid = ["12.2.2", "10 ,,, 2", "True && False", "'a'sd\;"]
 
         for test in invalid:
             with self.assertRaises(FunkyLexingError):

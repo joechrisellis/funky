@@ -23,7 +23,7 @@ module factorial with
         prog = """
 module math with
     
-    area r = pi * r ** 2.0
+    area r = pi * r ^ 2
              with pi = 3.0 +
                             0.141
     

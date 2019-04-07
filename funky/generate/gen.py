@@ -1,5 +1,5 @@
 from funky.generate import FunkyCodeGenerationError
-from funky.corelang.types import is_function
+from funky.corelang.types import contains_function
 import datetime
 
 class CodeGenerator:
@@ -38,9 +38,9 @@ class CodeGenerator:
         # technically, languages like Python can output a representation of it.
         # but languages like Haskell can't, so we should prevent it ever
         # happening for consistency.
-        if is_function(core_tree.inferred_type):
-            raise FunkyCodeGenerationError("Output type is a function. "
-                                           "Cannot generate code to output "
+        if contains_function(core_tree.inferred_type):
+            raise FunkyCodeGenerationError("Output type contains a function. "
+                                           "Cannot generate code which outputs "
                                            "function types.")
 
 class Program:
